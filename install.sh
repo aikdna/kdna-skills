@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # KDNA Skills Installer
-# Installs kdna-loader skill for detected AI agents
+# Installs kdna-loader and kdna-create skills for detected AI agents
 
-SKILL_SRC="https://raw.githubusercontent.com/aikdna/kdna-skills/main/SKILL.md"
 KDNA_REPO="https://github.com/aikdna/KDNA"
+SKILLS_REPO="https://github.com/aikdna/kdna-skills"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -16,49 +16,50 @@ log()  { echo -e "${GREEN}[kdna]${NC} $1"; }
 warn() { echo -e "${YELLOW}[kdna]${NC} $1"; }
 err()  { echo -e "${RED}[kdna]${NC} $1"; }
 
-install_for_agent() {
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+install_skills_for_agent() {
   local name="$1"
-  local skill_dir="$2"
+  local skill_base="$2"
   local data_dir="$3"
 
   log "Installing for $name..."
 
-  mkdir -p "$skill_dir"
+  mkdir -p "$skill_base/kdna-loader"
+  mkdir -p "$skill_base/kdna-create"
   mkdir -p "$data_dir"
 
-  if [ -f "SKILL.md" ]; then
-    cp SKILL.md "$skill_dir/SKILL.md"
+  if [ -f "$SCRIPT_DIR/kdna-loader/SKILL.md" ]; then
+    cp "$SCRIPT_DIR/kdna-loader/SKILL.md" "$skill_base/kdna-loader/SKILL.md"
+    cp "$SCRIPT_DIR/kdna-create/SKILL.md" "$skill_base/kdna-create/SKILL.md"
   else
-    curl -fsSL "$SKILL_SRC" -o "$skill_dir/SKILL.md"
+    curl -fsSL "https://raw.githubusercontent.com/aikdna/kdna-skills/main/kdna-loader/SKILL.md" -o "$skill_base/kdna-loader/SKILL.md"
+    curl -fsSL "https://raw.githubusercontent.com/aikdna/kdna-skills/main/kdna-create/SKILL.md" -o "$skill_base/kdna-create/SKILL.md"
   fi
 
-  log "  Skill: $skill_dir/SKILL.md"
-  log "  Data:  $data_dir/"
-  log "  $name: done"
-}
+  log "  kdna-loader: $skill_base/kdna-loader/SKILL.md"
+  log "  kdna-create: $skill_base/kdna-create/SKILL.md"
+  log "  KDNA data:    $data_dir/"
 
-install_registry() {
-  local data_dir="$1"
-  local registry_file="$data_dir/registry.json"
-
-  if [ ! -f "$registry_file" ]; then
-    cat > "$registry_file" << 'EOF'
+  if [ ! -f "$data_dir/registry.json" ]; then
+    cat > "$data_dir/registry.json" << EOF
 {
   "version": "0.1",
-  "root": "KDNA_DATA_DIR",
+  "root": "$data_dir",
   "domains": []
 }
 EOF
+    log "  registry:     $data_dir/registry.json"
   fi
+
+  log "  $name: done"
 }
 
 detect_agents() {
   local found=""
-
   [ -d "$HOME/.codex" ]  && found="$found codex"
   [ -d "$HOME/.claude" ] && found="$found claude"
   [ -d "$HOME/.agents" ] && found="$found opencode"
-
   echo "$found"
 }
 
@@ -76,42 +77,41 @@ Options:
   --help       Show this message
 
 Without options, runs interactive mode.
+
+Installs two skills:
+  kdna-loader  — loads KDNA domain cognition before responding
+  kdna-create  — creates, downloads, or imports KDNA domains
 EOF
 }
 
 install_codex() {
-  install_for_agent "Codex" \
-    "$HOME/.codex/skills/kdna-loader" \
+  install_skills_for_agent "Codex" \
+    "$HOME/.codex/skills" \
     "$HOME/.codex/Kdna"
-  install_registry "$HOME/.codex/Kdna"
 }
 
 install_claude() {
-  install_for_agent "Claude Code" \
-    "$HOME/.claude/skills/kdna-loader" \
+  install_skills_for_agent "Claude Code" \
+    "$HOME/.claude/skills" \
     "$HOME/.claude/Kdna"
-  install_registry "$HOME/.claude/Kdna"
 }
 
 install_opencode() {
-  install_for_agent "OpenCode" \
-    "$HOME/.agents/skills/kdna-loader" \
+  install_skills_for_agent "OpenCode" \
+    "$HOME/.agents/skills" \
     "$HOME/.agents/Kdna"
-  install_registry "$HOME/.agents/Kdna"
 }
 
 install_cursor() {
-  install_for_agent "Cursor" \
-    "$HOME/.cursor/skills/kdna-loader" \
+  install_skills_for_agent "Cursor" \
+    "$HOME/.cursor/skills" \
     "$HOME/.cursor/Kdna"
-  install_registry "$HOME/.cursor/Kdna"
 }
 
 install_copilot() {
-  install_for_agent "GitHub Copilot" \
-    "$HOME/.agents/skills/kdna-loader" \
+  install_skills_for_agent "GitHub Copilot" \
+    "$HOME/.agents/skills" \
     "$HOME/.agents/Kdna"
-  install_registry "$HOME/.agents/Kdna"
 }
 
 interactive_mode() {
@@ -121,11 +121,11 @@ interactive_mode() {
   if [ -z "$agents" ]; then
     warn "No agents detected. Manual install:"
     echo ""
-    echo "  Codex:       mkdir -p ~/.codex/skills/kdna-loader"
-    echo "  Claude Code: mkdir -p ~/.claude/skills/kdna-loader"
-    echo "  OpenCode:    mkdir -p ~/.agents/skills/kdna-loader"
+    echo "  Codex:       mkdir -p ~/.codex/skills/kdna-loader ~/.codex/skills/kdna-create"
+    echo "  Claude Code: mkdir -p ~/.claude/skills/kdna-loader ~/.claude/skills/kdna-create"
+    echo "  OpenCode:    mkdir -p ~/.agents/skills/kdna-loader ~/.agents/skills/kdna-create"
     echo ""
-    echo "Then copy SKILL.md into the directory."
+    echo "Then copy kdna-loader/SKILL.md and kdna-create/SKILL.md into each."
     exit 0
   fi
 
@@ -178,8 +178,13 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-log "Installation complete."
+echo ""
+log "Installation complete. Two skills installed:"
+echo ""
+echo "  kdna-loader — loads domain cognition before responding"
+echo "  kdna-create — creates, downloads, or imports KDNA domains"
 echo ""
 echo "Next steps:"
-echo "  1. Add domains to your KDNA data directory"
-echo "  2. See available domains: $KDNA_REPO"
+echo "  1. Add domains: ask your agent 'download the communication KDNA from the registry'"
+echo "  2. Or create:   ask your agent 'create a KDNA for my domain expertise'"
+echo "  3. See available domains: $KDNA_REPO"

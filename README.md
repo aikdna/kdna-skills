@@ -1,8 +1,13 @@
 # KDNA Skills
 
-Install KDNA domain cognition for any AI agent. One skill, one format, multiple agents.
+Install KDNA domain cognition for any AI agent. Two skills, one installer, multiple agents.
 
-KDNA tells AI how to think within a domain. This repo helps you install the `kdna-loader` skill into your agent of choice.
+## Skills
+
+| Skill | Purpose |
+|---|---|
+| **kdna-loader** | Loads KDNA domain cognition before responding. Detects domains, applies axioms, uses preferred terminology, runs self-checks. |
+| **kdna-create** | Creates, downloads, or imports KDNA domains. Interview-based creation, registry download, URL import, template scaffolding. |
 
 ## Supported Agents
 
@@ -16,78 +21,81 @@ KDNA tells AI how to think within a domain. This repo helps you install the `kdn
 
 ## Quick Install
 
-Interactive installer — detects your agents and asks where to install:
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/aikdna/kdna-skills/main/install.sh | bash
 ```
 
+The installer auto-detects your agents and installs both skills.
+
 Or install for a specific agent:
 
 ```bash
-# Codex
-./install.sh --codex
-
-# Claude Code
-./install.sh --claude
-
-# OpenCode
-./install.sh --opencode
-
-# All detected agents
-./install.sh --all
+./install.sh --codex    # Codex
+./install.sh --claude   # Claude Code
+./install.sh --opencode # OpenCode
+./install.sh --all      # All detected
 ```
 
-## What Gets Installed
+## What You Can Do After Installing
 
-1. The `kdna-loader` skill (`SKILL.md`) — tells the agent how to find, load, and apply KDNA.
-2. A KDNA data directory — where domain packages live (e.g., `~/.codex/Kdna/communication_expert/`).
-3. An example `registry.json` — helps the agent discover domains by keyword.
+### Load domain cognition
+```
+"Use kdna-loader to review this sales page."
+→ Agent loads sales KDNA, diagnoses certainty deficits, applies domain terminology.
+```
+
+### Create a new domain
+```
+"Create a KDNA for real estate negotiation expertise."
+→ kdna-create interviews you, extracts axioms and patterns, writes validated JSON.
+```
+
+### Download from the official registry
+```
+"Download the communication KDNA from the registry."
+→ kdna-create fetches the registry, clones the repo, copies files to your KDNA directory.
+```
+
+### Import from a URL
+```
+"Import KDNA from https://github.com/someone/kdna-cybersecurity"
+→ kdna-create clones the repo, validates the files, installs to your KDNA directory.
+```
 
 ## Manual Installation
-
-Copy the skill directly:
 
 ```bash
 # Codex
 mkdir -p ~/.codex/skills/kdna-loader
-cp SKILL.md ~/.codex/skills/kdna-loader/SKILL.md
+cp kdna-loader/SKILL.md ~/.codex/skills/kdna-loader/SKILL.md
+mkdir -p ~/.codex/skills/kdna-create
+cp kdna-create/SKILL.md ~/.codex/skills/kdna-create/SKILL.md
 
 # Claude Code
 mkdir -p ~/.claude/skills/kdna-loader
-cp SKILL.md ~/.claude/skills/kdna-loader/SKILL.md
+cp kdna-loader/SKILL.md ~/.claude/skills/kdna-loader/SKILL.md
+mkdir -p ~/.claude/skills/kdna-create
+cp kdna-create/SKILL.md ~/.claude/skills/kdna-create/SKILL.md
 
 # OpenCode
 mkdir -p ~/.agents/skills/kdna-loader
-cp SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
+cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
+mkdir -p ~/.agents/skills/kdna-create
+cp kdna-create/SKILL.md ~/.agents/skills/kdna-create/SKILL.md
 ```
 
-Then add KDNA domains to the data directory. See [KDNA](https://github.com/aikdna/KDNA) for available domains.
+## How kdna-create Works
 
-## What This Skill Does
+Four paths to obtain a KDNA domain:
 
-When loaded by your agent, `kdna-loader`:
-- Detects which domain the user's question belongs to
-- Loads `KDNA_Core.json` and `KDNA_Patterns.json` for that domain
-- Loads optional files (scenarios, cases, reasoning, evolution) based on the task
-- Applies domain axioms, terminology, and self-checks before the agent responds
+| Path | How |
+|---|---|
+| **Create from conversation** | Agent interviews you about your domain expertise, extracts axioms/patterns/misunderstandings, writes KDNA files |
+| **Download from registry** | Fetches [registry/domains.json](https://github.com/aikdna/KDNA/blob/main/registry/domains.json), clones the domain repo, copies to your KDNA directory |
+| **Import from URL** | Clones or downloads a KDNA package from any git repo or URL, validates, installs |
+| **Create from template** | Copies the [minimal template](https://github.com/aikdna/KDNA/tree/main/templates/minimal-domain), renames for your domain |
 
-The user sees a domain-shaped answer — not a summary of KDNA.
-
-## Adding Domains
-
-Install a domain into your KDNA data directory:
-
-```bash
-# Clone a domain package
-git clone https://github.com/aikdna/kdna-communication.git
-
-# Copy to your KDNA data dir
-mkdir -p ~/.codex/Kdna/communication_expert
-cp kdna-communication/KDNA_*.json ~/.codex/Kdna/communication_expert/
-```
-
-Or create your own from the [minimal template](https://github.com/aikdna/KDNA/tree/main/templates/minimal-domain).
+All paths validate the result before saving.
 
 ## License
 
