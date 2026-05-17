@@ -1,3 +1,5 @@
+> 🧬 [aikdna.com](https://aikdna.com) — 官方网站
+
 # KDNA 技能安装
 
 为任何 AI Agent 安装 KDNA 领域认知。两个技能，一个安装器，支持多个 Agent。

@@ -1,3 +1,5 @@
+> 🧬 [aikdna.com](https://aikdna.com) — Official website
+
 # KDNA Skills
 
 Install KDNA domain cognition for any AI agent. Two skills, one installer, multiple agents.
