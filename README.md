@@ -100,3 +100,5 @@ All paths validate the result before saving.
 ## License
 
 Apache-2.0
+
+[中文](./README.zh.md)
