@@ -1,8 +1,15 @@
-> 🧬 [aikdna.com](https://aikdna.com) — Official website
+> 🧬 [aikdna.com](https://aikdna.com) — Official website · [![npm](https://img.shields.io/npm/v/@aikdna/kdna)](https://www.npmjs.com/package/@aikdna/kdna)
 
 # KDNA Skills
 
-Install KDNA domain cognition for any AI agent. Two skills, one installer, multiple agents.
+Install KDNA domain cognition for any AI agent. Requires `@aikdna/kdna` CLI:
+
+```bash
+npm i -g @aikdna/kdna
+curl -fsSL https://raw.githubusercontent.com/aikdna/kdna-skills/main/install.sh | bash
+```
+
+Two skills, one installer, multiple agents.
 
 ## Skills
 
