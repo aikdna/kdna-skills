@@ -44,7 +44,7 @@ install_skills_for_agent() {
   if [ ! -f "$data_dir/registry.json" ]; then
     cat > "$data_dir/registry.json" << EOF
 {
-  "version": "0.1",
+  "version": "0.4",
   "root": "$data_dir",
   "domains": []
 }
