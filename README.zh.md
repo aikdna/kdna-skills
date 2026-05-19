@@ -22,10 +22,7 @@ curl -fsSL https://raw.githubusercontent.com/knowledge-dna/kdna-skills/main/inst
 
 | Agent | 技能位置 | KDNA 数据位置 |
 |---|---|---|
-| **Codex** (OpenAI) | `~/.codex/skills/kdna-loader/SKILL.md` | `~/.codex/Kdna/` |
-| **Claude Code** (Anthropic) | `~/.claude/skills/kdna-loader/SKILL.md` | `~/.claude/Kdna/` |
-| **OpenCode** | `~/.agents/skills/kdna-loader/SKILL.md` | `~/.agents/Kdna/` |
-| **Cursor** | `~/.cursor/skills/kdna-loader/SKILL.md` | `~/.cursor/Kdna/` |
+| **所有 Agent** | (因 Agent 而异) | `~/.kdna/`（统一位置，必要时创建软链接） |
 | **GitHub Copilot** | `~/.agents/skills/kdna-loader/SKILL.md` | `~/.agents/Kdna/` |
 
 ## 一键安装

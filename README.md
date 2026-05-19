@@ -22,10 +22,7 @@ Two skills, one installer, multiple agents.
 
 | Agent | Skill location | KDNA data location |
 |---|---|---|
-| **Codex** (OpenAI) | `~/.codex/skills/kdna-loader/SKILL.md` | `~/.codex/Kdna/` |
-| **Claude Code** (Anthropic) | `~/.claude/skills/kdna-loader/SKILL.md` | `~/.claude/Kdna/` |
-| **OpenCode** | `~/.agents/skills/kdna-loader/SKILL.md` | `~/.agents/Kdna/` |
-| **Cursor** | `~/.cursor/skills/kdna-loader/SKILL.md` | `~/.cursor/Kdna/` |
+| **All Agents** | (varies by Agent) | `~/.kdna/` (unified, symlink if needed) |
 | **GitHub Copilot** | `~/.agents/skills/kdna-loader/SKILL.md` | `~/.agents/Kdna/` |
 
 ## Quick Install
