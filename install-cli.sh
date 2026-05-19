@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# KDNA CLI Installer
+# One-command install: curl -fsSL https://aikdna.com/install | bash
+#
+# This script is open source and auditable.
+# Source: https://github.com/aikdna/kdna-skills/blob/main/install.sh
+# Pinned to a specific version — update VERSION below when releasing.
+
+VERSION="0.4.0"
+KDNA_ROOT="${HOME}/.kdna"
+NPM_PKG="@aikdna/kdna@${VERSION}"
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+log()    { echo -e "${GREEN}[kdna]${NC} $1"; }
+warn()   { echo -e "${YELLOW}[kdna]${NC} $1"; }
+err()    { echo -e "${RED}[kdna]${NC} $1"; exit 1; }
+header() { echo -e "\n${BOLD}${GREEN}══ $1 ══${NC}\n"; }
+
+# ─── Pre-flight ─────────────────────────────────────────────────────────
+
+header "KDNA CLI Installer v${VERSION}"
+
+# Check for npm
+if ! command -v npm &>/dev/null; then
+  err "npm is required but not found. Install Node.js first: https://nodejs.org"
+fi
+
+NODE_VERSION=$(node -v 2>/dev/null | sed 's/v//' | cut -d. -f1)
+if [ "${NODE_VERSION:-0}" -lt 18 ]; then
+  err "Node.js 18+ required. Current: $(node -v 2>/dev/null || echo 'none')"
+fi
+
+# ─── Install CLI ─────────────────────────────────────────────────────────
+
+log "Installing ${NPM_PKG}..."
+if npm install -g "${NPM_PKG}" 2>/dev/null; then
+  log "kdna CLI installed successfully"
+else
+  warn "Global install failed — trying with sudo..."
+  sudo npm install -g "${NPM_PKG}" || err "Installation failed"
+fi
+
+# Verify
+if ! command -v kdna &>/dev/null; then
+  err "kdna command not found after install. Check your npm global bin path."
+fi
+
+INSTALLED_VERSION=$(kdna version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "?")
+log "Version: ${INSTALLED_VERSION}"
+
+# ─── Setup KDNA directory ────────────────────────────────────────────────
+
+mkdir -p "${KDNA_ROOT}"
+log "KDNA root: ${KDNA_ROOT}"
+
+# ─── Install basic domains ───────────────────────────────────────────────
+
+header "Installing basic domains"
+
+for domain in writing-basic speaking-basic management-basic; do
+  if kdna install "$domain" 2>/dev/null; then
+    log "  ✓ $domain"
+  else
+    warn "  ⚠ $domain (skipped — may need manual install)"
+  fi
+done
+
+# ─── Agent detection ─────────────────────────────────────────────────────
+
+header "Detecting agents"
+
+detect_and_link() {
+  local agent_name="$1"
+  local expected_dir="$2"
+
+  if [ -d "$expected_dir" ]; then
+    log "Found $agent_name"
+    if [ ! -L "${expected_dir}/Kdna" ] && [ ! -d "${expected_dir}/Kdna" ]; then
+      ln -s "${KDNA_ROOT}" "${expected_dir}/Kdna" 2>/dev/null || true
+      log "  → linked ~/.kdna/ to ${expected_dir}/Kdna/"
+    fi
+  fi
+}
+
+detect_and_link "Claude Code" "${HOME}/.claude"
+detect_and_link "Codex"        "${HOME}/.codex"
+detect_and_link "OpenCode"     "${HOME}/.agents"
+detect_and_link "Cursor"       "${HOME}/.cursor"
+
+# ─── Done ─────────────────────────────────────────────────────────────────
+
+header "Done"
+
+echo "  CLI:       $(which kdna)"
+echo "  Version:   ${INSTALLED_VERSION}"
+echo "  KDNA root: ${KDNA_ROOT}"
+echo ""
+echo "  Next steps:"
+echo "    kdna list --available   # browse domains"
+echo "    kdna demo               # see judgment difference"
+echo "    kdna init my_domain     # create your own"
