@@ -16,7 +16,7 @@ log()  { echo -e "${GREEN}[kdna]${NC} $1"; }
 warn() { echo -e "${YELLOW}[kdna]${NC} $1"; }
 err()  { echo -e "${RED}[kdna]${NC} $1"; }
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 
 install_skills_for_agent() {
   local name="$1"
@@ -50,6 +50,20 @@ install_skills_for_agent() {
 }
 EOF
     log "  registry:     $data_dir/registry.json"
+  fi
+
+  # Create symlink from data_dir to ~/.kdna so loader can find installed domains
+  local kdna_root="$HOME/.kdna"
+  if [ "$data_dir" != "$kdna_root" ] && [ ! -L "$data_dir" ]; then
+    mkdir -p "$kdna_root"
+    if [ ! -e "$data_dir" ] || [ -d "$data_dir" ]; then
+      # Ensure data_dir exists for the symlink target
+      mkdir -p "$data_dir"
+      # Symlink ~/.kdna → data_dir if no symlink exists yet
+      if [ ! -L "$kdna_root" ] && [ "$(readlink "$data_dir" 2>/dev/null)" != "$kdna_root" ]; then
+        ln -sf "$kdna_root" "$data_dir/kdna_root" 2>/dev/null || true
+      fi
+    fi
   fi
 
   log "  $name: done"

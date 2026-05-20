@@ -95,7 +95,7 @@ cp kdna-create/SKILL.md ~/.agents/skills/kdna-create/SKILL.md
 | 方式 | 说明 |
 |---|---|
 | **对话创建** | Agent 访谈你的领域经验，提取公理/模式/误解，生成 KDNA 文件 |
-| **注册表下载** | 从 [registry/domains.json](https://github.com/aikdna/KDNA/blob/main/registry/domains.json) 查找并下载官方领域 |
+| **注册表下载** | 从 [kdna-registry/domains.json](https://github.com/aikdna/kdna-registry/blob/main/domains.json) 查找并下载官方领域 |
 | **URL 导入** | 从任意 Git 仓库或 URL 下载 KDNA 包，校验后安装 |
 | **模板创建** | 复制[最小模板](https://github.com/aikdna/KDNA/tree/main/templates/minimal-domain)，重命名并逐项填写 |
 

@@ -97,7 +97,7 @@ Four paths to obtain a KDNA domain:
 | Path | How |
 |---|---|
 | **Create from conversation** | Agent interviews you about your domain expertise, extracts axioms/patterns/misunderstandings, writes KDNA files |
-| **Download from registry** | Fetches [registry/domains.json](https://github.com/aikdna/KDNA/blob/main/registry/domains.json), clones the domain repo, copies to your KDNA directory |
+| **Download from registry** | Fetches [kdna-registry/domains.json](https://github.com/aikdna/kdna-registry/blob/main/domains.json), clones the domain repo, copies to your KDNA directory |
 | **Import from URL** | Clones or downloads a KDNA package from any git repo or URL, validates, installs |
 | **Create from template** | Copies the [minimal template](https://github.com/aikdna/KDNA/tree/main/templates/minimal-domain), renames for your domain |
 
