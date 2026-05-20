@@ -64,7 +64,7 @@ log "KDNA root: ${KDNA_ROOT}"
 
 header "Installing basic domains"
 
-for domain in writing-basic speaking-basic management-basic; do
+for domain in writing knowledge_management prompt_diagnosis agent_safety open_source_project content_strategy; do
   if kdna install "$domain" 2>/dev/null; then
     log "  ✓ $domain"
   else
