@@ -56,81 +56,71 @@ The user should never see "I considered loading KDNA but didn't."
 
 ## Part 2 — Discover what's installed
 
-Do **not** assume any specific domains exist. Look every time.
+Do **not** assume any specific domains exist. Ask the CLI every time.
 
 ```bash
-ls ~/.kdna/domains/                # list installed scopes (e.g. @aikdna, @yourname)
-ls ~/.kdna/domains/<scope>/        # list domains within a scope
+kdna available --json
 ```
 
-Typical layout:
+Returns a compact JSON array — one entry per installed domain — with:
+`name`, `version`, `judgment_version`, `status`, `description`,
+`core_insight`, `keywords`, `applies_when` (flattened across all
+axioms), `does_not_apply_when` (flattened), `failure_risks`. Yanked
+domains are excluded automatically.
 
-```
-~/.kdna/domains/
-├── @aikdna/
-│   ├── writing/
-│   ├── decision_state/
-│   ├── code_review/
-│   └── ...
-└── @yourorg/
-    └── internal_review/
-```
+This is your **only** discovery interface. Do not `ls ~/.kdna/domains/`
+or `cat` the JSON files directly — the CLI is the supported contract
+between this skill and the KDNA file format. The on-disk layout may
+change; `kdna available` will not.
 
-If `~/.kdna/domains/` is empty or missing → no KDNA available → answer
-normally, mention installation only if the user is asking about KDNA
-itself.
+If the command returns `[]` or fails (CLI not installed) → no KDNA
+available → answer normally, mention installation only if the user is
+asking about KDNA itself.
 
 ---
 
 ## Part 3 — Evaluate fit (per candidate domain)
 
-For each candidate domain, read its `kdna.json` first. This is small
-(~1 KB) and cheap.
+`kdna available --json` already gave you each domain's `applies_when`
+and `does_not_apply_when` (flattened across all axioms). For each
+domain in the list, decide whether it fits the current task by
+**reading the language**, not by token matching.
+
+For a hint signal (optional, low-trust), you can also call:
 
 ```bash
-cat ~/.kdna/domains/<scope>/<name>/kdna.json
+kdna match "<task in user's own words>" --json
 ```
 
-Check these fields:
+This returns two things:
 
-| Field | What it tells you |
-|---|---|
-| `name` | The full @scope/name identifier |
-| `version`, `judgment_version` | How recent the judgment surface is |
-| `description` | One-sentence domain purpose |
-| `core_insight` | The single most distinctive claim of this domain |
-| `keywords` | Topic signals |
-| `status` | `experimental` / `reference` / `stable` |
-| `yanked` | If `true`, **do not load** |
+- `dropped`: domains whose `does_not_apply_when` matched the task
+  with high enough confidence to mechanically disqualify them.
+  **Respect this.** Even if your own reading thinks the domain
+  could fit, the author explicitly excluded the case.
+- `hints`: domains with weak surface keyword overlap. Many false
+  positives are normal — treat as one input among many, not as a
+  decision.
 
-If a domain's purpose is clearly outside the task → skip without
-opening any other file.
+The decision is yours, not the CLI's. The CLI only mechanically
+disqualifies (via `dropped`); it cannot pick the winner.
 
-For surviving candidates, open `KDNA_Core.json` and walk the `axioms`
-array. **v2.1 axioms carry `applies_when` and `does_not_apply_when`** —
-match the current task against both:
+### How to decide
 
-```json
-{
-  "id": "axiom_problem_not_prose",
-  "applies_when": [
-    "the user asks for content feedback, review, or 'why isn't this working'"
-  ],
-  "does_not_apply_when": [
-    "the task is copy editing for grammar, spelling, or compliance",
-    "the format is rigid (legal contracts, regulatory filings)"
-  ],
-  "failure_risk": "Refusing to fix sentences when the user genuinely just wants smoother prose."
-}
-```
+For each domain still in play after `dropped` exclusion:
 
-Decision rules:
+1. Does the domain's **description** match what the user is asking?
+2. Does **any** `applies_when` entry describe a situation that
+   matches this specific task?
+3. Does **any** `does_not_apply_when` entry describe what the user
+   actually wants (e.g. they explicitly asked for copy edit)?
 
-- **Any** `does_not_apply_when` clearly matches the task → the domain
-  has **disqualified itself**. Drop it. Even strong keyword overlap
-  cannot override an explicit boundary.
-- `applies_when` matches → strong fit candidate.
-- Neither matches clearly → weak fit. Prefer skipping over forcing.
+If 1 and 2 are yes and 3 is no → strong fit.
+If 2 is unclear → weak fit. Prefer skipping over forcing.
+
+A domain's `failure_risks` (also in `available --json`) tells you
+what bad output the author warns about. Pre-check: is this exactly
+what you'd produce if you loaded the domain? If yes, skip it.
 
 ---
 
@@ -155,24 +145,34 @@ actions), but the primary judgment frame is always one.
 
 ## Part 5 — Load
 
-Once selected, read the domain's full judgment surface:
+Once selected, load the domain via the CLI:
 
 ```bash
-cat ~/.kdna/domains/<scope>/<name>/KDNA_Core.json
-cat ~/.kdna/domains/<scope>/<name>/KDNA_Patterns.json
+kdna load @scope/name
 ```
 
-Optionally, if relevant to the task:
+The default output (`--as=prompt`) is a compact text rendering
+optimized for system-prompt injection: axioms with their
+`applies_when` / `does_not_apply_when` / `failure_risk`, stances,
+banned terms, misunderstandings, and self-checks. Typically
+~30–50% smaller than the raw JSON.
 
-| File | When to also load |
-|---|---|
-| `KDNA_Scenarios.json` | Concrete situation with conditions/conflicts |
-| `KDNA_Cases.json` | User asks for examples or before/after |
-| `KDNA_Reasoning.json` | User wants the reasoning, not just the conclusion |
-| `KDNA_Evolution.json` | User asks about practice / capability growth |
+Other output modes:
 
-**Token discipline**: Core + Patterns is usually enough. Only load
-optional files when the task signals you'll use them.
+```bash
+kdna load @scope/name --as=json   # raw Core + Patterns JSON
+kdna load @scope/name --as=raw    # concatenated raw file contents
+```
+
+Use `--as=prompt` for normal loading. Use `--as=json` only when you
+genuinely need to inspect the structure (e.g. user is debugging the
+domain itself).
+
+**Token discipline**: the prompt output already includes everything
+the agent needs to apply judgment. Do not also `cat` the optional
+files (`KDNA_Scenarios.json`, `KDNA_Cases.json`, etc.) unless the
+user explicitly asks for examples, reasoning chains, or capability
+stages.
 
 ---
 
@@ -219,9 +219,9 @@ KDNA does not override:
 
 | Situation | What to do |
 |---|---|
-| `~/.kdna/domains/` missing or empty | Skip KDNA. Answer normally. |
-| Domain's `KDNA_Core.json` missing or unparseable | Skip that domain. Try next candidate or skip KDNA entirely. |
-| `kdna.json.yanked == true` | Do not load. If user asked for that specific domain by name, tell them it has been yanked and suggest `replaced_by` if present. |
+| `kdna` CLI not installed | Skip KDNA. Answer normally. Mention installation only if user asks about KDNA itself. |
+| `kdna available --json` returns `[]` | No domains installed. Skip KDNA. |
+| `kdna load <name>` exits non-zero | That domain is broken (yanked, missing files, parse error). Try next candidate or skip KDNA. The error message tells you why. |
 | User explicitly asks for a domain that isn't installed | Tell them, suggest `kdna install <name>`. Do not fabricate the domain. |
 | Two domains' stances directly conflict on the task | Surface to user. Do not blend. |
 
