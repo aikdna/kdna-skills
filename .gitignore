@@ -2,3 +2,8 @@
 .env
 *.log
 node_modules/
+
+# Added by security audit
+
+dist/
+build/
