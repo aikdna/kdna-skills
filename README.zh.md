@@ -1,11 +1,11 @@
-> 🧬 [aikdna.com](https://aikdna.com) — 官方网站 · [![npm](https://img.shields.io/npm/v/@aikdna/kdna)](https://www.npmjs.com/package/@aikdna/kdna)
+> 🧬 [aikdna.com](https://aikdna.com) — 官方网站 · [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli-cli)
 
 # KDNA 技能安装
 
-为任何 AI Agent 安装 KDNA 领域认知。需要 `@aikdna/kdna` CLI：
+为任何 AI Agent 安装 KDNA 领域认知。需要 `@aikdna/kdna-cli` CLI：
 
 ```bash
-npm i -g @aikdna/kdna
+npm i -g @aikdna/kdna-cli
 curl -fsSL https://raw.githubusercontent.com/aikdna/kdna-skills/main/install.sh | bash
 ```
 
