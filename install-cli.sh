@@ -8,7 +8,7 @@ set -euo pipefail
 # Source: https://github.com/aikdna/kdna-skills/blob/main/install.sh
 # Pinned to a specific version — update VERSION below when releasing.
 
-VERSION="0.4.0"
+VERSION="0.7.8"
 KDNA_ROOT="${HOME}/.kdna"
 NPM_PKG="@aikdna/kdna@${VERSION}"
 
@@ -104,5 +104,5 @@ echo "  KDNA root: ${KDNA_ROOT}"
 echo ""
 echo "  Next steps:"
 echo "    kdna list --available   # browse domains"
-echo "    kdna demo               # see judgment difference"
+echo "    kdna install writing    # install a domain"
 echo "    kdna init my_domain     # create your own"
