@@ -6,6 +6,8 @@
 
 The `kdna-loader` skill teaches AI agents a protocol for discovering, loading, and applying KDNA domain cognition packages. Domains are data assets managed by `kdna` CLI, not separate skills.
 
+**KDNA shapes judgment, not tool permission.** KDNA does not override system or safety policy. Unsigned, yanked, or high-risk domains are not silently trusted. See [KDNA Governance](https://github.com/aikdna/KDNA/blob/main/docs/GOVERNANCE.md).
+
 Requires `@aikdna/kdna-cli` CLI:
 
 ```bash
