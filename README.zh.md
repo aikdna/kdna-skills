@@ -1,72 +1,81 @@
-> 🧬 [aikdna.com](https://aikdna.com) — 官方网站 · [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli-cli)
+> [aikdna.com](https://aikdna.com) -- 官方网站 . [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli)
 
 # KDNA 技能安装
 
-为任何 AI Agent 安装 KDNA 领域认知。需要 `@aikdna/kdna-cli` CLI：
+**一个 Loader。多个领域。**
+
+`kdna-loader` 技能教会 AI Agent 一套协议，用于发现、加载和应用 KDNA 领域认知包。领域是数据资产，由 `kdna` CLI 管理，不是独立的技能。
+
+需要 `@aikdna/kdna-cli` CLI：
 
 ```bash
 npm i -g @aikdna/kdna-cli
-curl -fsSL https://raw.githubusercontent.com/aikdna/kdna-skills/main/install.sh | bash
+kdna setup
 ```
 
-两个技能，一个安装器，支持多个 Agent。
+## 架构
 
-## 技能
-
-| 技能 | 用途 |
+| 角色 | 说明 |
 |---|---|
-| **kdna-loader** | 在回答前加载领域认知——检测领域、应用公理、运行自查 |
-| **kdna-create** | 创建或获取 KDNA——对话式创建、注册表下载、URL 导入、模板搭建 |
+| **kdna-loader**（唯一技能） | 由 `kdna setup` 安装到你的 Agent。教会 Agent 发现和应用 KDNA 的协议。 |
+| **KDNA 领域**（数据） | 通过 `kdna install <名称>` 安装。存放在 `~/.kdna/domains/`。按任务按需加载。 |
+| **kdna CLI**（工具） | `kdna init`、`kdna install`、`kdna verify`、`kdna publish`。领域管理的稳定接口。 |
 
 ## 支持的 Agent
 
-| Agent | 技能位置 | KDNA 数据位置 |
-|---|---|---|
-| **所有 Agent** | (因 Agent 而异) | `~/.kdna/`（统一位置，必要时创建软链接） |
-| **GitHub Copilot** | `~/.agents/skills/kdna-loader/SKILL.md` | `~/.agents/Kdna/` |
+`kdna setup` 自动检测并安装 `kdna-loader` 到：
+
+- **Codex** — `~/.codex/skills/kdna-loader/`
+- **Claude Code** — `~/.claude/skills/kdna-loader/`
+- **OpenCode** — `~/.agents/skills/kdna-loader/`
+- **Cursor** — `~/.cursor/skills/kdna-loader/`
+- **GitHub Copilot** — `~/.agents/skills/kdna-loader/`
+
+所有 Agent 共享同一 KDNA 数据根目录：`~/.kdna/domains/`。
 
 ## 一键安装
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aikdna/kdna-skills/main/install.sh | bash
-```
-
-安装器会自动检测你的 Agent，然后安装两个技能。
-
-或指定 Agent 安装：
-
-```bash
-./install.sh --codex    # Codex
-./install.sh --claude   # Claude Code
-./install.sh --opencode # OpenCode
-./install.sh --all      # 全部检测到的 Agent
+npm i -g @aikdna/kdna-cli
+kdna setup
+kdna install @aikdna/writing
+kdna doctor --agents
 ```
 
 ## 安装后可以做什么
 
 ### 加载领域认知
-```
-"用 kdna-loader 帮我审这篇销售文案。"
-→ Agent 加载销售 KDNA，诊断确定性缺失，使用领域术语。
+
+Agent 在每个任务中自动判断是否需要 KDNA。当领域匹配时，静默加载——应用公理、使用首选术语、遵守边界、运行自检。用户看到的是更好的判断，而不是 KDNA 内部结构。
+
+### 安装更多领域
+
+```bash
+kdna list --available    # 浏览注册表
+kdna install code_review # 安装领域
+kdna verify @aikdna/code_review --judgment
 ```
 
-### 创建新领域
-```
-"帮我创建一个房产谈判领域的 KDNA。"
-→ kdna-create 访谈你，提取公理和模式，生成校验过的 JSON 文件。
+### 创建自己的领域
+
+```bash
+kdna init my_expertise
+# 填写 KDNA_Core.json 和 KDNA_Patterns.json
+kdna validate my_expertise
+kdna publish my_expertise
 ```
 
-### 从官方注册表下载
-```
-"从注册表下载沟通领域的 KDNA。"
-→ kdna-create 拉取注册表、克隆仓库、复制文件到你的 KDNA 目录。
-```
+或使用 **KDNAChat** Mac App 或 **VS Code 插件** 进行引导式创作。
 
-### 从 URL 导入
-```
-"导入 https://github.com/someone/kdna-cybersecurity 的 KDNA。"
-→ kdna-create 克隆仓库、校验文件、安装到 KDNA 目录。
-```
+## kdna-loader 如何工作（七步协议）
+
+1. **判断** KDNA 是否适用于当前任务（格式化、查询、代码执行等场景跳过）
+2. **发现** 已安装的领域（`kdna available --json`）
+3. **评估** 每个候选领域的匹配度（检查 `applies_when` / `does_not_apply_when`）
+4. **选择** 0 或 1 个领域（绝不静默混合多个）
+5. **加载** 通过 `kdna load @scope/name`（prompt 模式，比完整 JSON 小 30-50%）
+6. **应用** 静默执行——基于公理推理，不向用户引用 KDNA
+7. **遵守** 边界——用户意图 > 证据 > 安全 > 技能
 
 ## 手动安装
 
@@ -74,32 +83,15 @@ curl -fsSL https://raw.githubusercontent.com/aikdna/kdna-skills/main/install.sh 
 # Codex
 mkdir -p ~/.codex/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.codex/skills/kdna-loader/SKILL.md
-mkdir -p ~/.codex/skills/kdna-create
-cp kdna-create/SKILL.md ~/.codex/skills/kdna-create/SKILL.md
 
 # Claude Code
 mkdir -p ~/.claude/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.claude/skills/kdna-loader/SKILL.md
-mkdir -p ~/.claude/skills/kdna-create
-cp kdna-create/SKILL.md ~/.claude/skills/kdna-create/SKILL.md
 
 # OpenCode
 mkdir -p ~/.agents/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
-mkdir -p ~/.agents/skills/kdna-create
-cp kdna-create/SKILL.md ~/.agents/skills/kdna-create/SKILL.md
 ```
-
-## kdna-create 的四种获取方式
-
-| 方式 | 说明 |
-|---|---|
-| **对话创建** | Agent 访谈你的领域经验，提取公理/模式/误解，生成 KDNA 文件 |
-| **注册表下载** | 从 [kdna-registry/domains.json](https://github.com/aikdna/kdna-registry/blob/main/domains.json) 查找并下载官方领域 |
-| **URL 导入** | 从任意 Git 仓库或 URL 下载 KDNA 包，校验后安装 |
-| **模板创建** | 复制[最小模板](https://github.com/aikdna/KDNA/tree/main/templates/minimal-domain)，重命名并逐项填写 |
-
-所有方式都会在保存前进行校验。
 
 ## 许可
 

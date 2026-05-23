@@ -1,72 +1,81 @@
-> 🧬 [aikdna.com](https://aikdna.com) — Official website · [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli-cli)
+> [aikdna.com](https://aikdna.com) -- Official website . [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli)
 
 # KDNA Skills
 
-Install KDNA domain cognition for any AI agent. Requires `@aikdna/kdna` CLI:
+**One loader. Many domains.**
+
+The `kdna-loader` skill teaches AI agents a protocol for discovering, loading, and applying KDNA domain cognition packages. Domains are data assets managed by `kdna` CLI, not separate skills.
+
+Requires `@aikdna/kdna-cli` CLI:
 
 ```bash
 npm i -g @aikdna/kdna-cli
-curl -fsSL https://raw.githubusercontent.com/aikdna/kdna-skills/main/install.sh | bash
+kdna setup
 ```
 
-Two skills, one installer, multiple agents.
+## How it works
 
-## Skills
-
-| Skill | Purpose |
+| What | Where |
 |---|---|
-| **kdna-loader** | Loads KDNA domain cognition before responding. Detects domains, applies axioms, uses preferred terminology, runs self-checks. |
-| **kdna-create** | Creates, downloads, or imports KDNA domains. Interview-based creation, registry download, URL import, template scaffolding. |
+| **kdna-loader** (single skill) | Installed into your agent by `kdna setup`. Teaches the agent the protocol for KDNA discovery and application. |
+| **KDNA domains** (data) | Installed via `kdna install <name>`. Live in `~/.kdna/domains/`. Loaded on demand per task. |
+| **kdna CLI** (tool) | `kdna init`, `kdna install`, `kdna verify`, `kdna publish`. Stable interface for domain management. |
 
 ## Supported Agents
 
-| Agent | Skill location | KDNA data location |
-|---|---|---|
-| **All Agents** | (varies by Agent) | `~/.kdna/` (unified, symlink if needed) |
-| **GitHub Copilot** | `~/.agents/skills/kdna-loader/SKILL.md` | `~/.agents/Kdna/` |
+`kdna setup` auto-detects and installs `kdna-loader` into:
+
+- **Codex** — `~/.codex/skills/kdna-loader/`
+- **Claude Code** — `~/.claude/skills/kdna-loader/`
+- **OpenCode** — `~/.agents/skills/kdna-loader/`
+- **Cursor** — `~/.cursor/skills/kdna-loader/`
+- **GitHub Copilot** — `~/.agents/skills/kdna-loader/`
+
+All agents share the same KDNA data root: `~/.kdna/domains/`.
 
 ## Quick Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aikdna/kdna-skills/main/install.sh | bash
+npm i -g @aikdna/kdna-cli
+kdna setup
+kdna install @aikdna/writing
+kdna doctor --agents
 ```
 
-The installer auto-detects your agents and installs both skills.
-
-Or install for a specific agent:
-
-```bash
-./install.sh --codex    # Codex
-./install.sh --claude   # Claude Code
-./install.sh --opencode # OpenCode
-./install.sh --all      # All detected
-```
-
-## What You Can Do After Installing
+## After Installing
 
 ### Load domain cognition
-```
-"Use kdna-loader to review this sales page."
-→ Agent loads sales KDNA, diagnoses certainty deficits, applies domain terminology.
+
+The agent automatically decides per task whether KDNA applies. When a domain fits, it loads silently -- applying axioms, using preferred terminology, honoring boundaries, and running self-checks. The user sees better judgment, not KDNA internals.
+
+### Install more domains
+
+```bash
+kdna list --available    # Browse registry
+kdna install code_review # Install a domain
+kdna verify @aikdna/code_review --judgment
 ```
 
-### Create a new domain
-```
-"Create a KDNA for real estate negotiation expertise."
-→ kdna-create interviews you, extracts axioms and patterns, writes validated JSON.
+### Create your own domain
+
+```bash
+kdna init my_expertise
+# Fill in KDNA_Core.json and KDNA_Patterns.json
+kdna validate my_expertise
+kdna publish my_expertise
 ```
 
-### Download from the official registry
-```
-"Download the communication KDNA from the registry."
-→ kdna-create fetches the registry, clones the repo, copies files to your KDNA directory.
-```
+Or use the **KDNAChat** Mac App or **VS Code extension** for guided authoring.
 
-### Import from a URL
-```
-"Import KDNA from https://github.com/someone/kdna-cybersecurity"
-→ kdna-create clones the repo, validates the files, installs to your KDNA directory.
-```
+## How kdna-loader works (7-part protocol)
+
+1. **Decide** whether KDNA applies at all (skip for formatting, lookup, code execution)
+2. **Discover** installed domains via `kdna available --json`
+3. **Evaluate** fit per domain (checks `applies_when` / `does_not_apply_when`)
+4. **Select** 0 or 1 domain (never silently blend multiple)
+5. **Load** via `kdna load @scope/name` (prompt mode, ~30-50% smaller than raw JSON)
+6. **Apply** silently -- reason from axioms, never quote KDNA to user
+7. **Respect** boundaries -- user intent > evidence > safety > skills
 
 ## Manual Installation
 
@@ -74,34 +83,15 @@ Or install for a specific agent:
 # Codex
 mkdir -p ~/.codex/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.codex/skills/kdna-loader/SKILL.md
-mkdir -p ~/.codex/skills/kdna-create
-cp kdna-create/SKILL.md ~/.codex/skills/kdna-create/SKILL.md
 
 # Claude Code
 mkdir -p ~/.claude/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.claude/skills/kdna-loader/SKILL.md
-mkdir -p ~/.claude/skills/kdna-create
-cp kdna-create/SKILL.md ~/.claude/skills/kdna-create/SKILL.md
 
 # OpenCode
 mkdir -p ~/.agents/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
-mkdir -p ~/.agents/skills/kdna-create
-cp kdna-create/SKILL.md ~/.agents/skills/kdna-create/SKILL.md
 ```
-
-## How kdna-create Works
-
-Four paths to obtain a KDNA domain:
-
-| Path | How |
-|---|---|
-| **Create from conversation** | Agent interviews you about your domain expertise, extracts axioms/patterns/misunderstandings, writes KDNA files |
-| **Download from registry** | Fetches [kdna-registry/domains.json](https://github.com/aikdna/kdna-registry/blob/main/domains.json), clones the domain repo, copies to your KDNA directory |
-| **Import from URL** | Clones or downloads a KDNA package from any git repo or URL, validates, installs |
-| **Create from template** | Copies the [minimal template](https://github.com/aikdna/KDNA/tree/main/templates/minimal-domain), renames for your domain |
-
-All paths validate the result before saving.
 
 ## License
 
