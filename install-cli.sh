@@ -5,12 +5,10 @@ set -euo pipefail
 # One-command install: curl -fsSL https://aikdna.com/install | bash
 #
 # This script is open source and auditable.
-# Source: https://github.com/aikdna/kdna-skills/blob/main/install.sh
-# Pinned to a specific version — update VERSION below when releasing.
+# Source: https://github.com/aikdna/kdna-skills/blob/main/install-cli.sh
 
-VERSION="0.7.8"
+NPM_PKG="@aikdna/kdna-cli"
 KDNA_ROOT="${HOME}/.kdna"
-NPM_PKG="@aikdna/kdna@${VERSION}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -25,7 +23,7 @@ header() { echo -e "\n${BOLD}${GREEN}══ $1 ══${NC}\n"; }
 
 # ─── Pre-flight ─────────────────────────────────────────────────────────
 
-header "KDNA CLI Installer v${VERSION}"
+header "KDNA CLI Installer"
 
 # Check for npm
 if ! command -v npm &>/dev/null; then
@@ -55,44 +53,10 @@ fi
 INSTALLED_VERSION=$(kdna version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "?")
 log "Version: ${INSTALLED_VERSION}"
 
-# ─── Setup KDNA directory ────────────────────────────────────────────────
+# ─── Run setup ──────────────────────────────────────────────────────────
 
-mkdir -p "${KDNA_ROOT}"
-log "KDNA root: ${KDNA_ROOT}"
-
-# ─── Install basic domains ───────────────────────────────────────────────
-
-header "Installing basic domains"
-
-for domain in writing knowledge_management prompt_diagnosis agent_safety open_source_project content_strategy; do
-  if kdna install "$domain" 2>/dev/null; then
-    log "  ✓ $domain"
-  else
-    warn "  ⚠ $domain (skipped — may need manual install)"
-  fi
-done
-
-# ─── Agent detection ─────────────────────────────────────────────────────
-
-header "Detecting agents"
-
-detect_and_link() {
-  local agent_name="$1"
-  local expected_dir="$2"
-
-  if [ -d "$expected_dir" ]; then
-    log "Found $agent_name"
-    if [ ! -L "${expected_dir}/Kdna" ] && [ ! -d "${expected_dir}/Kdna" ]; then
-      ln -s "${KDNA_ROOT}" "${expected_dir}/Kdna" 2>/dev/null || true
-      log "  → linked ~/.kdna/ to ${expected_dir}/Kdna/"
-    fi
-  fi
-}
-
-detect_and_link "Claude Code" "${HOME}/.claude"
-detect_and_link "Codex"        "${HOME}/.codex"
-detect_and_link "OpenCode"     "${HOME}/.agents"
-detect_and_link "Cursor"       "${HOME}/.cursor"
+log "Running kdna setup..."
+kdna setup || warn "kdna setup had warnings — check output above"
 
 # ─── Done ─────────────────────────────────────────────────────────────────
 
@@ -103,6 +67,7 @@ echo "  Version:   ${INSTALLED_VERSION}"
 echo "  KDNA root: ${KDNA_ROOT}"
 echo ""
 echo "  Next steps:"
-echo "    kdna list --available   # browse domains"
-echo "    kdna install writing    # install a domain"
-echo "    kdna init my_domain     # create your own"
+echo "    kdna list --available        # browse domains"
+echo "    kdna install @aikdna/writing # install a domain"
+echo "    kdna doctor --agents         # verify agent integration"
+echo "    kdna init my_domain          # create your own"
