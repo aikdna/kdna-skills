@@ -5,7 +5,7 @@ set -euo pipefail
 # One-command install: curl -fsSL https://aikdna.com/install | bash
 #
 # This script is open source and auditable.
-# Source: https://github.com/knowledge-dna/kdna-skills/blob/main/install-cli.sh
+# Source: https://github.com/aikdna/kdna-skills/blob/main/install-cli.sh
 
 NPM_PKG="@aikdna/kdna-cli"
 KDNA_ROOT="${HOME}/.kdna"
@@ -41,8 +41,7 @@ log "Installing ${NPM_PKG}..."
 if npm install -g "${NPM_PKG}" 2>/dev/null; then
   log "kdna CLI installed successfully"
 else
-  warn "Global install failed — trying with sudo..."
-  sudo npm install -g "${NPM_PKG}" || err "Installation failed"
+  err "Global install failed. Check npm permissions: npm config get prefix. See https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally"
 fi
 
 # Verify

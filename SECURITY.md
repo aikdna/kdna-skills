@@ -1,26 +1,30 @@
 # Security Policy
 
-## Supported Versions
-
-| Version | Supported          |
-| ------- | ------------------ |
-| main    | :white_check_mark: |
-
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in the KDNA skills installer or
-skill files, please report it by opening a GitHub issue. Do not include
-exploit details in public issues for unreported vulnerabilities.
+Please **do not** report security vulnerabilities through public GitHub issues.
 
-We will acknowledge your report within 5 business days and provide an
-estimated timeline for a fix.
+Instead, use one of these private channels:
 
-## Scope
+- **GitHub Private Vulnerability Reporting**: Go to the [Security Advisories](https://github.com/aikdna/kdna-skills/security/advisories/new) page
+- **Email**: security@aikdna.com
 
-- Security of install.sh and the skill installation process
-- Skill file content that could cause unexpected agent behavior
+We aim to respond within 72 hours and provide a timeline for resolution within 1 week.
+Please do not disclose the vulnerability publicly until we have had a chance to address it.
 
-## Out of Scope
+## Supported Versions
 
-- The behavior of AI agents that load KDNA skills
-- Upstream dependencies
+We actively support the latest release for security updates.
+
+| Component | Supported Versions |
+|-----------|-------------------|
+| KDNA Protocol | Latest tagged release |
+| kdna-cli | Latest minor release |
+| kdna-studio | Latest minor release |
+| Official domains | Registry-listed current versions |
+
+Older versions may receive critical security patches on a case-by-case basis.
+
+## Security Model
+
+For the KDNA Protocol security architecture, see [GOVERNANCE.md](https://github.com/aikdna/KDNA/blob/main/GOVERNANCE.md) in the main repository.

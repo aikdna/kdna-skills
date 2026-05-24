@@ -7,8 +7,8 @@ set -euo pipefail
 # discover and use KDNA domains. KDNA domains themselves live in
 # ~/.kdna/domains/ and are not registered as skills.
 
-KDNA_REPO="https://github.com/knowledge-dna/KDNA"
-SKILLS_REPO="https://github.com/knowledge-dna/kdna-skills"
+KDNA_REPO="https://github.com/aikdna/KDNA"
+SKILLS_REPO="https://github.com/aikdna/kdna-skills"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -32,7 +32,7 @@ install_skills_for_agent() {
   if [ -f "$SCRIPT_DIR/kdna-loader/SKILL.md" ]; then
     cp "$SCRIPT_DIR/kdna-loader/SKILL.md" "$skill_base/kdna-loader/SKILL.md"
   else
-    curl -fsSL "https://raw.githubusercontent.com/knowledge-dna/kdna-skills/main/kdna-loader/SKILL.md" -o "$skill_base/kdna-loader/SKILL.md"
+    curl -fsSL "https://raw.githubusercontent.com/aikdna/kdna-skills/main/kdna-loader/SKILL.md" -o "$skill_base/kdna-loader/SKILL.md"
   fi
 
   log "  kdna-loader: $skill_base/kdna-loader/SKILL.md"
