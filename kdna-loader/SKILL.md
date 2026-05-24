@@ -21,6 +21,24 @@ not registered as skills — they live in `~/.kdna/domains/` as data and
 are discovered on demand. Whether the user has 1 domain installed or
 100, this skill is the single entry point.
 
+## Core Principle: No KDNA is better than wrong KDNA
+
+Loading a mismatched domain is not just "unhelpful" — it is harmful.
+It produces **Judgment Contamination**: the agent classifies problems
+incorrectly, assigns wrong priorities, applies wrong risk models, and
+offers wrong recommendations — all with the false confidence of having
+"loaded expert judgment."
+
+*No KDNA*: the agent uses model capability, tools, MCP, project files,
+and normal prompts. It may lack domain-specific judgment, but it is
+not polluted by incorrect judgment.
+
+*Wrong KDNA*: the agent applies a mismatched framework — e.g., diagnosing
+a website design task through a team management lens, or treating a
+price question as an editing issue. The output is worse than baseline.
+
+**When in doubt, skip.** This is the first law of KDNA routing.
+
 ---
 
 ## Part 1 — Decide whether KDNA applies at all
@@ -124,18 +142,27 @@ what you'd produce if you loaded the domain? If yes, skip it.
 
 ---
 
-## Part 4 — Selection
+## Part 4 — Selection (7-State Router)
 
-After evaluating, you should usually have:
+After evaluating against `applies_when`, `does_not_apply_when`, and
+`failure_risks`, classify into one of 7 states:
 
-- **0 fits** → do not load KDNA. Answer normally.
-- **1 fit** → load it.
-- **2+ fits** → prefer the narrowest match. If two domains take
-  genuinely different stances on the task, surface the choice:
-  > "Two installed domains could apply here: @aikdna/writing
-  > (structural diagnosis) and @yourorg/copy_polish (line-level
-  > polish). Which judgment frame should I use?"
-  Do **not** silently blend.
+| State | Condition | Action |
+|-------|-----------|--------|
+| **SKIP_NO_JUDGMENT_NEEDED** | Task is mechanical: format, translate, lookup, execute | Answer normally. Do not mention KDNA. |
+| **SKIP_NO_LOCAL_DOMAIN** | Task may need judgment, but no installed domain covers it | Answer normally. Only mention KDNA if user explicitly asks. |
+| **SKIP_WEAK_FIT** | A domain is weakly related but insufficiently matches | Answer normally. Trace notes "weak match, skipped." |
+| **REJECT_NEGATIVE_MATCH** | A domain's `does_not_apply_when` explicitly excludes this task | Block loading. Respect the author's boundary. |
+| **ASK_AMBIGUOUS_DOMAIN** | 2+ domains could apply but with different judgment frameworks | Ask user to choose. Do **not** silently blend. |
+| **LOAD_STRONG_FIT** | One domain strongly matches with trust passing | Load it. |
+| **BLOCK_TRUST_FAILED** | Domain matches but trust check fails (signature, yanked, license) | Block loading. Notify if appropriate. |
+
+**Rule: Negative Match First.** Check `does_not_apply_when` before
+checking `applies_when`. A domain that says "not for visual design"
+must be excluded before evaluating whether it matches "design task."
+
+**Rule: When in doubt, skip.** Weak fit → skip. Ambiguous without
+clear user preference → ask, don't guess. Trust failure → block.
 
 Never load more than one domain as primary. A secondary domain can
 constrain (e.g. `@aikdna/agent_safety` always advises on irreversible
