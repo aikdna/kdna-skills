@@ -1,0 +1,24 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check install.sh syntax
+        run: bash -n install.sh
+      - name: Check install-cli.sh syntax
+        run: bash -n install-cli.sh
+      - name: Verify required files
+        run: |
+          for f in install.sh install-cli.sh README.md LICENSE SECURITY.md; do
+            [ -f "$f" ] || { echo "MISSING: $f"; exit 1; }
+          done
+      - name: Check for forbidden strings
+        run: |
+          ! grep -rq "aikdna" install.sh install-cli.sh || { echo "ERROR: aikdna reference found"; exit 1; }
