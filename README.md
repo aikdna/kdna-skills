@@ -4,6 +4,8 @@
 
 **One loader. Many domains.**
 
+This repository does not turn KDNA into a skill. It provides adapter skills that allow AI agents to load KDNA.
+
 The `kdna-loader` skill teaches AI agents a protocol for discovering, loading, and applying KDNA domain cognition packages. Domains are data assets managed by `kdna` CLI, not separate skills.
 
 **KDNA shapes judgment, not tool permission.** KDNA does not override system or safety policy. Unsigned, yanked, or high-risk domains are not silently trusted. See [KDNA Governance](https://github.com/aikdna/kdna/blob/main/docs/GOVERNANCE.md).

@@ -4,6 +4,8 @@
 
 **一个 Loader。多个领域。**
 
+这个仓库不是把 KDNA 变成 Skill。它提供的是适配器 Skill，让不同 AI Agent 能够加载 KDNA。
+
 `kdna-loader` 技能教会 AI Agent 一套协议，用于发现、加载和应用 KDNA 领域认知包。领域是数据资产，由 `kdna` CLI 管理，不是独立的技能。
 
 需要 `@aikdna/kdna-cli` CLI：
