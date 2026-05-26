@@ -20,7 +20,7 @@ kdna setup
 | 角色 | 说明 |
 |---|---|
 | **kdna-loader**（唯一技能） | 由 `kdna setup` 安装到你的 Agent。教会 Agent 发现和应用 KDNA 的协议。 |
-| **KDNA 领域**（数据） | 通过 `kdna install <名称>` 安装。存放在 `~/.kdna/domains/`。按任务按需加载。 |
+| **KDNA 资产**（数据） | 通过 `kdna install <名称>` 安装。以不可变 `.kdna` 文件保存在 `~/.kdna/packages/`，并由 `~/.kdna/index.json` 索引。按任务按需加载。 |
 | **kdna CLI**（工具） | `kdna init`、`kdna install`、`kdna verify`、`kdna publish`。领域管理的稳定接口。 |
 
 ## 支持的 Agent
@@ -33,7 +33,7 @@ kdna setup
 - **Cursor** — `~/.cursor/skills/kdna-loader/`
 - **GitHub Copilot** — `~/.agents/skills/kdna-loader/`
 
-所有 Agent 共享同一 KDNA 数据根目录：`~/.kdna/domains/`。
+所有 Agent 共享同一 KDNA 资产存储：`~/.kdna/packages/` 和 `~/.kdna/index.json`。
 
 ## 一键安装
 
@@ -61,10 +61,10 @@ kdna verify @aikdna/code_review --judgment
 ### 创建自己的领域
 
 ```bash
-kdna init my_expertise
-# 填写 KDNA_Core.json 和 KDNA_Patterns.json
-kdna validate my_expertise
-kdna publish my_expertise
+kdna dev init my_expertise
+# 填写开发源工作区
+kdna dev validate my_expertise
+kdna publish my_expertise --output dist/my_expertise.kdna
 ```
 
 或使用 **KDNaStudio** Mac App 或 **VS Code 插件** 进行引导式创作。

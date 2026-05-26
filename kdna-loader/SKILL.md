@@ -1,12 +1,12 @@
 ---
 name: kdna-loader
-description: Discover and load KDNA judgment frameworks from ~/.kdna/domains/ when the task requires domain-specific judgment (review, diagnosis, critique, classification, strategy) where the same input could legitimately be interpreted multiple ways. Skip for pure formatting, factual lookup, code execution, or mechanical transformations. This skill is the entire interface to KDNA — domains themselves are not separate skills.
+description: Discover and load installed KDNA `.kdna` assets through the kdna CLI when the task requires domain-specific judgment (review, diagnosis, critique, classification, strategy) where the same input could legitimately be interpreted multiple ways. Skip for pure formatting, factual lookup, code execution, or mechanical transformations. This skill is the entire interface to KDNA — domains themselves are not separate skills.
 ---
 
 # KDNA Loader
 
 KDNA (Knowledge DNA) is a portable format for encoding domain judgment.
-Each KDNA domain is a small JSON bundle (~5–30 KB) that describes how
+Each KDNA domain is a `.kdna` cognitive asset that describes how
 an expert thinks inside one domain: the principles they reason from,
 the misunderstandings they avoid, the questions they ask themselves
 before deciding.
@@ -17,8 +17,8 @@ this skill provides the **routing and protocol**, KDNA provides the
 **judgment material**.
 
 This skill is the **only** KDNA-related skill. Domains themselves are
-not registered as skills — they live in `~/.kdna/domains/` as data and
-are discovered on demand. Whether the user has 1 domain installed or
+not registered as skills — they are installed as `.kdna` assets and
+are discovered through the CLI on demand. Whether the user has 1 domain installed or
 100, this skill is the single entry point.
 
 ## Core Principle: No KDNA is better than wrong KDNA
@@ -86,7 +86,7 @@ Returns a compact JSON array — one entry per installed domain — with:
 axioms), `does_not_apply_when` (flattened), `failure_risks`. Yanked
 domains are excluded automatically.
 
-This is your **only** discovery interface. Do not `ls ~/.kdna/domains/`
+This is your **only** discovery interface. Do not inspect `~/.kdna/packages/`
 or `cat` the JSON files directly — the CLI is the supported contract
 between this skill and the KDNA file format. The on-disk layout may
 change; `kdna available` will not.
@@ -273,8 +273,8 @@ Otherwise, stay silent about the loading mechanics.
 
 ## What this skill is NOT
 
-- Not a list of available KDNA domains (those live in
-  `~/.kdna/domains/`, discovered on demand)
+- Not a list of available KDNA domains (those are installed `.kdna` assets,
+  discovered on demand through the CLI)
 - Not a registry browser (use `kdna list --available` CLI)
 - Not a domain creator (use `kdna init <name>` CLI)
 - Not an auto-loader that runs on every request — you decide per
