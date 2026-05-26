@@ -67,7 +67,7 @@ kdna validate my_expertise
 kdna publish my_expertise
 ```
 
-或使用 **KDNAChat** Mac App 或 **VS Code 插件** 进行引导式创作。
+或使用 **KDNaStudio** Mac App 或 **VS Code 插件** 进行引导式创作。
 
 ## kdna-loader 如何工作（七步协议）
 
