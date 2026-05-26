@@ -4,8 +4,8 @@ set -euo pipefail
 # KDNA Skills Installer
 # Installs the single kdna-loader skill for detected AI agents.
 # kdna-loader is the entire skill surface — it teaches the agent how to
-# discover and use KDNA domains. KDNA domains themselves live in
-# ~/.kdna/domains/ and are not registered as skills.
+# discover and use installed KDNA assets. KDNA domains themselves are
+# immutable .kdna assets managed by the CLI and are not registered as skills.
 
 KDNA_REPO="https://github.com/aikdna/KDNA"
 SKILLS_REPO="https://github.com/aikdna/kdna-skills"
@@ -70,8 +70,8 @@ Options:
 Without options, runs interactive mode.
 
 Installs one skill:
-  kdna-loader  — teaches the agent how to discover and load KDNA
-                 judgment frameworks from ~/.kdna/domains/
+  kdna-loader  — teaches the agent how to discover and load installed
+                 KDNA .kdna assets through the kdna CLI
 
 To create new KDNA domains, use the CLI: kdna init <name>
 EOF

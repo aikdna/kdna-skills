@@ -22,7 +22,7 @@ kdna setup
 | What | Where |
 |---|---|
 | **kdna-loader** (single skill) | Installed into your agent by `kdna setup`. Teaches the agent the protocol for KDNA discovery and application. |
-| **KDNA domains** (data) | Installed via `kdna install <name>`. Live in `~/.kdna/domains/`. Loaded on demand per task. |
+| **KDNA assets** (data) | Installed via `kdna install <name>`. Stored as immutable `.kdna` files under `~/.kdna/packages/` and indexed by `~/.kdna/index.json`. Loaded on demand per task. |
 | **kdna CLI** (tool) | `kdna init`, `kdna install`, `kdna verify`, `kdna publish`. Stable interface for domain management. |
 
 ## Supported Agents
@@ -35,7 +35,7 @@ kdna setup
 - **Cursor** — `~/.cursor/skills/kdna-loader/`
 - **GitHub Copilot** — `~/.agents/skills/kdna-loader/`
 
-All agents share the same KDNA data root: `~/.kdna/domains/`.
+All agents share the same KDNA asset store: `~/.kdna/packages/` plus `~/.kdna/index.json`.
 
 ## Quick Install
 
@@ -63,10 +63,10 @@ kdna verify @aikdna/code_review --judgment
 ### Create your own domain
 
 ```bash
-kdna init my_expertise
-# Fill in KDNA_Core.json and KDNA_Patterns.json
-kdna validate my_expertise
-kdna publish my_expertise
+kdna dev init my_expertise
+# Fill in the dev source workspace
+kdna dev validate my_expertise
+kdna publish my_expertise --output dist/my_expertise.kdna
 ```
 
 Or use the **KDNaStudio** Mac App or **VS Code extension** for guided authoring.
