@@ -69,7 +69,7 @@ kdna validate my_expertise
 kdna publish my_expertise
 ```
 
-Or use the **KDNAChat** Mac App or **VS Code extension** for guided authoring.
+Or use the **KDNaStudio** Mac App or **VS Code extension** for guided authoring.
 
 ## How kdna-loader works (7-part protocol)
 
