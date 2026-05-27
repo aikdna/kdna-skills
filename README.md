@@ -37,6 +37,21 @@ kdna setup
 
 All agents share the same KDNA asset store: `~/.kdna/packages/` plus `~/.kdna/index.json`.
 
+## MCP Server
+
+This repository also includes a minimal MCP adapter in
+[`mcp-server/`](./mcp-server). Use it when an agent runtime supports MCP and
+should access KDNA through stable tools instead of reading KDNA internals
+directly.
+
+Exposed tools:
+
+- `kdna.inspect`
+- `kdna.verify`
+- `kdna.load`
+- `kdna.match`
+- `kdna.available`
+
 ## Quick Install
 
 ```bash
