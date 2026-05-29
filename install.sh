@@ -40,7 +40,7 @@ install_skills_for_agent() {
   # Clean up any pre-v0.9 kdna-create skill (no longer maintained).
   if [ -d "$skill_base/kdna-create" ]; then
     rm -rf "$skill_base/kdna-create"
-    log "  removed legacy kdna-create skill (use 'kdna init' CLI instead)"
+    log "  removed legacy kdna-create skill (use KDNA Studio for trusted asset creation)"
   fi
 
   log "  $name: done"
@@ -73,7 +73,7 @@ Installs one skill:
   kdna-loader  — teaches the agent how to discover and load installed
                  KDNA .kdna assets through the kdna CLI
 
-To create new KDNA domains, use the CLI: kdna init <name>
+To create trusted KDNA assets, use KDNA Studio or @aikdna/kdna-studio.
 EOF
 }
 

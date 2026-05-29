@@ -21,7 +21,7 @@ kdna setup
 |---|---|
 | **kdna-loader**（唯一技能） | 由 `kdna setup` 安装到你的 Agent。教会 Agent 发现和应用 KDNA 的协议。 |
 | **KDNA 资产**（数据） | 通过 `kdna install <名称>` 安装。以不可变 `.kdna` 文件保存在 `~/.kdna/packages/`，并由 `~/.kdna/index.json` 索引。按任务按需加载。 |
-| **kdna CLI**（工具） | `kdna init`、`kdna install`、`kdna verify`、`kdna publish`。领域管理的稳定接口。 |
+| **kdna CLI**（工具） | `kdna install`、`kdna verify`、`kdna load`、`kdna compare`、`kdna publish <file.kdna>`。已有资产的运行控制平面。 |
 
 ## 支持的 Agent
 
@@ -58,16 +58,16 @@ kdna install code_review # 安装领域
 kdna verify @aikdna/code_review --judgment
 ```
 
-### 创建自己的领域
+### 创建自己的可信 KDNA
 
 ```bash
-kdna dev init my_expertise
-# 填写开发源工作区
-kdna dev validate my_expertise
-kdna publish my_expertise --output dist/my_expertise.kdna
+npm install -g @aikdna/kdna-studio
+kdna-studio create my_expertise --name @yourscope/my_expertise
+kdna-studio export my_expertise --out dist/my_expertise.kdna --sign
+kdna verify dist/my_expertise.kdna --judgment
 ```
 
-或使用 **KDNaStudio** Mac App 或 **VS Code 插件** 进行引导式创作。
+Agent 和 Skills 不创建可信 KDNA。它们可以帮助提出判断草稿或候选卡片，但 Human Lock、compile/export、签名和来源记录必须由 KDNA Studio 或 Studio-compatible compiler 完成。VS Code 只用于开发源诊断。
 
 ## kdna-loader 如何工作（七步协议）
 
