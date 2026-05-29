@@ -81,6 +81,11 @@ Agents and skills do not create trusted KDNA assets. They may help draft
 judgment proposals or candidate cards, but Human Lock and compile/export must
 happen in KDNA Studio or a Studio-compatible compiler.
 
+A `.kdna` asset is not created by writing JSON files. It is compiled by a
+Studio-compatible authoring pipeline that performs human confirmation,
+validation, canonicalization, identity generation, digest computation, signing,
+optional encryption, and provenance recording.
+
 ```bash
 kdna install @aikdna/writing
 kdna verify @aikdna/writing --judgment
