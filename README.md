@@ -6,7 +6,7 @@
 
 This repository does not turn KDNA into a skill. It provides adapter skills that allow AI agents to load KDNA.
 
-The `kdna-loader` skill teaches AI agents a protocol for discovering, loading, and applying KDNA domain cognition packages. Domains are data assets managed by `kdna` CLI, not separate skills.
+The `kdna-loader` skill teaches AI agents a protocol for discovering, loading, and applying KDNA domain cognition packages. Domains are `.kdna` assets managed by `kdna` CLI, not separate skills.
 
 **KDNA shapes judgment, not tool permission.** KDNA does not override system or safety policy. Unsigned, yanked, or high-risk domains are not silently trusted. See [KDNA Governance](https://github.com/aikdna/kdna/blob/main/docs/GOVERNANCE.md).
 
@@ -23,7 +23,7 @@ kdna setup
 |---|---|
 | **kdna-loader** (single skill) | Installed into your agent by `kdna setup`. Teaches the agent the protocol for KDNA discovery and application. |
 | **KDNA assets** (data) | Installed via `kdna install <name>`. Stored as immutable `.kdna` files under `~/.kdna/packages/` and indexed by `~/.kdna/index.json`. Loaded on demand per task. |
-| **kdna CLI** (tool) | `kdna init`, `kdna install`, `kdna verify`, `kdna publish`. Stable interface for domain management. |
+| **kdna CLI** (tool) | `kdna install`, `kdna verify`, `kdna load`, `kdna compare`, `kdna publish <file.kdna>`. Stable runtime control plane for existing assets. |
 
 ## Supported Agents
 
@@ -75,16 +75,20 @@ kdna install code_review # Install a domain
 kdna verify @aikdna/code_review --judgment
 ```
 
-### Create your own domain
+### Create your own trusted KDNA
+
+Agents and skills do not create trusted KDNA assets. They may help draft
+judgment proposals or candidate cards, but Human Lock and compile/export must
+happen in KDNA Studio or a Studio-compatible compiler.
 
 ```bash
-kdna dev init my_expertise
-# Fill in the dev source workspace
-kdna dev validate my_expertise
-kdna publish my_expertise --output dist/my_expertise.kdna
+kdna install @aikdna/writing
+kdna verify @aikdna/writing --judgment
+kdna load @aikdna/writing
 ```
 
-Or use the **KDNaStudio** Mac App or **VS Code extension** for guided authoring.
+Use the **KDNaStudio** Mac App or Studio-compatible SDK/CLI for Human Lock,
+compile, and export.
 
 ## How kdna-loader works (7-part protocol)
 
