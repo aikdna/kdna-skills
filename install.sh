@@ -73,7 +73,7 @@ Installs one skill:
   kdna-loader  — teaches the agent how to discover and load installed
                  KDNA .kdna assets through the kdna CLI
 
-To create trusted KDNA assets, use KDNA Studio or @aikdna/kdna-studio.
+To create trusted KDNA assets, use KDNA Studio or @aikdna/kdna-studio-cli.
 EOF
 }
 

@@ -61,7 +61,7 @@ kdna verify @aikdna/code_review --judgment
 ### 创建自己的可信 KDNA
 
 ```bash
-npm install -g @aikdna/kdna-studio
+npm install -g @aikdna/kdna-studio-cli
 kdna-studio create my_expertise --name @yourscope/my_expertise
 kdna-studio export my_expertise --out dist/my_expertise.kdna --sign
 kdna verify dist/my_expertise.kdna --judgment
