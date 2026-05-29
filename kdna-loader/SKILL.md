@@ -276,7 +276,9 @@ Otherwise, stay silent about the loading mechanics.
 - Not a list of available KDNA domains (those are installed `.kdna` assets,
   discovered on demand through the CLI)
 - Not a registry browser (use `kdna list --available` CLI)
-- Not a domain creator (use `kdna init <name>` CLI)
+- Not a domain creator. Agents may draft judgment proposals or candidate cards,
+  but trusted `.kdna` assets require Human Lock and Studio-compatible
+  compile/export.
 - Not an auto-loader that runs on every request — you decide per
   request whether the task needs KDNA at all
 
