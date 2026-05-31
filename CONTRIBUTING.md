@@ -1,13 +1,13 @@
 # Contributing to KDNA Skills
 
-This repository contains agent skills (kdna-loader, kdna-create) and the
+This repository contains the kdna-loader agent skill and the
 installer script (install.sh) for KDNA.
 
 ## How to Contribute
 
 ### Skill Improvements
 
-1. Edit the relevant `SKILL.md` file in `kdna-loader/` or `kdna-create/`
+1. Edit the relevant `SKILL.md` file in `kdna-loader/`
 2. Test with your target agent (Claude Code, Codex, OpenCode, etc.)
 3. Open a PR with a description of what changed and why
 
