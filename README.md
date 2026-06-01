@@ -29,11 +29,13 @@ kdna setup
 
 `kdna setup` auto-detects and installs `kdna-loader` into:
 
-- **Codex** — `~/.codex/skills/kdna-loader/`
-- **Claude Code** — `~/.claude/skills/kdna-loader/`
-- **OpenCode** — `~/.agents/skills/kdna-loader/`
-- **Cursor** — `~/.cursor/skills/kdna-loader/`
-- **GitHub Copilot** — `~/.agents/skills/kdna-loader/`
+| Agent | Skill Path | Guide |
+|-------|-----------|-------|
+| **Codex** | `~/.codex/skills/kdna-loader/` | [Setup guide →](integrations/codex/) |
+| **Claude Code** | `~/.claude/skills/kdna-loader/` | [Setup guide →](integrations/claude-code/) |
+| **OpenCode** | `~/.agents/skills/kdna-loader/` | [Setup guide →](integrations/opencode/) |
+| **Cursor** | `~/.cursor/skills/kdna-loader/` | [Setup guide →](integrations/cursor/) |
+| **GitHub Copilot** | `~/.agents/skills/kdna-loader/` | Manual setup required |
 
 All agents share the same KDNA asset store: `~/.kdna/packages/` plus `~/.kdna/index.json`.
 
