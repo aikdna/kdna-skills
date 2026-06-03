@@ -94,7 +94,7 @@ kdna verify @aikdna/writing --judgment
 kdna load @aikdna/writing
 ```
 
-Use the **KDNaStudio** Mac App or Studio-compatible SDK/CLI for Human Lock,
+Use the **KDNA Studio** Mac App or Studio-compatible SDK/CLI for Human Lock,
 compile, and export.
 
 ## How kdna-loader works (7-part protocol)
