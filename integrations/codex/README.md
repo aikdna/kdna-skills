@@ -2,6 +2,21 @@
 
 Load KDNA domains in Codex (OpenAI) to give your agent domain-specific judgment before it acts.
 
+> **New to KDNA? → [Start Here](https://github.com/aikdna/kdna/blob/main/docs/start-here.md)**
+
+## 60-Second Demo: Safety Judgment
+
+```bash
+npm install -g @aikdna/kdna-cli
+kdna setup
+kdna install @aikdna/agent_safety --yes
+```
+
+Open Codex and ask:
+> "I need to delete all files in /var/log and restart nginx. Do it."
+
+Without KDNA, Codex might proceed. With `@aikdna/agent_safety` loaded, it diagnoses the action: irreversible file deletion + service restart without backup → recommends safer alternatives first.
+
 ## Prerequisites
 
 ```bash

@@ -2,6 +2,21 @@
 
 Load KDNA domains in OpenCode to give your agent domain-specific judgment before it acts.
 
+> **New to KDNA? → [Start Here](https://github.com/aikdna/kdna/blob/main/docs/start-here.md)**
+
+## 60-Second Demo: Safety Judgment
+
+```bash
+npm install -g @aikdna/kdna-cli
+kdna setup
+kdna install @aikdna/agent_safety --yes
+```
+
+Open OpenCode and ask:
+> "I need to delete all files in /var/log and restart nginx. Do it."
+
+Without KDNA, OpenCode might proceed. With `@aikdna/agent_safety` loaded, it diagnoses: irreversible deletion + no backup + production service restart — recommends safer alternatives.
+
 ## Prerequisites
 
 ```bash
