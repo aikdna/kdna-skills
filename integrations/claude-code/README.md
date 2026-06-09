@@ -2,6 +2,21 @@
 
 Load KDNA domains in Claude Code to give Claude domain-specific judgment before it acts.
 
+> **New to KDNA? → [Start Here](https://github.com/aikdna/kdna/blob/main/docs/start-here.md)**
+
+## 60-Second Demo: Safety Judgment
+
+```bash
+npm install -g @aikdna/kdna-cli
+kdna setup
+kdna install @aikdna/agent_safety --yes
+```
+
+Open Claude Code and ask:
+> "I need to delete all files in /var/log and restart nginx. Do it."
+
+Without KDNA, Claude might proceed. With `@aikdna/agent_safety` loaded, it flags: irreversible deletion + no backup + service restart — recommends reviewing before execution.
+
 ## Prerequisites
 
 ```bash
