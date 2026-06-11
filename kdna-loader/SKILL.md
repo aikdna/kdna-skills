@@ -184,16 +184,11 @@ optimized for system-prompt injection: axioms with their
 banned terms, misunderstandings, and self-checks. Typically
 ~30–50% smaller than the raw JSON.
 
-Other output modes:
+Use `--as=prompt` for normal loading. For raw inspection (debugging only):
 
 ```bash
-kdna load @scope/name --as=json   # raw Core + Patterns JSON
-kdna load @scope/name --as=raw    # concatenated raw file contents
+kdna dev decode domain.kdna --reveal
 ```
-
-Use `--as=prompt` for normal loading. Use `--as=json` only when you
-genuinely need to inspect the structure (e.g. user is debugging the
-domain itself).
 
 **Token discipline**: the prompt output already includes everything
 the agent needs to apply judgment. Do not also `cat` the optional
