@@ -8,7 +8,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aikdna/kdna-core": "^0.7.2"
+    "@aikdna/kdna-core": "^0.10.0"
   },
   "engines": {
     "node": ">=18"
