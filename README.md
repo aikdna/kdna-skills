@@ -6,9 +6,9 @@
 
 This repository does not turn KDNA into a skill. It provides adapter skills that allow AI agents to load KDNA.
 
-The `kdna-loader` skill teaches AI agents a protocol for discovering, loading, and applying KDNA domain cognition packages. Domains are `.kdna` assets managed by `kdna` CLI, not separate skills.
+The `kdna-loader` skill is the official agent adapter for the KDNA toolchain. It teaches AI agents how to discover, load, and apply `.kdna` assets managed by the official KDNA CLI.
 
-**KDNA shapes judgment, not tool permission.** KDNA does not override system or safety policy. Unsigned, yanked, or high-risk domains are not silently trusted. See [KDNA Governance](https://github.com/aikdna/kdna/blob/main/docs/GOVERNANCE.md).
+**KDNA shapes judgment, not tool permission.** KDNA does not override system or safety policy. The runtime trace vocabulary records explicit status values (version_incompatible, failed_to_parse, failed_to_decrypt, signature_invalid, blocked_by_runtime_policy) so that the loader cannot quietly succeed while producing garbage. See KDNA Core trace vocabulary.
 
 Requires `@aikdna/kdna-cli` CLI:
 
