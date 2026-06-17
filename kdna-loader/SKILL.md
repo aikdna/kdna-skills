@@ -170,12 +170,15 @@ actions), but the primary judgment frame is always one.
 
 ---
 
-## Part 5 — Load
+## Part 5 — Load (v1 & legacy)
 
-Once selected, load the domain via the CLI:
+Once selected, load the domain via the official KDNA CLI. Two paths are supported:
 
 ```bash
-kdna load @scope/name
+kdna load <file.kdna> --profile=compact --as=prompt
+kdna load <source-dir> --profile=compact --as=prompt
+
+Legacy installed domains: kdna load @scope/name
 ```
 
 The default output (`--as=prompt`) is a compact text rendering
@@ -272,7 +275,7 @@ Otherwise, stay silent about the loading mechanics.
   discovered on demand through the CLI)
 - Not a registry browser (use `kdna list --available` CLI)
 - Not a domain creator. Agents may draft judgment proposals or candidate cards,
-  but trusted `.kdna` assets require Human Lock and Studio-compatible
+  but formal `.kdna` assets are created through the official KDNA Studio toolchain.
   compile/export.
 - Not an auto-loader that runs on every request — you decide per
   request whether the task needs KDNA at all
