@@ -16,11 +16,12 @@ The `kdna-loader` skill teaches an agent the full KDNA protocol (7-part routing,
 
 | Tool | Purpose | Input | Output |
 |------|---------|-------|--------|
-| `kdna.inspect` | Inspect a `.kdna` asset: manifest, entries, digests, quality, risk | File path or asset name | Structured metadata |
-| `kdna.verify` | Verify asset integrity: digest, signature, trust gate | File path or asset name | Pass/fail with reasons |
-| `kdna.load` | Load and render a `.kdna` profile for agent context | Asset name, optional format | Prompt-mode text or raw JSON |
+| `kdna.inspect` | Inspect a v1 `.kdna` asset or legacy asset | File path | Structured metadata |
+| `kdna.verify` | Verify asset integrity state | File path | Pass/fail with reasons |
+| `kdna.load` | Load and render a `.kdna` profile for agent context | File path, optional profile | Prompt-mode text or raw JSON |
+| `kdna.available-local` | List local v1 `.kdna` assets without registry dependency | Root directory | Local v1 asset inventory |
 | `kdna.match` | Rank candidate assets for a task string | Task description | Scored list with fit signals |
-| `kdna.available` | List entries from a local Registry `domains.json` | Optional scope filter | Available domain list |
+| `kdna.available` | Legacy registry compatibility only | `domains.json` path | Legacy domain list |
 
 ## Install & Run
 
@@ -74,7 +75,8 @@ kdna-mcp
 
 | Variable | Purpose |
 |----------|---------|
-| `KDNA_REGISTRY_FILE` | Path to `domains.json` for `kdna.available` |
+| `KDNA_ASSET_DIR` | Root directory for `kdna.available-local` (default: `~/.kdna/assets`) |
+| `KDNA_REGISTRY_FILE` | Legacy path to `domains.json` for `kdna.available` |
 | `KDNA_DATA_ROOT` | Override KDNA data directory (default: `~/.kdna`) |
 
 ## Local Development
@@ -88,9 +90,9 @@ node bin/kdna-mcp.mjs
 ## Example: Verify and Load a Domain via MCP
 
 ```
-# Client calls kdna.available → ["@aikdna/writing", "@aikdna/code_review"]
-# Client calls kdna.verify { name: "@aikdna/writing" } → { valid: true }
-# Client calls kdna.load { name: "@aikdna/writing", format: "prompt" } → prompt text
+# Client calls kdna.available-local { root: "./dist" }
+# Client calls kdna.verify { assetPath: "./dist/writing.kdna" }
+# Client calls kdna.load { assetPath: "./dist/writing.kdna", profile: "compact" }
 # Agent injects prompt text into system context
 ```
 

@@ -1,105 +1,47 @@
 # KDNA on OpenCode
 
-Load KDNA domains in OpenCode to give your agent domain-specific judgment before it acts.
+Load local KDNA Core v1 assets in OpenCode to give the agent domain-specific
+judgment before it acts.
 
-> **New to KDNA? → [Start Here](https://github.com/aikdna/kdna/blob/main/docs/start-here.md)**
+> New to KDNA? See [Start Here](https://github.com/aikdna/kdna/blob/main/docs/start-here.md).
 
-## 60-Second Demo: Safety Judgment
-
-```bash
-npm install -g @aikdna/kdna-cli
-kdna setup
-kdna install @aikdna/agent_safety --yes
-```
-
-Open OpenCode and ask:
-> "I need to delete all files in /var/log and restart nginx. Do it."
-
-Without KDNA, OpenCode might proceed. With `@aikdna/agent_safety` loaded, it diagnoses: irreversible deletion + no backup + production service restart — recommends safer alternatives.
-
-## Prerequisites
+## 60-Second Check
 
 ```bash
 npm install -g @aikdna/kdna-cli
 kdna setup
+kdna demo minimal ./minimal
+kdna pack ./minimal ./minimal.kdna
+kdna validate ./minimal.kdna
+kdna load ./minimal.kdna --profile=compact --as=prompt
 ```
 
 `kdna setup` auto-detects OpenCode and installs the `kdna-loader` skill.
 
-## Verify Installation
+## Real Domain Assets
+
+Use a checked-in or locally exported v1 asset:
 
 ```bash
-kdna doctor --agents
-# → OpenCode: detected, kdna-loader installed
+kdna validate ./writing-v1.kdna
+kdna load ./writing-v1.kdna --profile=compact --as=prompt
 ```
 
-Check the skill file exists:
-
-```bash
-ls ~/.agents/skills/kdna-loader/SKILL.md
-```
-
-## Install Your First Domain
-
-```bash
-kdna install @aikdna/writing
-kdna verify @aikdna/writing --judgment
-```
-
-## Test: See KDNA Change Judgment
-
-1. Open a new OpenCode session.
-2. Ask: *"Review this writing: 'Our product is the best in the market. Customers love it. Get yours today.'"*
-3. The kdna-loader skill auto-detects "writing" + "review" → loads `@aikdna/writing`.
-4. Instead of generic feedback, the agent diagnoses structural problems (argument structure, cognitive hook, evidence density) rather than suggesting surface changes.
-
-## Use the CLI for Compare
-
-```bash
-kdna compare @aikdna/writing --input "Review: 'Our product is the best.'"
-```
-
-Sends the same input with and without KDNA to an LLM, diffing the judgment paths.
-
-## Install More Domains
-
-```bash
-kdna install code_review
-kdna install agent_safety
-kdna install prompt_diagnosis
-kdna list
-```
-
-## Troubleshooting
-
-### "No KDNA domains installed"
-
-Run `kdna install @aikdna/writing`.
-
-### "Agent doesn't seem to use KDNA"
-
-Check if kdna-loader is installed:
-```bash
-ls ~/.agents/skills/kdna-loader/SKILL.md
-```
-
-If missing, run `kdna setup` again. If the task doesn't match any domain's `applies_when`, the loader silently skips — try a task that clearly matches, like "review my writing."
-
-### "CLI command not found"
-
-`npm install -g @aikdna/kdna-cli` first. Node.js >= 18 required.
+The loader should apply KDNA silently. The user should see better judgment, not
+KDNA internals quoted back.
 
 ## Manual Skill Installation
-
-If auto-detection fails:
 
 ```bash
 mkdir -p ~/.agents/skills/kdna-loader
 cp /path/to/kdna-skills/kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
 ```
 
-## Next Steps
+## Troubleshooting
 
-- [Browse available domains](https://aikdna.com/domains)
-- [KDNA main docs](https://github.com/aikdna/kdna)
-- [5-minute guide](https://github.com/aikdna/kdna/blob/main/docs/5-minute-guide.md)
+| Symptom | Fix |
+|---|---|
+| `kdna` command not found | Install `@aikdna/kdna-cli` globally |
+| OpenCode not detected | Run `kdna setup --opencode` |
+| Asset fails validation | Fix or regenerate the `.kdna` file before loading |
+| Agent ignores KDNA | Confirm the loader skill exists and the task matches the loaded domain |

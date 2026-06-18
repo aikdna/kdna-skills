@@ -22,8 +22,8 @@ kdna setup
 | What | Where |
 |---|---|
 | **kdna-loader** (single skill) | Installed into your agent by `kdna setup`. Teaches the agent the protocol for KDNA discovery and application. |
-| **KDNA assets** (data) | Installed via `kdna install <name>`. Stored as immutable `.kdna` files under `~/.kdna/packages/` and indexed by `~/.kdna/index.json`. Loaded on demand per task. |
-| **kdna CLI** (tool) | `kdna install`, `kdna verify`, `kdna load`, `kdna compare`, `kdna publish <file.kdna>`. Stable runtime control plane for existing assets. |
+| **KDNA assets** (data) | Local v1 `.kdna` containers. Discover them through local paths or MCP `kdna.available-local`; load them on demand per task. |
+| **kdna CLI** (tool) | `kdna inspect`, `kdna validate`, `kdna pack`, `kdna unpack`, `kdna load`. Stable runtime control plane for v1 assets. |
 
 ## Supported Agents
 
@@ -51,15 +51,17 @@ Exposed tools:
 - `kdna.inspect`
 - `kdna.verify`
 - `kdna.load`
+- `kdna.available-local`
 - `kdna.match`
-- `kdna.available`
+- `kdna.available` (legacy registry compatibility)
 
 ## Quick Install
 
 ```bash
 npm i -g @aikdna/kdna-cli
 kdna setup
-kdna install @aikdna/writing
+kdna validate ./writing-v1.kdna
+kdna load ./writing-v1.kdna --profile=compact --as=prompt
 kdna doctor --agents
 ```
 
@@ -72,38 +74,32 @@ The agent automatically decides per task whether KDNA applies. When a domain fit
 ### Install more domains
 
 ```bash
-kdna list --available    # Browse registry
-kdna install code_review # Install a domain
-kdna verify @aikdna/code_review --judgment
+kdna load ./writing.kdna --profile=compact --as=prompt
+kdna validate ./writing.kdna
 ```
 
-### Create your own trusted KDNA
+### Create your own KDNA
 
-Agents and skills do not create trusted KDNA assets. They may help draft
+Agents and skills do not create formal KDNA assets. They may help draft
 judgment proposals or candidate cards, but Human Lock and compile/export must
 happen in KDNA Studio or a Studio-compatible compiler.
 
 A `.kdna` asset is not created by writing JSON files. It is compiled by a
 Studio-compatible authoring pipeline that performs human confirmation,
-validation, canonicalization, identity generation, digest computation, signing,
-optional encryption, and provenance recording.
+validation, canonicalization, identity generation, digest computation, and
+provenance recording. Signature and encryption are future security phases, not
+part of the current open v1 toolchain baseline.
 
-```bash
-kdna install @aikdna/writing
-kdna verify @aikdna/writing --judgment
-kdna load @aikdna/writing
-```
-
-Use the **KDNA Studio** Mac App or Studio-compatible SDK/CLI for Human Lock,
-compile, and export.
+Use the **KDNA Studio CLI** or Studio-compatible SDK/CLI to create and export
+v1 `.kdna` containers.
 
 ## How kdna-loader works (7-part protocol)
 
 1. **Decide** whether KDNA applies at all (skip for formatting, lookup, code execution)
-2. **Discover** installed domains via `kdna available --json`
+2. **Discover** local domains via the CLI or MCP local inventory
 3. **Evaluate** fit per domain (checks `applies_when` / `does_not_apply_when`)
 4. **Select** 0 or 1 domain (never silently blend multiple)
-5. **Load** via `kdna load @scope/name` (prompt mode, ~30-50% smaller than raw JSON)
+5. **Load** via `kdna load <file.kdna> --profile=compact --as=prompt`
 6. **Apply** silently -- reason from axioms, never quote KDNA to user
 7. **Respect** boundaries -- user intent > evidence > safety > skills
 

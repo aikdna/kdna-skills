@@ -6,9 +6,14 @@
   "bin": {
     "kdna-mcp": "bin/kdna-mcp.mjs"
   },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aikdna/kdna-core": "^0.10.0"
+    "@aikdna/kdna-core": "^0.11.1",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
   },
   "engines": {
     "node": ">=18"

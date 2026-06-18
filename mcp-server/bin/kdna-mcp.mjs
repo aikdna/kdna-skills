@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import readline from 'node:readline';
 import { createRequire } from 'node:module';
 
@@ -11,6 +13,13 @@ const {
   renderForAgent,
   verifyAsset,
 } = require('@aikdna/kdna-core');
+const {
+  detectContainerFormat,
+  inspect: inspectV1,
+  isV1SourceDir,
+  loadV1,
+  validate: validateV1,
+} = require('@aikdna/kdna-core/v1');
 
 const tools = [
   {
@@ -24,7 +33,7 @@ const tools = [
   },
   {
     name: 'kdna.verify',
-    description: 'Verify a .kdna asset digest/signature.',
+    description: 'Verify a .kdna asset integrity state.',
     inputSchema: {
       type: 'object',
       required: ['assetPath'],
@@ -50,6 +59,17 @@ const tools = [
     },
   },
   {
+    name: 'kdna.available-local',
+    description: 'List local v1 .kdna assets or v1 source directories without using a registry.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        root: { type: 'string' },
+        maxDepth: { type: 'number' },
+      },
+    },
+  },
+  {
     name: 'kdna.match',
     description: 'Rank .kdna assets for a task string.',
     inputSchema: {
@@ -63,7 +83,7 @@ const tools = [
   },
   {
     name: 'kdna.available',
-    description: 'List assets from a local Registry domains.json file.',
+    description: 'Legacy: list assets from a local Registry domains.json file.',
     inputSchema: {
       type: 'object',
       properties: { registryFile: { type: 'string' } },
@@ -84,27 +104,100 @@ function textResult(value) {
   };
 }
 
+function isV1Asset(assetPath) {
+  if (!assetPath) return false;
+  try {
+    if (fs.existsSync(assetPath) && fs.statSync(assetPath).isDirectory()) {
+      return isV1SourceDir(assetPath);
+    }
+    return detectContainerFormat(assetPath) === 'v1';
+  } catch {
+    return false;
+  }
+}
+
+function defaultAssetRoot() {
+  return process.env.KDNA_ASSET_DIR || path.join(os.homedir(), '.kdna', 'assets');
+}
+
+function findLocalAssets(root = defaultAssetRoot(), maxDepth = 3) {
+  if (!root || !fs.existsSync(root)) return [];
+  const found = [];
+
+  function visit(dir, depth) {
+    if (depth > maxDepth) return;
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+
+    if (isV1SourceDir(dir)) {
+      const inspection = inspectV1(dir);
+      const validation = validateV1(dir);
+      found.push({
+        path: dir,
+        kind: 'v1_source_dir',
+        asset_id: inspection.asset_id,
+        title: inspection.title,
+        version: inspection.version,
+        judgment_version: inspection.judgment_version,
+        checksums_present: Boolean(inspection.checksums_present),
+        loadable: Boolean(validation.overall_valid),
+        problems: validation.overall_valid ? [] : validation.problems || [],
+      });
+      return;
+    }
+
+    for (const entry of entries) {
+      if (entry.name === 'node_modules' || entry.name === '.git') continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        visit(full, depth + 1);
+      } else if (entry.isFile() && entry.name.endsWith('.kdna') && detectContainerFormat(full) === 'v1') {
+        const inspection = inspectV1(full);
+        const validation = validateV1(full);
+        found.push({
+          path: full,
+          kind: 'v1_container',
+          asset_id: inspection.asset_id,
+          title: inspection.title,
+          version: inspection.version,
+          judgment_version: inspection.judgment_version,
+          checksums_present: Boolean(inspection.checksums_present),
+          loadable: Boolean(validation.overall_valid),
+          problems: validation.overall_valid ? [] : validation.problems || [],
+        });
+      }
+    }
+  }
+
+  visit(path.resolve(root), 0);
+  return found;
+}
+
 function listRegistry(registryFile) {
   const file = registryFile || process.env.KDNA_REGISTRY_FILE;
   if (!file) return [];
   const registry = JSON.parse(fs.readFileSync(file, 'utf8'));
   const domains = Array.isArray(registry.domains) ? registry.domains : Object.values(registry.domains || {});
   return domains.map((d) => ({
+    legacy_registry: true,
     name: d.name,
     version: d.version,
     asset_url: d.asset_url,
     asset_digest: d.asset_digest,
-    quality_badge: d.quality_badge,
-    risk_level: d.risk_level,
-    release_status: d.release_status,
   }));
 }
 
 async function callTool(name, args = {}) {
   if (name === 'kdna.inspect') {
+    if (isV1Asset(args.assetPath)) return textResult(inspectV1(args.assetPath));
     return textResult(await inspectKDNA(args.assetPath, { verify: args.verify !== false }));
   }
   if (name === 'kdna.verify') {
+    if (isV1Asset(args.assetPath)) return textResult(validateV1(args.assetPath));
     return textResult(await verifyAsset(args.assetPath, {
       asset_digest: args.asset_digest,
       content_digest: args.content_digest,
@@ -112,6 +205,12 @@ async function callTool(name, args = {}) {
     }));
   }
   if (name === 'kdna.load') {
+    if (isV1Asset(args.assetPath)) {
+      const profile = args.profile || 'compact';
+      const loaded = loadV1(args.assetPath, { profile, as: 'json' });
+      const prompt = profile === 'index' ? null : loadV1(args.assetPath, { profile, as: 'prompt' }).text;
+      return textResult({ ...loaded, context: prompt });
+    }
     const loaded = await loadKDNA(args.assetPath, { profile: args.profile || 'compact', input: args.input || '' });
     const context = args.profile === 'index'
       ? null
@@ -120,6 +219,9 @@ async function callTool(name, args = {}) {
   }
   if (name === 'kdna.match') {
     return textResult(await matchDomain(args.input || '', args.assetPaths || []));
+  }
+  if (name === 'kdna.available-local') {
+    return textResult(findLocalAssets(args.root, args.maxDepth || 3));
   }
   if (name === 'kdna.available') {
     return textResult(listRegistry(args.registryFile));

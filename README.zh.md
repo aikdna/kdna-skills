@@ -6,7 +6,7 @@
 
 这个仓库不是把 KDNA 变成 Skill。它提供的是适配器 Skill，让不同 AI Agent 能够加载 KDNA。
 
-`kdna-loader` 技能教会 AI Agent 一套协议，用于发现、加载和应用 KDNA 领域认知包。领域是数据资产，由 `kdna` CLI 管理，不是独立的技能。
+`kdna-loader` 技能教会 AI Agent 一套协议，用于发现、加载和应用本地 KDNA Core v1 `.kdna` 判断资产。资产是文件，不是独立的技能。
 
 需要 `@aikdna/kdna-cli` CLI：
 
@@ -20,8 +20,8 @@ kdna setup
 | 角色 | 说明 |
 |---|---|
 | **kdna-loader**（唯一技能） | 由 `kdna setup` 安装到你的 Agent。教会 Agent 发现和应用 KDNA 的协议。 |
-| **KDNA 资产**（数据） | 通过 `kdna install <名称>` 安装。以不可变 `.kdna` 文件保存在 `~/.kdna/packages/`，并由 `~/.kdna/index.json` 索引。按任务按需加载。 |
-| **kdna CLI**（工具） | `kdna install`、`kdna verify`、`kdna load`、`kdna compare`、`kdna publish <file.kdna>`。已有资产的运行控制平面。 |
+| **KDNA 资产**（数据） | 本地 `.kdna` 文件。通过 `kdna validate` 校验，通过 `kdna load` 加载。按任务按需进入上下文。 |
+| **kdna CLI**（工具） | `kdna inspect`、`kdna validate`、`kdna pack`、`kdna unpack`、`kdna load`。已有资产的运行控制平面。 |
 
 ## 支持的 Agent
 
@@ -33,14 +33,17 @@ kdna setup
 - **Cursor** — `~/.cursor/skills/kdna-loader/`
 - **GitHub Copilot** — `~/.agents/skills/kdna-loader/`
 
-所有 Agent 共享同一 KDNA 资产存储：`~/.kdna/packages/` 和 `~/.kdna/index.json`。
+所有 Agent 可以共享同一批本地 `.kdna` 文件；当前 v1 路径不要求公开 registry。
 
 ## 一键安装
 
 ```bash
 npm i -g @aikdna/kdna-cli
 kdna setup
-kdna install @aikdna/writing
+kdna demo minimal ./minimal
+kdna pack ./minimal ./minimal.kdna
+kdna validate ./minimal.kdna
+kdna load ./minimal.kdna --profile=compact --as=prompt
 kdna doctor --agents
 ```
 
@@ -50,32 +53,31 @@ kdna doctor --agents
 
 Agent 在每个任务中自动判断是否需要 KDNA。当领域匹配时，静默加载——应用公理、使用首选术语、遵守边界、运行自检。用户看到的是更好的判断，而不是 KDNA 内部结构。
 
-### 安装更多领域
+### 使用真实领域资产
 
 ```bash
-kdna list --available    # 浏览注册表
-kdna install code_review # 安装领域
-kdna verify @aikdna/code_review --judgment
+kdna validate ./writing-v1.kdna
+kdna load ./writing-v1.kdna --profile=compact --as=prompt
 ```
 
-### 创建自己的可信 KDNA
+### 创建自己的 v1 KDNA
 
 ```bash
 npm install -g @aikdna/kdna-studio-cli
 kdna-studio create my_expertise --name @yourscope/my_expertise
-kdna-studio export my_expertise --out dist/my_expertise.kdna --sign
-kdna verify dist/my_expertise.kdna --judgment
+kdna-studio migrate ./my_expertise --format v1 --out dist/my_expertise.kdna
+kdna validate dist/my_expertise.kdna
 ```
 
-Agent 和 Skills 不创建可信 KDNA。它们可以帮助提出判断草稿或候选卡片，但 Human Lock、compile/export、签名和来源记录必须由 KDNA Studio 或 Studio-compatible compiler 完成。VS Code 只用于开发源诊断。
+Agent 和 Skills 不创建正式 KDNA。它们可以帮助提出判断草稿或候选卡片，但 v1 `.kdna` 导出、校验和加载应通过 Studio CLI 与官方 CLI 完成。签名和加密属于后续 gated 阶段。
 
 ## kdna-loader 如何工作（七步协议）
 
 1. **判断** KDNA 是否适用于当前任务（格式化、查询、代码执行等场景跳过）
-2. **发现** 已安装的领域（`kdna available --json`）
-3. **评估** 每个候选领域的匹配度（检查 `applies_when` / `does_not_apply_when`）
+2. **发现** 可用的本地 `.kdna` 资产
+3. **评估** 每个候选领域的匹配度（检查适用边界）
 4. **选择** 0 或 1 个领域（绝不静默混合多个）
-5. **加载** 通过 `kdna load @scope/name`（prompt 模式，比完整 JSON 小 30-50%）
+5. **加载** 通过 `kdna load <asset.kdna> --profile=compact --as=prompt`
 6. **应用** 静默执行——基于公理推理，不向用户引用 KDNA
 7. **遵守** 边界——用户意图 > 证据 > 安全 > 技能
 

@@ -77,19 +77,23 @@ The user should never see "I considered loading KDNA but didn't."
 Do **not** assume any specific domains exist. Ask the CLI every time.
 
 ```bash
-kdna available --json
+kdna load <file.kdna> --profile=index --as=json
 ```
 
-Returns a compact JSON array — one entry per installed domain — with:
-`name`, `version`, `judgment_version`, `status`, `description`,
-`core_insight`, `keywords`, `applies_when` (flattened across all
-axioms), `does_not_apply_when` (flattened), `failure_risks`. Yanked
-domains are excluded automatically.
+When an MCP runtime is available, use:
 
-This is your **only** discovery interface. Do not inspect `~/.kdna/packages/`
-or `cat` the JSON files directly — the CLI is the supported contract
-between this skill and the KDNA file format. The on-disk layout may
-change; `kdna available` will not.
+```text
+kdna.available-local
+```
+
+The current v1 path discovers local `.kdna` files or v1 source
+directories, then inspects their index profile. Legacy installations may
+also expose `kdna available --json`; treat that as a compatibility path,
+not the v1 source of truth.
+
+The supported contract is the CLI/MCP loader, not hand-reading internal
+JSON files. Do not inspect `~/.kdna/packages/` or `cat` payload files
+directly unless the user explicitly asks for debugging.
 
 If the command returns `[]` or fails (CLI not installed) → no KDNA
 available → answer normally, mention installation only if the user is
@@ -99,12 +103,13 @@ asking about KDNA itself.
 
 ## Part 3 — Evaluate fit (per candidate domain)
 
-`kdna available --json` already gave you each domain's `applies_when`
-and `does_not_apply_when` (flattened across all axioms). For each
-domain in the list, decide whether it fits the current task by
-**reading the language**, not by token matching.
+The index profile or MCP local inventory gives you each domain's title,
+summary, keywords, and profile availability. For each candidate, load
+the compact profile only after the task plausibly fits. Decide whether
+it fits by **reading the language**, not by token matching.
 
-For a hint signal (optional, low-trust), you can also call:
+For a hint signal (optional, low-confidence), legacy installations may
+also support:
 
 ```bash
 kdna match "<task in user's own words>" --json
@@ -154,15 +159,15 @@ After evaluating against `applies_when`, `does_not_apply_when`, and
 | **SKIP_WEAK_FIT** | A domain is weakly related but insufficiently matches | Answer normally. Trace notes "weak match, skipped." |
 | **REJECT_NEGATIVE_MATCH** | A domain's `does_not_apply_when` explicitly excludes this task | Block loading. Respect the author's boundary. |
 | **ASK_AMBIGUOUS_DOMAIN** | 2+ domains could apply but with different judgment frameworks | Ask user to choose. Do **not** silently blend. |
-| **LOAD_STRONG_FIT** | One domain strongly matches with trust passing | Load it. |
-| **BLOCK_TRUST_FAILED** | Domain matches but trust check fails (signature, yanked, license) | Block loading. Notify if appropriate. |
+| **LOAD_STRONG_FIT** | One local domain strongly matches and validates | Load it. |
+| **BLOCK_INTEGRITY_FAILED** | Domain matches but validation, checksum, parsing, or runtime loading fails | Block loading. Notify if appropriate. |
 
 **Rule: Negative Match First.** Check `does_not_apply_when` before
 checking `applies_when`. A domain that says "not for visual design"
 must be excluded before evaluating whether it matches "design task."
 
 **Rule: When in doubt, skip.** Weak fit → skip. Ambiguous without
-clear user preference → ask, don't guess. Trust failure → block.
+clear user preference → ask, don't guess. Integrity failure → block.
 
 Never load more than one domain as primary. A secondary domain can
 constrain (e.g. `@aikdna/agent_safety` always advises on irreversible
@@ -178,7 +183,7 @@ Once selected, load the domain via the official KDNA CLI. Two paths are supporte
 kdna load <file.kdna> --profile=compact --as=prompt
 kdna load <source-dir> --profile=compact --as=prompt
 
-Legacy installed domains: kdna load @scope/name
+Legacy installed domains may still support: kdna load @scope/name
 ```
 
 The default output (`--as=prompt`) is a compact text rendering
@@ -245,7 +250,7 @@ KDNA does not override:
 | Situation | What to do |
 |---|---|
 | `kdna` CLI not installed | Skip KDNA. Answer normally. Mention installation only if user asks about KDNA itself. |
-| `kdna available --json` returns `[]` | No domains installed. Skip KDNA. |
+| No local v1 assets are found | No domains installed. Skip KDNA. |
 | `kdna load <name>` exits non-zero | That domain is broken (yanked, missing files, parse error). Try next candidate or skip KDNA. The error message tells you why. |
 | User explicitly asks for a domain that isn't installed | Tell them, suggest `kdna install <name>`. Do not fabricate the domain. |
 | Two domains' stances directly conflict on the task | Surface to user. Do not blend. |
@@ -273,7 +278,7 @@ Otherwise, stay silent about the loading mechanics.
 
 - Not a list of available KDNA domains (those are installed `.kdna` assets,
   discovered on demand through the CLI)
-- Not a registry browser (use `kdna list --available` CLI)
+- Not a registry browser. Legacy registry commands are compatibility-only.
 - Not a domain creator. Agents may draft judgment proposals or candidate cards,
   but formal `.kdna` assets are created through the official KDNA Studio toolchain.
   compile/export.
