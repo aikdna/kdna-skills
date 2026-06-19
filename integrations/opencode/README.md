@@ -12,7 +12,8 @@ npm install -g @aikdna/kdna-cli
 kdna setup
 kdna demo minimal ./minimal
 kdna pack ./minimal ./minimal.kdna
-kdna validate ./minimal.kdna
+kdna validate ./minimal.kdna --runtime
+kdna plan-load ./minimal.kdna --json
 kdna load ./minimal.kdna --profile=compact --as=prompt
 ```
 
@@ -23,7 +24,8 @@ kdna load ./minimal.kdna --profile=compact --as=prompt
 Use a checked-in or locally exported v1 asset:
 
 ```bash
-kdna validate ./writing-v1.kdna
+kdna validate ./writing-v1.kdna --runtime
+kdna plan-load ./writing-v1.kdna --json
 kdna load ./writing-v1.kdna --profile=compact --as=prompt
 ```
 

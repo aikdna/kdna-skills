@@ -61,7 +61,7 @@ Exposed tools:
 ```bash
 npm i -g @aikdna/kdna-cli
 kdna setup
-kdna validate ./writing-v1.kdna
+kdna validate ./writing-v1.kdna --runtime
 kdna plan-load ./writing-v1.kdna --json
 kdna load ./writing-v1.kdna --profile=compact --as=prompt
 kdna doctor --agents
@@ -76,8 +76,9 @@ The agent automatically decides per task whether KDNA applies. When a domain fit
 ### Install more domains
 
 ```bash
+kdna validate ./writing.kdna --runtime
+kdna plan-load ./writing.kdna --json
 kdna load ./writing.kdna --profile=compact --as=prompt
-kdna validate ./writing.kdna
 ```
 
 ### Create your own KDNA

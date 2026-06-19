@@ -175,9 +175,21 @@ actions), but the primary judgment frame is always one.
 
 ---
 
-## Part 5 — Load (v1 & legacy)
+## Part 5 — Plan, then Load (v1 & legacy)
 
-Once selected, load the domain via the official KDNA CLI. Two paths are supported:
+Once selected, ask the runtime for a LoadPlan before loading:
+
+```bash
+kdna plan-load <file.kdna> --json
+```
+
+If the LoadPlan does not return `can_load_now=true`, do not load the asset.
+Follow `required_action` and `issues[].code` instead. Remote assets are
+recognized but unsupported until the runtime provides a remote projection
+implementation.
+
+Only after `can_load_now=true`, load the domain via the official KDNA CLI.
+Two paths are supported:
 
 ```bash
 kdna load <file.kdna> --profile=compact --as=prompt
@@ -251,7 +263,8 @@ KDNA does not override:
 |---|---|
 | `kdna` CLI not installed | Skip KDNA. Answer normally. Mention installation only if user asks about KDNA itself. |
 | No local v1 assets are found | No domains installed. Skip KDNA. |
-| `kdna load <name>` exits non-zero | That domain is broken (yanked, missing files, parse error). Try next candidate or skip KDNA. The error message tells you why. |
+| `kdna plan-load <asset>` returns `can_load_now=false` | Do not load. Follow `required_action` and `issues[].code`. |
+| `kdna load <name>` exits non-zero | That domain is broken (validation, authorization, parse, or runtime loading failure). Try next candidate or skip KDNA. The error message tells you why. |
 | User explicitly asks for a domain that isn't installed | Tell them, suggest `kdna install <name>`. Do not fabricate the domain. |
 | Two domains' stances directly conflict on the task | Surface to user. Do not blend. |
 
