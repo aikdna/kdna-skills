@@ -69,6 +69,7 @@ const tools = [
       properties: {
         assetPath: { type: 'string' },
         hasPassword: { type: 'boolean' },
+        entitlementStatus: { type: 'string', enum: ['active', 'expired', 'revoked', 'offline_grace'] },
       },
     },
   },
@@ -208,6 +209,7 @@ function listRegistry(registryFile) {
 function runCliPlanLoad(args = {}) {
   const cliArgs = ['plan-load', args.assetPath, '--json'];
   if (args.hasPassword) cliArgs.push('--has-password');
+  if (args.entitlementStatus) cliArgs.push('--entitlement-status', args.entitlementStatus);
 
   const result = spawnSync('kdna', cliArgs, {
     encoding: 'utf8',
@@ -234,6 +236,7 @@ function planLoadThroughCoreOrCli(args = {}) {
   if (typeof planLoad === 'function') {
     return planLoad(args.assetPath, {
       hasPassword: Boolean(args.hasPassword),
+      entitlement: args.entitlementStatus ? { status: args.entitlementStatus } : undefined,
     });
   }
 

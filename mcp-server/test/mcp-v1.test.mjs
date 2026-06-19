@@ -129,7 +129,7 @@ console.log(JSON.stringify({
     const tools = listTools();
     assert.ok(tools.some((tool) => tool.name === 'kdna.plan-load'));
 
-    const plan = callTool('kdna.plan-load', { assetPath, hasPassword: true }, {
+    const plan = callTool('kdna.plan-load', { assetPath, hasPassword: true, entitlementStatus: 'active' }, {
       env: { ...process.env, PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}` },
     });
 
@@ -141,6 +141,8 @@ console.log(JSON.stringify({
       assetPath,
       '--json',
       '--has-password',
+      '--entitlement-status',
+      'active',
     ]);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });

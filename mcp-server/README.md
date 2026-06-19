@@ -18,7 +18,7 @@ The `kdna-loader` skill teaches an agent the full KDNA protocol (7-part routing,
 |------|---------|-------|--------|
 | `kdna.inspect` | Inspect a v1 `.kdna` asset or legacy asset | File path | Structured metadata |
 | `kdna.verify` | Verify asset integrity state | File path | Pass/fail with reasons |
-| `kdna.plan-load` | Return Core LoadPlan before loading | File path, optional password state | LoadPlan JSON |
+| `kdna.plan-load` | Return Core LoadPlan before loading | File path, optional password or entitlement state | LoadPlan JSON |
 | `kdna.load` | Load and render a `.kdna` profile for agent context | File path, optional profile | Prompt-mode text or raw JSON |
 | `kdna.available-local` | List local v1 `.kdna` assets without registry dependency | Root directory | Local v1 asset inventory |
 | `kdna.match` | Rank candidate assets for a task string | Task description | Scored list with fit signals |
@@ -94,6 +94,7 @@ node bin/kdna-mcp.mjs
 # Client calls kdna.available-local { root: "./dist" }
 # Client calls kdna.verify { assetPath: "./dist/writing.kdna" }
 # Client calls kdna.plan-load { assetPath: "./dist/writing.kdna" }
+# Or kdna.plan-load { assetPath: "./dist/writing.kdna", entitlementStatus: "active" }
 # Client calls kdna.load { assetPath: "./dist/writing.kdna", profile: "compact" }
 # Agent injects prompt text into system context
 ```
