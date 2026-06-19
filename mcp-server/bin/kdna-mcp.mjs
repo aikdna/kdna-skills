@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import readline from 'node:readline';
+import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -10,6 +11,7 @@ const {
   inspectKDNA,
   loadKDNA,
   matchDomain,
+  planLoad,
   renderForAgent,
   verifyAsset,
 } = require('@aikdna/kdna-core');
@@ -55,6 +57,18 @@ const tools = [
         assetPath: { type: 'string' },
         profile: { type: 'string', enum: ['index', 'compact', 'scenario', 'full'] },
         input: { type: 'string' },
+      },
+    },
+  },
+  {
+    name: 'kdna.plan-load',
+    description: 'Return the Core LoadPlan for a .kdna asset before loading.',
+    inputSchema: {
+      type: 'object',
+      required: ['assetPath'],
+      properties: {
+        assetPath: { type: 'string' },
+        hasPassword: { type: 'boolean' },
       },
     },
   },
@@ -191,6 +205,41 @@ function listRegistry(registryFile) {
   }));
 }
 
+function runCliPlanLoad(args = {}) {
+  const cliArgs = ['plan-load', args.assetPath, '--json'];
+  if (args.hasPassword) cliArgs.push('--has-password');
+
+  const result = spawnSync('kdna', cliArgs, {
+    encoding: 'utf8',
+    timeout: 30_000,
+  });
+
+  if (result.error) {
+    throw new Error(`Core planLoad is unavailable and kdna CLI failed: ${result.error.message}`);
+  }
+  if (result.status !== 0) {
+    throw new Error(`Core planLoad is unavailable and kdna CLI exited ${result.status}: ${result.stderr || result.stdout}`);
+  }
+
+  try {
+    return JSON.parse(result.stdout);
+  } catch (error) {
+    throw new Error(`Core planLoad is unavailable and kdna CLI returned non-JSON output: ${error.message}`);
+  }
+}
+
+function planLoadThroughCoreOrCli(args = {}) {
+  if (!args.assetPath) throw new Error('assetPath is required');
+
+  if (typeof planLoad === 'function') {
+    return planLoad(args.assetPath, {
+      hasPassword: Boolean(args.hasPassword),
+    });
+  }
+
+  return runCliPlanLoad(args);
+}
+
 async function callTool(name, args = {}) {
   if (name === 'kdna.inspect') {
     if (isV1Asset(args.assetPath)) return textResult(inspectV1(args.assetPath));
@@ -216,6 +265,9 @@ async function callTool(name, args = {}) {
       ? null
       : await renderForAgent(args.assetPath, { profile: args.profile || 'compact', input: args.input || '' });
     return textResult({ ...loaded, context });
+  }
+  if (name === 'kdna.plan-load') {
+    return textResult(planLoadThroughCoreOrCli(args));
   }
   if (name === 'kdna.match') {
     return textResult(await matchDomain(args.input || '', args.assetPaths || []));

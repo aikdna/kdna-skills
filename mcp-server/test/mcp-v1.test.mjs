@@ -11,7 +11,7 @@ const { buildChecksumsV1 } = require('@aikdna/kdna-core/v1');
 
 const server = path.join(process.cwd(), 'bin', 'kdna-mcp.mjs');
 
-function callTool(name, args) {
+function callTool(name, args, options = {}) {
   const request = {
     jsonrpc: '2.0',
     id: 1,
@@ -21,11 +21,24 @@ function callTool(name, args) {
   const r = spawnSync(process.execPath, [server], {
     input: `${JSON.stringify(request)}\n`,
     encoding: 'utf8',
+    env: options.env || process.env,
   });
   assert.equal(r.status, 0, r.stderr);
   const response = JSON.parse(r.stdout.trim());
   assert.ok(!response.error, response.error && response.error.message);
   return JSON.parse(response.result.content[0].text);
+}
+
+function listTools() {
+  const request = { jsonrpc: '2.0', id: 1, method: 'tools/list' };
+  const r = spawnSync(process.execPath, [server], {
+    input: `${JSON.stringify(request)}\n`,
+    encoding: 'utf8',
+  });
+  assert.equal(r.status, 0, r.stderr);
+  const response = JSON.parse(r.stdout.trim());
+  assert.ok(!response.error, response.error && response.error.message);
+  return response.result.tools;
 }
 
 function makeV1Source(root) {
@@ -87,6 +100,48 @@ test('available-local discovers v1 source dirs and load returns prompt context',
     assert.equal(loaded.asset_id, 'kdna:test:writing');
     assert.match(loaded.context, /Structure before wording/);
     assert.match(loaded.context, /Do not polish before diagnosis/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('plan-load is exposed and falls back to the official CLI when Core API is unavailable', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-plan-'));
+  try {
+    const assetPath = makeV1Source(root);
+    const binDir = path.join(root, 'bin');
+    const argvFile = path.join(root, 'argv.json');
+    fs.mkdirSync(binDir);
+    const kdnaBin = path.join(binDir, 'kdna');
+    fs.writeFileSync(kdnaBin, `#!/usr/bin/env node
+const fs = require('node:fs');
+fs.writeFileSync(${JSON.stringify(argvFile)}, JSON.stringify(process.argv.slice(2)));
+console.log(JSON.stringify({
+  state: "ready",
+  required_action: "none",
+  can_load_now: true,
+  issues: [{ code: "KDNA_OK" }],
+  asset: { source: process.argv[3] }
+}));
+`);
+    fs.chmodSync(kdnaBin, 0o755);
+
+    const tools = listTools();
+    assert.ok(tools.some((tool) => tool.name === 'kdna.plan-load'));
+
+    const plan = callTool('kdna.plan-load', { assetPath, hasPassword: true }, {
+      env: { ...process.env, PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}` },
+    });
+
+    assert.equal(plan.state, 'ready');
+    assert.equal(plan.required_action, 'none');
+    assert.equal(plan.can_load_now, true);
+    assert.deepEqual(JSON.parse(fs.readFileSync(argvFile, 'utf8')), [
+      'plan-load',
+      assetPath,
+      '--json',
+      '--has-password',
+    ]);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

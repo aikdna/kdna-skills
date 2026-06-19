@@ -50,7 +50,7 @@ Exposed tools:
 
 - `kdna.inspect`
 - `kdna.verify`
-- `kdna.plan-load` (planned)
+- `kdna.plan-load`
 - `kdna.load`
 - `kdna.available-local`
 - `kdna.match`
