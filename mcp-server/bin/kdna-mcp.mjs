@@ -233,7 +233,7 @@ function runCliPlanLoad(args = {}) {
 function planLoadThroughCoreOrCli(args = {}) {
   if (!args.assetPath) throw new Error('assetPath is required');
 
-  if (typeof planLoad === 'function') {
+  if (typeof planLoad === 'function' && process.env.KDNA_MCP_FORCE_CLI_PLAN_LOAD !== '1') {
     return planLoad(args.assetPath, {
       hasPassword: Boolean(args.hasPassword),
       entitlement: args.entitlementStatus ? { status: args.entitlementStatus } : undefined,

@@ -105,7 +105,25 @@ test('available-local discovers v1 source dirs and load returns prompt context',
   }
 });
 
-test('plan-load is exposed and falls back to the official CLI when Core API is unavailable', () => {
+test('plan-load uses the Core API when available', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-plan-core-'));
+  try {
+    const assetPath = makeV1Source(root);
+    const tools = listTools();
+    assert.ok(tools.some((tool) => tool.name === 'kdna.plan-load'));
+
+    const plan = callTool('kdna.plan-load', { assetPath });
+
+    assert.equal(plan.state, 'ready');
+    assert.equal(plan.required_action, 'load');
+    assert.equal(plan.can_load_now, true);
+    assert.equal(plan.asset.asset_id, 'kdna:test:writing');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('plan-load can fall back to the official CLI when Core API is unavailable', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-plan-'));
   try {
     const assetPath = makeV1Source(root);
@@ -130,7 +148,11 @@ console.log(JSON.stringify({
     assert.ok(tools.some((tool) => tool.name === 'kdna.plan-load'));
 
     const plan = callTool('kdna.plan-load', { assetPath, hasPassword: true, entitlementStatus: 'active' }, {
-      env: { ...process.env, PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}` },
+      env: {
+        ...process.env,
+        KDNA_MCP_FORCE_CLI_PLAN_LOAD: '1',
+        PATH: `${binDir}${path.delimiter}${process.env.PATH || ''}`,
+      },
     });
 
     assert.equal(plan.state, 'ready');
