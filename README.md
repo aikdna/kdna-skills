@@ -23,7 +23,7 @@ kdna setup
 |---|---|
 | **kdna-loader** (single skill) | Installed into your agent by `kdna setup`. Teaches the agent the protocol for KDNA discovery and application. |
 | **KDNA assets** (data) | Local v1 `.kdna` containers. Discover them through local paths or MCP `kdna.available-local`; load them on demand per task. |
-| **kdna CLI** (tool) | `kdna inspect`, `kdna validate`, `kdna pack`, `kdna unpack`, `kdna load`. Stable runtime control plane for v1 assets. |
+| **kdna CLI** (tool) | `kdna inspect`, `kdna validate`, `kdna plan-load`, `kdna load`. Stable runtime control plane for v1 assets. |
 
 ## Supported Agents
 
@@ -50,6 +50,7 @@ Exposed tools:
 
 - `kdna.inspect`
 - `kdna.verify`
+- `kdna.plan-load` (planned)
 - `kdna.load`
 - `kdna.available-local`
 - `kdna.match`
@@ -61,6 +62,7 @@ Exposed tools:
 npm i -g @aikdna/kdna-cli
 kdna setup
 kdna validate ./writing-v1.kdna
+kdna plan-load ./writing-v1.kdna --json
 kdna load ./writing-v1.kdna --profile=compact --as=prompt
 kdna doctor --agents
 ```
@@ -99,9 +101,12 @@ v1 `.kdna` containers.
 2. **Discover** local domains via the CLI or MCP local inventory
 3. **Evaluate** fit per domain (checks `applies_when` / `does_not_apply_when`)
 4. **Select** 0 or 1 domain (never silently blend multiple)
-5. **Load** via `kdna load <file.kdna> --profile=compact --as=prompt`
-6. **Apply** silently -- reason from axioms, never quote KDNA to user
-7. **Respect** boundaries -- user intent > evidence > safety > skills
+5. **Plan** via `kdna plan-load <file.kdna> --json`
+6. **Load** only when Core/CLI reports `can_load_now=true`, via `kdna load <file.kdna> --profile=compact --as=prompt`
+7. **Apply** silently -- reason from axioms, never quote KDNA to user
+8. **Respect** boundaries -- user intent > evidence > safety > skills
+
+See [docs/KDNA_LOADER_CONTRACT.md](docs/KDNA_LOADER_CONTRACT.md).
 
 ## Manual Installation
 
