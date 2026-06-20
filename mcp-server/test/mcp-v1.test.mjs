@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { buildChecksumsV1 } = require('@aikdna/kdna-core/v1');
+const { buildChecksumsV1, pack } = require('@aikdna/kdna-core/v1');
 const packageInfo = require('../package.json');
 
 const server = path.join(process.cwd(), 'bin', 'kdna-mcp.mjs');
@@ -113,20 +113,39 @@ function makeV1Source(root) {
   return dir;
 }
 
-test('available-local discovers v1 source dirs and load returns prompt context', () => {
+function makeV1Container(root, name = 'writing.kdna') {
+  const sourceDir = makeV1Source(root);
+  const assetPath = path.join(root, name);
+  pack(sourceDir, assetPath);
+  return assetPath;
+}
+
+test('available-local discovers v1 .kdna files and load returns prompt context', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-v1-'));
   try {
-    makeV1Source(root);
+    const assetPath = makeV1Container(root);
     const available = callTool('kdna.available-local', { root, maxDepth: 1 });
     assert.equal(available.length, 1);
     assert.equal(available[0].asset_id, 'kdna:test:writing');
+    assert.equal(available[0].kind, 'v1_container');
     assert.equal(available[0].loadable, true, JSON.stringify(available[0]));
     assert.equal(Object.prototype.hasOwnProperty.call(available[0], 'quality_badge'), false);
 
-    const loaded = callTool('kdna.load', { assetPath: path.join(root, 'writing'), profile: 'compact' });
+    const loaded = callTool('kdna.load', { assetPath, profile: 'compact' });
     assert.equal(loaded.asset_id, 'kdna:test:writing');
     assert.match(loaded.context, /Structure before wording/);
     assert.match(loaded.context, /Do not polish before diagnosis/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('available-local does not list v1 source directories as loadable assets', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-source-dir-'));
+  try {
+    makeV1Source(root);
+    const available = callTool('kdna.available-local', { root, maxDepth: 1 });
+    assert.deepEqual(available, []);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -139,7 +158,7 @@ test('available-local defaults to ~/.kdna/packages', () => {
     const legacyAssetsRoot = path.join(home, '.kdna', 'assets');
     fs.mkdirSync(packagesRoot, { recursive: true });
     fs.mkdirSync(legacyAssetsRoot, { recursive: true });
-    makeV1Source(packagesRoot);
+    makeV1Container(packagesRoot);
 
     const available = callTool('kdna.available-local', {}, {
       env: {
@@ -166,17 +185,19 @@ test('kdna.load refuses a v1 asset when LoadPlan cannot load now', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-load-denied-'));
   const secret = 'MCP_SECRET_PAYLOAD_SHOULD_NOT_LEAK';
   try {
-    const assetPath = makeV1Source(root);
-    const manifestPath = path.join(assetPath, 'kdna.json');
+    const sourceDir = makeV1Source(root);
+    const manifestPath = path.join(sourceDir, 'kdna.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     manifest.access = 'remote';
     manifest.runtime = { endpoint: 'https://runtime.example.test/v1/project' };
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-    const payloadPath = path.join(assetPath, 'payload.kdnab');
+    const payloadPath = path.join(sourceDir, 'payload.kdnab');
     const payload = JSON.parse(fs.readFileSync(payloadPath, 'utf8'));
     payload.core.axioms = [{ id: 'secret', one_sentence: secret }];
     fs.writeFileSync(payloadPath, JSON.stringify(payload, null, 2));
-    fs.writeFileSync(path.join(assetPath, 'checksums.json'), JSON.stringify(buildChecksumsV1(assetPath), null, 2));
+    fs.writeFileSync(path.join(sourceDir, 'checksums.json'), JSON.stringify(buildChecksumsV1(sourceDir), null, 2));
+    const assetPath = path.join(root, 'remote.kdna');
+    pack(sourceDir, assetPath);
 
     const plan = callTool('kdna.plan-load', { assetPath });
     assert.equal(plan.can_load_now, false);
@@ -195,7 +216,7 @@ test('kdna.load refuses a v1 asset when LoadPlan cannot load now', () => {
 test('plan-load uses the Core API when available', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-plan-core-'));
   try {
-    const assetPath = makeV1Source(root);
+    const assetPath = makeV1Container(root);
     const tools = listTools();
     assert.ok(tools.some((tool) => tool.name === 'kdna.plan-load'));
 
@@ -213,7 +234,7 @@ test('plan-load uses the Core API when available', () => {
 test('plan-load can fall back to the official CLI when Core API is unavailable', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-plan-'));
   try {
-    const assetPath = makeV1Source(root);
+    const assetPath = makeV1Container(root);
     const binDir = path.join(root, 'bin');
     const argvFile = path.join(root, 'argv.json');
     fs.mkdirSync(binDir);
@@ -261,7 +282,7 @@ console.log(JSON.stringify({
 test('plan-load CLI fallback preserves non-loadable LoadPlans from exit code 3', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-plan-denied-'));
   try {
-    const assetPath = makeV1Source(root);
+    const assetPath = makeV1Container(root);
     const binDir = path.join(root, 'bin');
     fs.mkdirSync(binDir);
     const kdnaBin = path.join(binDir, 'kdna');

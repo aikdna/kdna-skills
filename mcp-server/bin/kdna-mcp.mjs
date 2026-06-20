@@ -77,7 +77,7 @@ const tools = [
   },
   {
     name: 'kdna.available-local',
-    description: 'List local v1 .kdna assets or v1 source directories without using a registry.',
+    description: 'List local v1 .kdna files without using a registry.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -124,10 +124,8 @@ function textResult(value) {
 function isV1Asset(assetPath) {
   if (!assetPath) return false;
   try {
-    if (fs.existsSync(assetPath) && fs.statSync(assetPath).isDirectory()) {
-      return isV1SourceDir(assetPath);
-    }
-    return detectContainerFormat(assetPath) === 'v1';
+    if (!fs.existsSync(assetPath) || !fs.statSync(assetPath).isFile()) return false;
+    return assetPath.endsWith('.kdna') && detectContainerFormat(assetPath) === 'v1';
   } catch {
     return false;
   }
@@ -147,23 +145,6 @@ function findLocalAssets(root = defaultAssetRoot(), maxDepth = 3) {
     try {
       entries = fs.readdirSync(dir, { withFileTypes: true });
     } catch {
-      return;
-    }
-
-    if (isV1SourceDir(dir)) {
-      const inspection = inspectV1(dir);
-      const validation = validateV1(dir);
-      found.push({
-        path: dir,
-        kind: 'v1_source_dir',
-        asset_id: inspection.asset_id,
-        title: inspection.title,
-        version: inspection.version,
-        judgment_version: inspection.judgment_version,
-        checksums_present: Boolean(inspection.checksums_present),
-        loadable: Boolean(validation.overall_valid),
-        problems: validation.overall_valid ? [] : validation.problems || [],
-      });
       return;
     }
 
