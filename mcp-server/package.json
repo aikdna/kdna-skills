@@ -1,8 +1,24 @@
 {
   "name": "@aikdna/kdna-mcp-server",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MCP server for loading, inspecting, verifying, and matching KDNA .kdna assets.",
   "type": "module",
+  "homepage": "https://aikdna.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aikdna/kdna-skills.git",
+    "directory": "mcp-server"
+  },
+  "bugs": {
+    "url": "https://github.com/aikdna/kdna-skills/issues"
+  },
+  "keywords": [
+    "kdna",
+    "mcp",
+    "ai-agent",
+    "judgment",
+    "loadplan"
+  ],
   "bin": {
     "kdna-mcp": "bin/kdna-mcp.mjs"
   },
