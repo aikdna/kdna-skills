@@ -6,8 +6,15 @@
   "bin": {
     "kdna-mcp": "bin/kdna-mcp.mjs"
   },
+  "files": [
+    "bin/",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "prepublishOnly": "npm test"
   },
   "license": "Apache-2.0",
   "dependencies": {

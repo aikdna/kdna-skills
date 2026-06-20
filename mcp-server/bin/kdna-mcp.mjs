@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const packageInfo = require('../package.json');
 const {
   inspectKDNA,
   loadKDNA,
@@ -19,6 +20,7 @@ const {
   detectContainerFormat,
   inspect: inspectV1,
   isV1SourceDir,
+  loadAuthorized,
   loadV1,
   validate: validateV1,
 } = require('@aikdna/kdna-core/v1');
@@ -132,7 +134,7 @@ function isV1Asset(assetPath) {
 }
 
 function defaultAssetRoot() {
-  return process.env.KDNA_ASSET_DIR || path.join(os.homedir(), '.kdna', 'assets');
+  return process.env.KDNA_ASSET_DIR || process.env.KDNA_PACKAGE_DIR || path.join(os.homedir(), '.kdna', 'packages');
 }
 
 function findLocalAssets(root = defaultAssetRoot(), maxDepth = 3) {
@@ -219,15 +221,15 @@ function runCliPlanLoad(args = {}) {
   if (result.error) {
     throw new Error(`Core planLoad is unavailable and kdna CLI failed: ${result.error.message}`);
   }
-  if (result.status !== 0) {
-    throw new Error(`Core planLoad is unavailable and kdna CLI exited ${result.status}: ${result.stderr || result.stdout}`);
-  }
-
   try {
-    return JSON.parse(result.stdout);
+    if (result.stdout && result.stdout.trim()) return JSON.parse(result.stdout);
   } catch (error) {
     throw new Error(`Core planLoad is unavailable and kdna CLI returned non-JSON output: ${error.message}`);
   }
+  if (result.status !== 0) {
+    throw new Error(`Core planLoad is unavailable and kdna CLI exited ${result.status}: ${result.stderr || result.stdout}`);
+  }
+  throw new Error('Core planLoad is unavailable and kdna CLI returned empty output');
 }
 
 function planLoadThroughCoreOrCli(args = {}) {
@@ -241,6 +243,23 @@ function planLoadThroughCoreOrCli(args = {}) {
   }
 
   return runCliPlanLoad(args);
+}
+
+function loadV1Authorized(assetPath, options) {
+  if (typeof loadAuthorized === 'function') return loadAuthorized(assetPath, options);
+  const plan = planLoadThroughCoreOrCli({
+    assetPath,
+    hasPassword: options.hasPassword,
+    entitlementStatus: options.entitlement && options.entitlement.status,
+  });
+  if (plan.can_load_now !== true) {
+    const error = new Error(
+      `LoadPlan denied loading: state=${plan.state || 'invalid'} required_action=${plan.required_action || 'block'}`,
+    );
+    error.code = (plan.issues && plan.issues[0] && plan.issues[0].code) || 'KDNA_LOAD_NOT_AUTHORIZED';
+    throw error;
+  }
+  return loadV1(assetPath, options);
 }
 
 async function callTool(name, args = {}) {
@@ -259,8 +278,8 @@ async function callTool(name, args = {}) {
   if (name === 'kdna.load') {
     if (isV1Asset(args.assetPath)) {
       const profile = args.profile || 'compact';
-      const loaded = loadV1(args.assetPath, { profile, as: 'json' });
-      const prompt = profile === 'index' ? null : loadV1(args.assetPath, { profile, as: 'prompt' }).text;
+      const loaded = loadV1Authorized(args.assetPath, { profile, as: 'json' });
+      const prompt = profile === 'index' ? null : loadV1Authorized(args.assetPath, { profile, as: 'prompt' }).text;
       return textResult({ ...loaded, context: prompt });
     }
     const loaded = await loadKDNA(args.assetPath, { profile: args.profile || 'compact', input: args.input || '' });
@@ -290,7 +309,7 @@ async function handle(message) {
     send(id, {
       protocolVersion: '2024-11-05',
       capabilities: { tools: {} },
-      serverInfo: { name: '@aikdna/kdna-mcp-server', version: '0.1.0' },
+      serverInfo: { name: '@aikdna/kdna-mcp-server', version: packageInfo.version },
     });
     return;
   }

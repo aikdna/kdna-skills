@@ -1,0 +1,9 @@
+Apache License 2.0
+
+Licensed under the Apache License, Version 2.0.
+http://www.apache.org/licenses/LICENSE-2.0
+
+Copyright (c) 2026 KDNA Team
+
+This repository contains KDNA skill files (kdna-loader, kdna-create) and
+the install.sh installer. Skill files are licensed under Apache-2.0.
