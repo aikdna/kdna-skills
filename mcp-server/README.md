@@ -1,7 +1,9 @@
 # KDNA MCP Server
 
 `@aikdna/kdna-mcp-server` exposes KDNA as MCP tools so agent runtimes can use
-`.kdna` assets without learning the container internals. Stdio-only, minimal footprint.
+packaged `.kdna` assets without learning the container internals. Stdio-only,
+minimal footprint. The npm package source lives in this repository under
+[`mcp-server/`](./); there is no separate public `kdna-mcp-server` repository.
 
 ## Why MCP instead of the kdna-loader skill?
 
@@ -76,9 +78,14 @@ kdna-mcp
 
 | Variable | Purpose |
 |----------|---------|
-| `KDNA_ASSET_DIR` | Root directory for `kdna.available-local` (default: `~/.kdna/assets`) |
+| `KDNA_ASSET_DIR` | Root directory for `kdna.available-local`; overrides the default |
+| `KDNA_PACKAGE_DIR` | Package directory fallback for `kdna.available-local` |
 | `KDNA_REGISTRY_FILE` | Legacy path to `domains.json` for `kdna.available` |
 | `KDNA_DATA_ROOT` | Override KDNA data directory (default: `~/.kdna`) |
+
+When no override is provided, `kdna.available-local` scans
+`~/.kdna/packages`. Older `~/.kdna/assets` paths are legacy compatibility or
+explicitly configured roots, not the current default.
 
 ## Local Development
 

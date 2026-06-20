@@ -33,7 +33,9 @@ kdna setup
 - **Cursor** — `~/.cursor/skills/kdna-loader/`
 - **GitHub Copilot** — `~/.agents/skills/kdna-loader/`
 
-所有 Agent 可以共享同一批本地 `.kdna` 文件；当前 v1 路径不要求公开 registry。
+所有 Agent 可以共享同一批本地 `.kdna` 文件；默认本地包目录是
+`~/.kdna/packages/`，也可以通过显式文件路径或 MCP `kdna.available-local`
+指定目录。当前 v1 路径不要求公开 registry。
 
 ## 一键安装
 
@@ -80,7 +82,12 @@ kdna validate dist/my_expertise.kdna --runtime
 kdna plan-load dist/my_expertise.kdna --json
 ```
 
-Agent 和 Skills 不创建正式 KDNA。它们可以帮助提出判断草稿或候选卡片，但 v1 `.kdna` 导出、校验和加载应通过 Studio CLI 与官方 CLI 完成。签名和加密属于后续 gated 阶段。
+人、Agent、工具和混合工作流都可以创建 `.kdna` 资产，前提是通过官方
+KDNA 工具链或兼容 SDK 产出标准 packaged `.kdna` 文件。当前 public beta
+推荐使用 Studio CLI 创建和导出，再用官方 CLI validate、plan-load 和 load。
+
+Human Lock、签名、发布证据、加密和付费授权都是可选或后续 trust layer，
+不是 KDNA Core v1 格式有效性的前提。
 
 ## kdna-loader 如何工作（七步协议）
 

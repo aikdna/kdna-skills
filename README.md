@@ -37,7 +37,9 @@ kdna setup
 | **Cursor** | `~/.cursor/skills/kdna-loader/` | [Setup guide →](integrations/cursor/) |
 | **GitHub Copilot** | `~/.agents/skills/kdna-loader/` | Manual setup required |
 
-All agents share the same KDNA asset store: `~/.kdna/packages/` plus `~/.kdna/index.json`.
+All agents can share the same local KDNA package store:
+`~/.kdna/packages/`. Explicit file paths and MCP `kdna.available-local` roots
+are also supported.
 
 ## MCP Server
 
@@ -83,18 +85,23 @@ kdna load ./writing.kdna --profile=compact --as=prompt
 
 ### Create your own KDNA
 
-Agents and skills do not create formal KDNA assets. They may help draft
-judgment proposals or candidate cards, but Human Lock and compile/export must
-happen in KDNA Studio or a Studio-compatible compiler.
+Humans, agents, tools, and hybrid workflows can create `.kdna` assets when they
+use the official KDNA toolchain or compatible SDKs. The public beta authoring
+path is:
 
-A `.kdna` asset is not created by writing JSON files. It is compiled by a
-Studio-compatible authoring pipeline that performs human confirmation,
-validation, canonicalization, identity generation, digest computation, and
-provenance recording. Signature and encryption are future security phases, not
-part of the current open v1 toolchain baseline.
+```bash
+npm i -g @aikdna/kdna-studio-cli @aikdna/kdna-cli
+kdna-studio create my_domain --name @yourscope/my_domain
+kdna-studio card add my_domain axiom --field one_sentence="..."
+kdna-studio export my_domain --format v1 --out ./my_domain.kdna
+kdna validate ./my_domain.kdna --runtime
+kdna plan-load ./my_domain.kdna --json
+kdna load ./my_domain.kdna --profile=compact --as=prompt
+```
 
-Use the **KDNA Studio CLI** or Studio-compatible SDK/CLI to create and export
-v1 `.kdna` containers.
+Human Lock, signatures, release evidence, encryption, and paid authorization
+are optional or future trust layers. They are not KDNA Core v1 format-validity
+requirements.
 
 ## How kdna-loader works (7-part protocol)
 
