@@ -1,6 +1,6 @@
 {
   "name": "@aikdna/kdna-mcp-server",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "MCP server for loading, inspecting, verifying, and matching KDNA .kdna assets.",
   "type": "module",
   "homepage": "https://aikdna.com",
@@ -34,7 +34,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aikdna/kdna-core": "^0.12.2",
+    "@aikdna/kdna-core": "^0.12.3",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1"
   },

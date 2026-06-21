@@ -18,13 +18,12 @@ The `kdna-loader` skill teaches an agent the full KDNA protocol (7-part routing,
 
 | Tool | Purpose | Input | Output |
 |------|---------|-------|--------|
-| `kdna.inspect` | Inspect a v1 `.kdna` asset or legacy asset | File path | Structured metadata |
+| `kdna.inspect` | Inspect a v1 `.kdna` asset | File path | Structured metadata |
 | `kdna.verify` | Verify asset integrity state | File path | Pass/fail with reasons |
 | `kdna.plan-load` | Return Core LoadPlan before loading | File path, optional password or entitlement state | LoadPlan JSON |
 | `kdna.load` | Load and render a `.kdna` profile for agent context | File path, optional profile | Prompt-mode text or raw JSON |
-| `kdna.available-local` | List local v1 `.kdna` assets without registry dependency | Root directory | Local v1 asset inventory |
+| `kdna.available-local` | List local v1 `.kdna` assets | Root directory | Local v1 asset inventory |
 | `kdna.match` | Rank candidate assets for a task string | Task description | Scored list with fit signals |
-| `kdna.available` | Legacy registry compatibility only | `domains.json` path | Legacy domain list |
 
 ## Install & Run
 
@@ -80,12 +79,11 @@ kdna-mcp
 |----------|---------|
 | `KDNA_ASSET_DIR` | Root directory for `kdna.available-local`; overrides the default |
 | `KDNA_PACKAGE_DIR` | Package directory fallback for `kdna.available-local` |
-| `KDNA_REGISTRY_FILE` | Legacy path to `domains.json` for `kdna.available` |
 | `KDNA_DATA_ROOT` | Override KDNA data directory (default: `~/.kdna`) |
 
 When no override is provided, `kdna.available-local` scans
-`~/.kdna/packages`. Older `~/.kdna/assets` paths are legacy compatibility or
-explicitly configured roots, not the current default.
+`~/.kdna/packages`. Explicit local roots can be provided when a user keeps
+assets elsewhere.
 
 ## Local Development
 
