@@ -1,4 +1,6 @@
-> [aikdna.com](https://aikdna.com) -- 官方网站 . [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli)
+> [aikdna.com](https://aikdna.com) — 官方网站
+>
+> [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli)
 
 # KDNA 技能安装
 
@@ -35,7 +37,7 @@ kdna setup
 
 所有 Agent 可以共享同一批本地 `.kdna` 文件；默认本地包目录是
 `~/.kdna/packages/`，也可以通过显式文件路径或 MCP `kdna.available-local`
-指定目录。当前 v1 路径不要求公开 registry。
+指定目录。当前 public beta 路径从本地 packaged `.kdna` 文件开始。
 
 ## 一键安装
 
