@@ -1,4 +1,6 @@
-> [aikdna.com](https://aikdna.com) -- Official website . [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli)
+> [aikdna.com](https://aikdna.com) — Official website
+>
+> [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli)
 
 # KDNA Skills
 
@@ -56,7 +58,6 @@ Exposed tools:
 - `kdna.load`
 - `kdna.available-local`
 - `kdna.match`
-- `kdna.available` (legacy registry compatibility)
 
 ## Quick Install
 
@@ -71,11 +72,11 @@ kdna doctor --agents
 
 ## After Installing
 
-### Load domain cognition
+### Load a `.kdna` asset
 
 The agent automatically decides per task whether KDNA applies. When a domain fits, it loads silently -- applying axioms, using preferred terminology, honoring boundaries, and running self-checks. The user sees better judgment, not KDNA internals.
 
-### Install more domains
+### Use another `.kdna` file
 
 ```bash
 kdna validate ./writing.kdna --runtime
@@ -99,9 +100,8 @@ kdna plan-load ./my_domain.kdna --json
 kdna load ./my_domain.kdna --profile=compact --as=prompt
 ```
 
-Human Lock, signatures, release evidence, encryption, and paid authorization
-are optional or future trust layers. They are not KDNA Core v1 format-validity
-requirements.
+Review evidence and provenance records can be added by authoring tools when a
+publisher needs them. They are not KDNA Core v1 format-validity requirements.
 
 ## How kdna-loader works (7-part protocol)
 
