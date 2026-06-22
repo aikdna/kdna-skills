@@ -38,3 +38,9 @@ To add support for a new AI agent:
 ## License
 
 Apache 2.0
+
+## Developer Certificate of Origin (DCO)
+
+All commits must include a `Signed-off-by:` line. Use `git commit -s` to add it automatically.
+
+This certifies that you wrote the code or have the right to submit it under the project's license (Apache-2.0). No CLA is required.
