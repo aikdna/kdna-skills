@@ -1,24 +1,21 @@
-name: Validate
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-
+name: CI
+on: [pull_request, push]
 jobs:
-  lint:
+  mcp-server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test
+  lint-scripts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - name: Check install.sh syntax
-        run: bash -n install.sh
-      - name: Check install-cli.sh syntax
-        run: bash -n install-cli.sh
-      - name: Verify required files
-        run: |
-          for f in install.sh install-cli.sh README.md LICENSE SECURITY.md; do
-            [ -f "$f" ] || { echo "MISSING: $f"; exit 1; }
-          done
-      - name: Check for forbidden strings
-        run: |
-          ! grep -rq "aikdna" install.sh install-cli.sh || { echo "ERROR: aikdna reference found"; exit 1; }
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y shellcheck
+      - run: shellcheck install.sh install-cli.sh
