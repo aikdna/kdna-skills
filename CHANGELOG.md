@@ -1,7 +1,11 @@
 # Changelog
 
-## 2026-05-30
-- Updated kdna-loader skill for v2.1 governance fields (applies_when)
+## 2026-06 (v0.3.0)
+- kdna-loader skill updated for v1 Core GA.
+- install script updated to install @aikdna/kdna-cli.
 
-## 2026-05-25
-- Initial release: kdna-loader for Claude Code, OpenCode, Cursor, Codex, Gemini
+## 2026-05 (v0.2.0)
+- Initial public release of kdna-loader skill and MCP server.
+- Cross-agent support: Claude Code, Codex, OpenCode, Cursor.
+
+Note: Pre-v1-Core-GA versions used date-based tagging. Version numbering begins from v0.3.0.
