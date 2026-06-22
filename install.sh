@@ -8,7 +8,6 @@ set -euo pipefail
 # immutable .kdna assets managed by the CLI and are not registered as skills.
 
 KDNA_REPO="https://github.com/aikdna/KDNA"
-SKILLS_REPO="https://github.com/aikdna/kdna-skills"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
