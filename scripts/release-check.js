@@ -22,6 +22,13 @@ check('git tag exists', () => {
   if (!out) throw new Error(`tag ${tag} not found. Run: git tag ${tag} && git push origin ${tag}`);
 });
 
+check('GitHub Release exists', () => {
+  const repo = pkg.repository.directory
+    ? pkg.repository.url.match(/github\.com\/([^/]+\/[^.]+)/)[1]
+    : pkg.repository.url.match(/github\.com\/([^/]+\/[^.]+)/)[1];
+  execSync(`gh release view ${tag} --repo ${repo}`, { stdio: 'ignore' });
+});
+
 check('CHANGELOG has version entry', () => {
   const changelog = fs.readFileSync(path.join(__dirname, '..', 'CHANGELOG.md'), 'utf8');
   if (!changelog.includes(version)) throw new Error(`CHANGELOG.md missing entry for ${version}`);
