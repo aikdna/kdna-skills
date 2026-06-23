@@ -77,7 +77,7 @@ The user should never see "I considered loading KDNA but didn't."
 Do **not** assume any specific domains exist. Ask the CLI every time.
 
 ```bash
-kdna load <file.kdna> --profile=index --as=json
+kdna inspect <file.kdna> --json
 ```
 
 When an MCP runtime is available, use:
@@ -85,6 +85,7 @@ When an MCP runtime is available, use:
 ```text
 kdna.available-local
 ```
+Do not use `--as=json` or `--as=raw` — these are removed in v1 Core and will hard-fail. Use `--as=prompt` for all agent-facing loading.
 
 The current v1 path discovers local `.kdna` files or v1 source
 directories, then inspects their index profile. Legacy installations may
