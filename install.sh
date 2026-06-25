@@ -7,7 +7,7 @@ set -euo pipefail
 # discover and use installed KDNA assets. KDNA domains themselves are
 # immutable .kdna assets managed by the CLI and are not registered as skills.
 
-KDNA_REPO="https://github.com/aikdna/KDNA"
+KDNA_REPO="https://github.com/aikdna/kdna"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
