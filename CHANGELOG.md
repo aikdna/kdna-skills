@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2026-06 (v0.3.0)
-- kdna-loader skill updated for v1 Core GA.
+- kdna-loader skill updated for KDNA Core v1.
 - install script updated to install @aikdna/kdna-cli.
 
 ## 2026-06 (v0.2.4)

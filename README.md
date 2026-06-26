@@ -24,7 +24,7 @@ npm i -g @aikdna/kdna-cli
 |---|---|
 | **kdna-loader** (single skill) | Installed manually into your agent. Teaches the agent the protocol for KDNA discovery and application. |
 | **KDNA assets** (data) | Local `.kdna` KDNA Asset Containers. Discover them through local paths or MCP `kdna.available-local`; load them on demand per task. |
-| **kdna CLI** (tool) | `kdna inspect`, `kdna validate`, `kdna plan-load`, `kdna load`. Stable runtime control plane for Core GA assets. |
+| **kdna CLI** (tool) | `kdna inspect`, `kdna validate`, `kdna plan-load`, `kdna load`. Stable runtime control plane for KDNA Core v1 assets. |
 
 ## Supported Agents
 
@@ -106,7 +106,7 @@ kdna load ./my_domain.kdna --profile=compact --as=prompt
 ```
 
 Review evidence and provenance records can be added by authoring tools when a
-publisher needs them. They are not Core GA format-validity requirements.
+publisher needs them. They are not KDNA Core v1 format-validity requirements.
 
 ## How kdna-loader works (7-part protocol)
 
