@@ -6,6 +6,11 @@
 
 **One loader. Many domains.**
 
+**Current status: preview / experimental.** The loader and MCP server adapters
+are functional for supported agents, but per-agent integration quality varies.
+Not all agent runtimes have been tested. Production hardening is deferred until
+the KDNA Core v1 official toolchain baseline is complete.
+
 This repository does not turn KDNA into a skill. It provides adapter skills that allow AI agents to load KDNA.
 
 The `kdna-loader` skill is the official agent adapter for the KDNA toolchain. It teaches AI agents how to discover, load, and apply `.kdna` assets managed by the official KDNA CLI.
@@ -108,7 +113,7 @@ kdna load ./my_domain.kdna --profile=compact --as=prompt
 Review evidence and provenance records can be added by authoring tools when a
 publisher needs them. They are not KDNA Core v1 format-validity requirements.
 
-## How kdna-loader works (7-part protocol)
+## How kdna-loader works (8-part protocol)
 
 1. **Decide** whether KDNA applies at all (skip for formatting, lookup, code execution)
 2. **Discover** local domains via the CLI or MCP local inventory
