@@ -258,6 +258,82 @@ KDNA does not override:
 
 ---
 
+## Part 8 — Bundle and multi-asset coexistence
+
+> **Added in RFC #148 v2.0 (roadmap-2026.md Story 7).**
+
+A **Bundle** is a multi-component KDNA v2 asset (`asset_type: "bundle"`).
+From this skill's perspective a Bundle is **one asset**, not many. The
+7-State Router evaluates the Bundle as a unit. Core handles component
+resolution, topological ordering, and conflict analysis internally — the
+skill does not see or manage the individual components.
+
+### Rule 1 — Treat a Bundle like a single domain
+
+A Bundle appears as a single entry in `kdna available`. Load it with the
+same command used for single-domain assets:
+
+```bash
+kdna plan-load <bundle.kdna> --json   # check readiness first
+kdna load <bundle.kdna> --profile=compact --as=prompt
+```
+
+Do **not** decompose a Bundle into its components and load them one by
+one. That bypasses topological ordering and conflict resolution, and
+produces inconsistent judgment.
+
+### Rule 2 — Check plan-load before loading a Bundle
+
+`kdna plan-load <bundle> --json` returns a `resolved_dependencies[]`
+array listing every component the Bundle will load in topological order.
+Read it before loading to understand cost and scope.
+
+If `can_load_now=false`, follow `required_action` and `issues[].code`
+exactly as for a single domain. A common code is
+`KDNA_DEPENDENCY_RESOLUTION_FAILED` (circular dependency or version
+mismatch in the Bundle's component graph). In that case, block loading
+and surface the issue code to the user if they ask.
+
+### Rule 3 — Conflict warnings are informational, errors are blocking
+
+`kdna validate --bundle <bundle.kdna>` reports:
+
+- `conflicts.error_count > 0` → treat as `BLOCK_INTEGRITY_FAILED`.
+  The Bundle cannot be safely loaded.
+- `conflicts.warning_count > 0` → informational only. The Bundle
+  author acknowledged the overlap. Load proceeds normally. Do not
+  surface warnings to the user unless they ask about Bundle health.
+
+### Rule 4 — Remote components in a Bundle
+
+If any component inside a Bundle has `access: remote`, the Bundle's
+`runtime.endpoint` is the single projection endpoint. Do **not**
+attempt per-component remote calls. The CLI handles projection routing
+from the Bundle level. Treat `remote`-containing Bundles exactly as
+you treat single `remote` assets: load through the CLI, receive a
+task projection, never the full payload.
+
+### Rule 5 — Context budget (forward compatibility)
+
+Story 8 (context budget) will add `context_budget` and
+`context_budget_strategy` fields to Bundle manifests. When those fields
+are present, `kdna plan-load <bundle> --json` will report the estimated
+token cost for the Bundle. Before that ships, use `resolved_dependencies`
+length as a proxy: a Bundle with many components deserves a quick
+mental check that the task actually needs the full composed judgment
+before loading.
+
+### Rule 6 — The 7-State Router still applies
+
+Evaluate the Bundle as a whole against the user's task. A Bundle
+covering three domains is still wrong to load if the task falls outside
+all three. The routing rules in Part 3–4 apply without modification.
+The Bundle's combined `does_not_apply_when` is the union of all
+components' exclusions — if the task is excluded by any component, the
+Bundle as a whole is excluded.
+
+---
+
 ## Failure handling
 
 | Situation | What to do |
@@ -268,6 +344,9 @@ KDNA does not override:
 | `kdna load <name>` exits non-zero | That domain is broken (validation, authorization, parse, or runtime loading failure). Try next candidate or skip KDNA. The error message tells you why. |
 | User explicitly asks for a domain that isn't installed | Tell them, suggest `kdna install <name>`. Do not fabricate the domain. |
 | Two domains' stances directly conflict on the task | Surface to user. Do not blend. |
+| Bundle `plan-load` returns `KDNA_DEPENDENCY_RESOLUTION_FAILED` | Block loading. Surface the issue code. The Bundle has a broken component graph (circular dependency or version mismatch). |
+| Bundle `validate --bundle` returns `error_count > 0` | Treat as `BLOCK_INTEGRITY_FAILED`. Do not load. |
+| Bundle contains a `remote` component and no runtime endpoint | Treat as `can_load_now=false`. Block loading. |
 
 ---
 
@@ -284,6 +363,15 @@ Applied modules: KDNA_Core, KDNA_Patterns
 Skipped: @aikdna/code_review (task is not code-related)
 ```
 
+For a Bundle, the debug output may list `resolved_dependencies`:
+
+```
+Loaded: @aikdna/comms-bundle@1.0.0 (bundle, 2 components)
+  └─ loaded: @aikdna/writing@0.7.2 (topological order: 1)
+  └─ loaded: @aikdna/speaking@0.3.1 (topological order: 2)
+Reason: Bundle matched task "prepare keynote draft"
+```
+
 Otherwise, stay silent about the loading mechanics.
 
 ---
@@ -298,6 +386,10 @@ Otherwise, stay silent about the loading mechanics.
   compile/export.
 - Not an auto-loader that runs on every request — you decide per
   request whether the task needs KDNA at all
+- Not a Bundle orchestrator. The skill treats a Bundle as one asset.
+  Component resolution, topological ordering, and conflict analysis are
+  handled by Core and the CLI — the skill never manages individual
+  Bundle components directly.
 
 The skill teaches the protocol. The KDNA files supply the judgment.
 Both are required; neither is sufficient alone.
