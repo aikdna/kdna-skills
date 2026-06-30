@@ -6,14 +6,9 @@
 
 **One loader. Many domains.**
 
-**Current status: preview / experimental.** The loader and MCP server adapters
-are functional for supported agents, but per-agent integration quality varies.
-Not all agent runtimes have been tested. Production hardening is deferred until
-the KDNA Core v1 official toolchain baseline is complete.
+This repository provides adapter skills that allow AI agents to load KDNA judgment assets. It does not turn KDNA into a skill — it gives agents the ability to discover and load `.kdna` files.
 
-This repository does not turn KDNA into a skill. It provides adapter skills that allow AI agents to load KDNA.
-
-The `kdna-loader` skill is the official agent adapter for the KDNA toolchain. It teaches AI agents how to discover, load, and apply `.kdna` assets managed by the official KDNA CLI.
+The `kdna-loader` skill is the official agent adapter for the KDNA toolchain (`@aikdna/kdna-cli@0.28.x`). It teaches AI agents when and how to load `.kdna` judgment assets — and when to skip. Supported agents: **OpenCode, Codex, Claude Code, Cursor, Gemini** (auto-installed via `kdna setup`).
 
 **KDNA shapes judgment, not tool permission.** KDNA does not override system or safety policy. The runtime trace vocabulary records explicit status values (version_incompatible, failed_to_parse, failed_to_decrypt, signature_invalid, blocked_by_runtime_policy) so that the loader cannot quietly succeed while producing garbage. See KDNA Core trace vocabulary.
 
