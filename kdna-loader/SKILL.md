@@ -185,9 +185,22 @@ kdna plan-load <file.kdna> --json
 ```
 
 If the LoadPlan does not return `can_load_now=true`, do not load the asset.
-Follow `required_action` and `issues[].code` instead. Remote assets are
-recognized but unsupported until the runtime provides a remote projection
-implementation.
+Follow `required_action` and `issues[].code` instead.
+
+**Remote assets** (`access: "remote"` in the manifest) require a
+self-hosted projection server. Pass the server URL at load time:
+
+```bash
+kdna load <file.kdna> --remote-server https://your-server/v1/project \
+  --profile=compact --as=prompt
+# or set KDNA_REMOTE_SERVER env var to avoid repeating the flag
+```
+
+The CLI routes the request to the server, receives the projected
+judgment, and emits the same `--as=prompt` output. If no
+`--remote-server` is configured for a remote asset, `plan-load`
+returns `can_load_now=false` with a `KDNA_REMOTE_SERVER_REQUIRED`
+issue code — surface that to the user.
 
 Only after `can_load_now=true`, load the domain via the official KDNA CLI.
 Two paths are supported:
@@ -204,6 +217,18 @@ optimized for system-prompt injection: axioms with their
 `applies_when` / `does_not_apply_when` / `failure_risk`, stances,
 banned terms, misunderstandings, and self-checks. Typically
 ~30–50% smaller than the raw JSON.
+
+**Watermark header**: if the asset author enabled payload watermarking,
+the `--as=prompt` output begins with a `[WATERMARK]` header line
+containing a compact HMAC trace token. Treat this line as metadata —
+do not quote it to users, do not omit it when forwarding the loaded
+prompt to another system.
+
+**Trust level and deprecation**: `kdna load` checks the asset's
+`trust_level` and `deprecation` fields. If the asset is deprecated,
+a non-blocking warning is emitted to stderr — the load still proceeds.
+If `trust_level` is invalid or revoked, the load exits with an error.
+Check the exit code and stderr when loading from automated contexts.
 
 Use `--as=prompt` for normal loading. For raw inspection (debugging only):
 
@@ -346,7 +371,9 @@ Bundle as a whole is excluded.
 | Two domains' stances directly conflict on the task | Surface to user. Do not blend. |
 | Bundle `plan-load` returns `KDNA_DEPENDENCY_RESOLUTION_FAILED` | Block loading. Surface the issue code. The Bundle has a broken component graph (circular dependency or version mismatch). |
 | Bundle `validate --bundle` returns `error_count > 0` | Treat as `BLOCK_INTEGRITY_FAILED`. Do not load. |
-| Bundle contains a `remote` component and no runtime endpoint | Treat as `can_load_now=false`. Block loading. |
+| Bundle contains a `remote` component and no `--remote-server` configured | Treat as `can_load_now=false`. Block loading. Suggest user configure `KDNA_REMOTE_SERVER`. |
+| Asset deprecated, load still proceeds | Deprecation is non-blocking. Stderr warning is informational; the loaded judgment is still valid. |
+| Asset has invalid or revoked `trust_level` | Load exits non-zero. Do not use the judgment. Surface the error to the user. |
 
 ---
 
@@ -373,6 +400,34 @@ Reason: Bundle matched task "prepare keynote draft"
 ```
 
 Otherwise, stay silent about the loading mechanics.
+
+---
+
+## Asset management commands
+
+These commands manage installed assets. Use them when the user asks
+about what's installed, needs to add or remove an asset, or wants to
+verify an asset's signature.
+
+```bash
+kdna list                          # list all installed .kdna assets
+kdna install <file-or-url>         # install a .kdna asset
+kdna remove <name>[@version]       # remove an installed asset
+
+kdna sign <file.kdna>              # sign an asset with your Ed25519 identity key
+kdna verify <file.kdna> [--key <pubkey.pub>]  # verify a signature
+kdna identity init [--name <name>] # create a local Ed25519 signing key
+kdna identity show                 # show your public key (PEM, hex, base64)
+
+kdna revoke <file.kdsig> [--reason <text>]    # revoke a previously issued signature
+kdna revocation-status <file.kdsig>           # check whether a signature has been revoked
+```
+
+Signing and revocation are author-side operations. As a loader-skill
+agent, you will typically only use `kdna verify` when the user asks
+"is this asset from a trusted source?" The signature check is
+informational — `kdna plan-load` already enforces trust policy before
+you reach `kdna load`.
 
 ---
 
