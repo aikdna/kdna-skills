@@ -8,7 +8,7 @@
 
 这个仓库不是把 KDNA 变成 Skill。它提供的是适配器 Skill，让不同 AI Agent 能够加载 KDNA。
 
-`kdna-loader` 技能教会 AI Agent 一套协议，用于发现、加载和应用本地 KDNA Core v1 `.kdna` 判断资产。资产是文件，不是独立的技能。
+`kdna-loader` 技能教会 AI Agent 一套协议，用于发现、加载和应用本地 KDNA Core v1 `.kdna` 判断资产。资产是文件，不是独立的技能。支持矩阵见 [`docs/agent-support-matrix.json`](docs/agent-support-matrix.json)。
 
 需要 `@aikdna/kdna-cli` CLI：
 
@@ -27,13 +27,13 @@ kdna setup
 
 ## 支持的 Agent
 
-`kdna setup` 自动检测并安装 `kdna-loader` 到：
+`kdna setup` 在支持自动检测时会把 `kdna-loader` 安装到下列路径。其他兼容 Agent 使用同一个 skill 文件手动放置：
 
 - **Codex** — `~/.codex/skills/kdna-loader/`
 - **Claude Code** — `~/.claude/skills/kdna-loader/`
 - **OpenCode** — `~/.agents/skills/kdna-loader/`
 - **Cursor** — `~/.cursor/skills/kdna-loader/`
-- **GitHub Copilot** — `~/.agents/skills/kdna-loader/`
+- **GitHub Copilot-compatible agents** — `~/.agents/skills/kdna-loader/`
 
 所有 Agent 可以共享同一批本地 `.kdna` 文件；默认本地包目录是
 `~/.kdna/packages/`，也可以通过显式文件路径或 MCP `kdna.available-local`
@@ -91,7 +91,7 @@ KDNA 工具链或兼容 SDK 产出标准 packaged `.kdna` 文件。当前 public
 Human Lock、签名、发布证据、加密和付费授权都是可选或后续 trust layer，
 不是 KDNA Core v1 格式有效性的前提。
 
-## kdna-loader 如何工作（七步协议）
+## kdna-loader 如何工作（八步协议）
 
 1. **判断** KDNA 是否适用于当前任务（格式化、查询、代码执行等场景跳过）
 2. **发现** 可用的本地 `.kdna` 资产
