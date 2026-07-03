@@ -116,6 +116,14 @@ cp kdna-loader/SKILL.md ~/.claude/skills/kdna-loader/SKILL.md
 # OpenCode
 mkdir -p ~/.agents/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
+
+# Cursor
+mkdir -p ~/.cursor/skills/kdna-loader
+cp kdna-loader/SKILL.md ~/.cursor/skills/kdna-loader/SKILL.md
+
+# GitHub Copilot 兼容 Agent
+mkdir -p ~/.agents/skills/kdna-loader
+cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
 ```
 
 ## 许可

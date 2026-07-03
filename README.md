@@ -8,7 +8,7 @@
 
 This repository provides adapter skills that allow AI agents to load KDNA judgment assets. It does not turn KDNA into a skill — it gives agents the ability to discover and load `.kdna` files.
 
-The `kdna-loader` skill is the official agent adapter for the KDNA toolchain (`@aikdna/kdna-cli@0.28.x`). It teaches AI agents when and how to load `.kdna` judgment assets — and when to skip. Supported agents: **OpenCode, Codex, Claude Code, Cursor, Gemini** (auto-installed via `kdna setup`).
+The `kdna-loader` skill is the official agent adapter for the KDNA toolchain (`@aikdna/kdna-cli@0.28.x`). It teaches AI agents when and how to load `.kdna` judgment assets — and when to skip. Supported agents: **OpenCode, Codex, Claude Code, Cursor**, with **GitHub Copilot** available through manual-compatible skill placement.
 
 **KDNA shapes judgment, not tool permission.** KDNA does not override system or safety policy. The runtime trace vocabulary records explicit status values (version_incompatible, failed_to_parse, failed_to_decrypt, signature_invalid, blocked_by_runtime_policy) so that the loader cannot quietly succeed while producing garbage. See KDNA Core trace vocabulary.
 
@@ -36,7 +36,7 @@ npm i -g @aikdna/kdna-cli
 | **Claude Code** | `~/.claude/skills/kdna-loader/` | [Setup guide →](integrations/claude-code/) |
 | **OpenCode** | `~/.agents/skills/kdna-loader/` | [Setup guide →](integrations/opencode/) |
 | **Cursor** | `~/.cursor/skills/kdna-loader/` | [Setup guide →](integrations/cursor/) |
-| **GitHub Copilot** | `~/.agents/skills/kdna-loader/` | Manual setup required |
+| **GitHub Copilot** | `~/.agents/skills/kdna-loader/` | [Setup guide →](integrations/copilot/) |
 
 All agents can share the same local KDNA package store:
 `~/.kdna/packages/`. Explicit file paths and MCP `kdna.available-local` roots
@@ -133,6 +133,14 @@ mkdir -p ~/.claude/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.claude/skills/kdna-loader/SKILL.md
 
 # OpenCode
+mkdir -p ~/.agents/skills/kdna-loader
+cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
+
+# Cursor
+mkdir -p ~/.cursor/skills/kdna-loader
+cp kdna-loader/SKILL.md ~/.cursor/skills/kdna-loader/SKILL.md
+
+# GitHub Copilot-compatible agents
 mkdir -p ~/.agents/skills/kdna-loader
 cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
 ```
