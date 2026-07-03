@@ -69,12 +69,11 @@ npm i -g @aikdna/kdna-cli
 ## Try a Demo Asset
 
 ```bash
-# Download from kdna-assets
-curl -LO https://github.com/aikdna/kdna-assets/releases/download/viral-topic-selection-v1.1.0/viral-topic-selection.kdna
-
-kdna validate ./viral-topic-selection.kdna
-kdna plan-load ./viral-topic-selection.kdna
-kdna load ./viral-topic-selection.kdna --profile=compact --as=prompt
+kdna demo judgment ./judgment
+kdna pack ./judgment ./judgment.kdna
+kdna validate ./judgment.kdna --runtime
+kdna plan-load ./judgment.kdna --json
+kdna load ./judgment.kdna --profile=compact --as=prompt
 ```
 
 ## After Installing

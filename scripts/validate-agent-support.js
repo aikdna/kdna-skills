@@ -38,9 +38,20 @@ requireText('README.md', rootReadme, 'docs/agent-support-matrix.json');
 requireText('README.zh.md', zhReadme, 'docs/agent-support-matrix.json');
 requireText('README.md', rootReadme, 'auto-detected where supported');
 requireText('README.zh.md', zhReadme, '支持自动检测时');
+requireText('README.md', rootReadme, 'kdna demo judgment ./judgment');
+requireText('README.zh.md', zhReadme, 'kdna demo judgment ./judgment');
+requireText('README.md', rootReadme, 'kdna pack ./judgment ./judgment.kdna');
+requireText('README.zh.md', zhReadme, 'kdna pack ./judgment ./judgment.kdna');
 requireText('kdna-loader/SKILL.md', loaderSkill, '## Part 1');
 requireText('kdna-loader/SKILL.md', loaderSkill, '## Part 8');
 requireText('mcp-server/README.md', mcpReadme, '8-part protocol');
+
+if (rootReadme.includes('viral-topic-selection')) {
+  fail('README.md must use kdna demo judgment instead of superseded release downloads');
+}
+if (zhReadme.includes('kdna demo minimal')) {
+  fail('README.zh.md must use kdna demo judgment instead of minimal placeholder demos');
+}
 
 const allowedSupport = new Set(['auto-detected', 'best-effort', 'manual-compatible']);
 const ids = new Set();
