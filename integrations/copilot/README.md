@@ -9,11 +9,11 @@ Load local KDNA Core v1 assets in agents that read OpenCode-style skills from
 
 ```bash
 npm install -g @aikdna/kdna-cli
-kdna demo minimal ./minimal
-kdna pack ./minimal ./minimal.kdna
-kdna validate ./minimal.kdna --runtime
-kdna plan-load ./minimal.kdna --json
-kdna load ./minimal.kdna --profile=compact --as=prompt
+kdna demo judgment ./judgment
+kdna pack ./judgment ./judgment.kdna
+kdna validate ./judgment.kdna --runtime
+kdna plan-load ./judgment.kdna --json
+kdna load ./judgment.kdna --profile=compact --as=prompt
 ```
 
 ## Manual Skill Installation

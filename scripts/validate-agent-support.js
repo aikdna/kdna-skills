@@ -60,8 +60,9 @@ for (const agent of matrix.agents || []) {
   requireText('README.md', rootReadme, `| **${readmeName}** | \`${agent.skill_path}\` | [Setup guide →](${guideDir}/) |`);
   requireText('README.zh.md', zhReadme, `**${zhName}**`);
   requireText(agent.guide, guide, agent.skill_path);
-  requireText(agent.guide, guide, 'kdna plan-load ./minimal.kdna --json');
-  requireText(agent.guide, guide, 'kdna load ./minimal.kdna --profile=compact --as=prompt');
+  requireText(agent.guide, guide, 'kdna demo judgment ./judgment');
+  requireText(agent.guide, guide, 'kdna plan-load ./judgment.kdna --json');
+  requireText(agent.guide, guide, 'kdna load ./judgment.kdna --profile=compact --as=prompt');
 
   if (agent.support === 'auto-detected') {
     requireText(agent.guide, guide, 'kdna setup');

@@ -10,11 +10,11 @@ domain-specific judgment before it acts.
 ```bash
 npm install -g @aikdna/kdna-cli
 kdna setup
-kdna demo minimal ./minimal
-kdna pack ./minimal ./minimal.kdna
-kdna validate ./minimal.kdna --runtime
-kdna plan-load ./minimal.kdna --json
-kdna load ./minimal.kdna --profile=compact --as=prompt
+kdna demo judgment ./judgment
+kdna pack ./judgment ./judgment.kdna
+kdna validate ./judgment.kdna --runtime
+kdna plan-load ./judgment.kdna --json
+kdna load ./judgment.kdna --profile=compact --as=prompt
 ```
 
 `kdna setup` auto-detects Claude Code and installs the `kdna-loader` skill.
