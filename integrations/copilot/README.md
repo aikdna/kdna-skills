@@ -1,7 +1,7 @@
-# KDNA on OpenCode
+# KDNA on GitHub Copilot-Compatible Agents
 
-Load local KDNA Core v1 assets in OpenCode to give the agent domain-specific
-judgment before it acts.
+Load local KDNA Core v1 assets in agents that read OpenCode-style skills from
+`~/.agents/skills`.
 
 > New to KDNA? See [Start Here](https://github.com/aikdna/kdna/blob/main/docs/start-here.md).
 
@@ -9,28 +9,12 @@ judgment before it acts.
 
 ```bash
 npm install -g @aikdna/kdna-cli
-kdna setup
 kdna demo judgment ./judgment
 kdna pack ./judgment ./judgment.kdna
 kdna validate ./judgment.kdna --runtime
 kdna plan-load ./judgment.kdna --json
 kdna load ./judgment.kdna --profile=compact --as=prompt
 ```
-
-`kdna setup` auto-detects OpenCode and installs the `kdna-loader` skill.
-
-## Real Domain Assets
-
-Use a checked-in or locally exported v1 asset:
-
-```bash
-kdna validate ./writing-v1.kdna --runtime
-kdna plan-load ./writing-v1.kdna --json
-kdna load ./writing-v1.kdna --profile=compact --as=prompt
-```
-
-The loader should apply KDNA silently. The user should see better judgment, not
-KDNA internals quoted back.
 
 ## Manual Skill Installation
 
@@ -44,6 +28,6 @@ cp /path/to/kdna-skills/kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.
 | Symptom | Fix |
 |---|---|
 | `kdna` command not found | Install `@aikdna/kdna-cli` globally |
-| OpenCode not detected | Run `kdna setup --opencode` |
+| Agent does not see the skill | Confirm it reads `~/.agents/skills` or copy the same `kdna-loader/SKILL.md` into the agent's documented skill directory |
 | Asset fails validation | Fix or regenerate the `.kdna` file before loading |
 | Agent ignores KDNA | Confirm the loader skill exists and the task matches the loaded domain |

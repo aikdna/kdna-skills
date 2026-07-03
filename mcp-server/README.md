@@ -7,7 +7,7 @@ minimal footprint. The npm package source lives in this repository under
 
 ## Why MCP instead of the kdna-loader skill?
 
-The `kdna-loader` skill teaches an agent the full KDNA protocol (7-part routing, silent loading, boundary respect). The MCP server provides a lower-level bridge — use it when you need programmatic access to `.kdna` assets through structured tool calls rather than letting the agent drive the CLI.
+The `kdna-loader` skill teaches an agent the full KDNA protocol (8-part protocol: routing, planning, loading, silent application, and boundary respect). The MCP server provides a lower-level bridge — use it when you need programmatic access to `.kdna` assets through structured tool calls rather than letting the agent drive the CLI.
 
 | Approach | Best for |
 |----------|----------|

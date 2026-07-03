@@ -50,6 +50,7 @@ detect_agents() {
   [ -d "$HOME/.codex" ]  && found="$found codex"
   [ -d "$HOME/.claude" ] && found="$found claude"
   [ -d "$HOME/.agents" ] && found="$found opencode"
+  [ -d "$HOME/.cursor" ] && found="$found cursor"
   echo "$found"
 }
 
@@ -92,6 +93,7 @@ interactive_mode() {
     echo "  Codex:       mkdir -p ~/.codex/skills/kdna-loader"
     echo "  Claude Code: mkdir -p ~/.claude/skills/kdna-loader"
     echo "  OpenCode:    mkdir -p ~/.agents/skills/kdna-loader"
+    echo "  Cursor:      mkdir -p ~/.cursor/skills/kdna-loader"
     echo ""
     echo "Then copy kdna-loader/SKILL.md into each."
     exit 0
@@ -112,6 +114,10 @@ interactive_mode() {
       opencode)
         read -r -p "Install for OpenCode? [Y/n] " answer
         [ "${answer:-Y}" != "n" ] && [ "${answer:-Y}" != "N" ] && install_opencode
+        ;;
+      cursor)
+        read -r -p "Install for Cursor? [Y/n] " answer
+        [ "${answer:-Y}" != "n" ] && [ "${answer:-Y}" != "N" ] && install_cursor
         ;;
     esac
   done
@@ -137,6 +143,7 @@ while [ $# -gt 0 ]; do
           codex)   install_codex ;;
           claude)  install_claude ;;
           opencode) install_opencode ;;
+          cursor)  install_cursor ;;
         esac
       done
       shift
