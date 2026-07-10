@@ -8,7 +8,9 @@
 
 This repository provides adapter skills that allow AI agents to load KDNA judgment assets. It does not turn KDNA into a skill — it gives agents the ability to discover and load `.kdna` files.
 
-The `kdna-loader` skill is the official agent adapter for the KDNA toolchain (`@aikdna/kdna-cli@0.28.x`). It teaches AI agents when and how to load `.kdna` judgment assets — and when to skip. Supported placements are tracked in [`docs/agent-support-matrix.json`](docs/agent-support-matrix.json): **OpenCode, Codex, Claude Code, Cursor**, with **GitHub Copilot-compatible agents** available through manual-compatible skill placement.
+The `kdna-loader` skill is the official agent adapter for the KDNA toolchain.
+It teaches AI agents when and how to load `.kdna` judgment assets — and when to
+skip. Supported placements are tracked in [`docs/agent-support-matrix.json`](docs/agent-support-matrix.json): **OpenCode, Codex, Claude Code, Cursor**, with **GitHub Copilot-compatible agents** available through manual-compatible skill placement.
 
 **KDNA shapes judgment, not tool permission.** KDNA does not override system or safety policy. The runtime trace vocabulary records explicit status values (version_incompatible, failed_to_parse, failed_to_decrypt, signature_invalid, blocked_by_runtime_policy) so that the loader cannot quietly succeed while producing garbage. See KDNA Core trace vocabulary.
 
@@ -25,6 +27,11 @@ npm i -g @aikdna/kdna-cli
 | **kdna-loader** (single skill) | Installed manually into your agent. Teaches the agent the protocol for KDNA discovery and application. |
 | **KDNA assets** (data) | Local `.kdna` KDNA Asset Containers. Discover them through local paths or MCP `kdna.available-local`; load them on demand per task. |
 | **kdna CLI** (tool) | `kdna inspect`, `kdna validate`, `kdna plan-load`, `kdna load`. Stable runtime control plane for KDNA Core v1 assets. |
+
+For most agent requests, the loader uses the conservative single-primary path.
+Applications that need explicit multi-asset composition should use the CLI
+consumption runtime and retain its trace and review controls; the loader does
+not silently load every available asset.
 
 ## Supported Agents
 
