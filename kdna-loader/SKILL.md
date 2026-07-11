@@ -178,7 +178,38 @@ actions), but the primary judgment frame is always one.
 
 ## Part 5 — Plan, then Load (v1 & legacy)
 
-Once selected, ask the runtime for a LoadPlan before loading:
+### 5a — Consumption Plan (0.9 recommended)
+
+The recommended path is to first generate a ConsumptionPlan, then execute:
+
+```bash
+# Deterministic — no model call, no runner needed
+kdna plan-use <file.kdna> --task="<task description>" --as=json
+```
+
+This emits a ConsumptionPlan 0.9 with applicability decision, budget, projection
+reference, and trace policy. If the asset does not apply (`does_not_apply` or
+`blocked`), the plan records this — do not proceed to execution.
+
+To execute through a registered Runner:
+
+```bash
+kdna use <file.kdna> --task="<task description>" --runner <type:id> --as json
+```
+
+Output formats: `--as=json` (plan+result+trace), `--as=trace` (trace only).
+List available runners: `kdna use --list-runners`.
+
+For Cluster mode:
+
+```bash
+kdna cluster plan-use <kdna.cluster.json> --task="<task>" --as=json
+kdna use <kdna.cluster.json> --task="<task>" --runner <type:id>
+```
+
+### 5b — Legacy plan-load
+
+The older path is still available:
 
 ```bash
 kdna plan-load <file.kdna> --json
