@@ -42,9 +42,9 @@ requireText('README.md', rootReadme, 'kdna demo judgment ./judgment');
 requireText('README.zh.md', zhReadme, 'kdna demo judgment ./judgment');
 requireText('README.md', rootReadme, 'kdna pack ./judgment ./judgment.kdna');
 requireText('README.zh.md', zhReadme, 'kdna pack ./judgment ./judgment.kdna');
-requireText('kdna-loader/SKILL.md', loaderSkill, '## Part 1');
-requireText('kdna-loader/SKILL.md', loaderSkill, '## Part 8');
-requireText('mcp-server/README.md', mcpReadme, '8-part protocol');
+requireText('kdna-loader/SKILL.md', loaderSkill, '## 1. Decide whether judgment is needed');
+requireText('kdna-loader/SKILL.md', loaderSkill, '## 7. Explicit multi-asset path');
+requireText('mcp-server/README.md', mcpReadme, 'toolchain-only protocol');
 
 if (rootReadme.includes('viral-topic-selection')) {
   fail('README.md must use kdna demo judgment instead of superseded release downloads');
@@ -73,7 +73,7 @@ for (const agent of matrix.agents || []) {
   requireText(agent.guide, guide, agent.skill_path);
   requireText(agent.guide, guide, 'kdna demo judgment ./judgment');
   requireText(agent.guide, guide, 'kdna plan-load ./judgment.kdna --json');
-  requireText(agent.guide, guide, 'kdna load ./judgment.kdna --profile=compact --as=prompt');
+  requireText(agent.guide, guide, 'kdna load ./judgment.kdna --profile=compact --as=json');
 
   if (agent.support === 'auto-detected') {
     requireText(agent.guide, guide, 'kdna setup');

@@ -9,21 +9,13 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const packageInfo = require('../package.json');
 const {
-  inspectKDNA,
-  loadKDNA,
+  detectContainerFormat,
+  inspect,
+  load,
   matchDomain,
   planLoad,
-  renderForAgent,
-  verifyAsset,
+  validate,
 } = require('@aikdna/kdna-core');
-const {
-  detectContainerFormat,
-  inspect: inspectV1,
-  isV1SourceDir,
-  loadAuthorized,
-  loadV1,
-  validate: validateV1,
-} = require('@aikdna/kdna-core/v1');
 
 const tools = [
   {
@@ -77,7 +69,7 @@ const tools = [
   },
   {
     name: 'kdna.available-local',
-    description: 'List local v1 .kdna files without using a registry.',
+    description: 'List local .kdna files without using a registry.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -121,11 +113,11 @@ function textResult(value) {
   };
 }
 
-function isV1Asset(assetPath) {
+function isKdnaAsset(assetPath) {
   if (!assetPath) return false;
   try {
     if (!fs.existsSync(assetPath) || !fs.statSync(assetPath).isFile()) return false;
-    return assetPath.endsWith('.kdna') && detectContainerFormat(assetPath) === 'v1';
+    return assetPath.endsWith('.kdna') && detectContainerFormat(assetPath) === 'kdna';
   } catch {
     return false;
   }
@@ -153,12 +145,12 @@ function findLocalAssets(root = defaultAssetRoot(), maxDepth = 3) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         visit(full, depth + 1);
-      } else if (entry.isFile() && entry.name.endsWith('.kdna') && detectContainerFormat(full) === 'v1') {
-        const inspection = inspectV1(full);
-        const validation = validateV1(full);
+      } else if (entry.isFile() && entry.name.endsWith('.kdna') && detectContainerFormat(full) === 'kdna') {
+        const inspection = inspect(full);
+        const validation = validate(full);
         found.push({
           path: full,
-          kind: 'v1_container',
+          kind: 'kdna_asset',
           asset_id: inspection.asset_id,
           title: inspection.title,
           version: inspection.version,
@@ -226,48 +218,26 @@ function planLoadThroughCoreOrCli(args = {}) {
   return runCliPlanLoad(args);
 }
 
-function loadV1Authorized(assetPath, options) {
-  if (typeof loadAuthorized === 'function') return loadAuthorized(assetPath, options);
-  const plan = planLoadThroughCoreOrCli({
-    assetPath,
-    hasPassword: options.hasPassword,
-    entitlementStatus: options.entitlement && options.entitlement.status,
-  });
-  if (plan.can_load_now !== true) {
-    const error = new Error(
-      `LoadPlan denied loading: state=${plan.state || 'invalid'} required_action=${plan.required_action || 'block'}`,
-    );
-    error.code = (plan.issues && plan.issues[0] && plan.issues[0].code) || 'KDNA_LOAD_NOT_AUTHORIZED';
-    throw error;
-  }
-  return loadV1(assetPath, options);
-}
-
 async function callTool(name, args = {}) {
   if (name === 'kdna.inspect') {
-    if (isV1Asset(args.assetPath)) return textResult(inspectV1(args.assetPath));
-    return textResult(await inspectKDNA(args.assetPath, { verify: args.verify !== false }));
+    if (!isKdnaAsset(args.assetPath)) throw new Error('assetPath is not a current KDNA asset');
+    return textResult(inspect(args.assetPath, { verify: args.verify !== false }));
   }
   if (name === 'kdna.verify') {
-    if (isV1Asset(args.assetPath)) return textResult(validateV1(args.assetPath));
-    return textResult(await verifyAsset(args.assetPath, {
+    if (!isKdnaAsset(args.assetPath)) throw new Error('assetPath is not a current KDNA asset');
+    return textResult(validate(args.assetPath, {
       asset_digest: args.asset_digest,
       content_digest: args.content_digest,
       requireSignature: Boolean(args.requireSignature),
     }));
   }
   if (name === 'kdna.load') {
-    if (isV1Asset(args.assetPath)) {
-      const profile = args.profile || 'compact';
-      const loaded = loadV1Authorized(args.assetPath, { profile, as: 'json' });
-      const prompt = profile === 'index' ? null : loadV1Authorized(args.assetPath, { profile, as: 'prompt' }).text;
-      return textResult({ ...loaded, context: prompt });
-    }
-    const loaded = await loadKDNA(args.assetPath, { profile: args.profile || 'compact', input: args.input || '' });
-    const context = args.profile === 'index'
-      ? null
-      : await renderForAgent(args.assetPath, { profile: args.profile || 'compact', input: args.input || '' });
-    return textResult({ ...loaded, context });
+    if (!isKdnaAsset(args.assetPath)) throw new Error('assetPath is not a current KDNA asset');
+    return textResult(load(args.assetPath, {
+      profile: args.profile || 'compact',
+      as: 'json',
+      input: args.input || '',
+    }));
   }
   if (name === 'kdna.plan-load') {
     return textResult(planLoadThroughCoreOrCli(args));

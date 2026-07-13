@@ -1,6 +1,6 @@
 # KDNA on Cursor
 
-Load local KDNA Core v1 assets in Cursor to give the agent domain-specific
+Load local KDNA assets in Cursor to give the agent domain-specific
 judgment before it acts.
 
 > New to KDNA? See [Start Here](https://github.com/aikdna/kdna/blob/main/docs/start-here.md).
@@ -14,7 +14,7 @@ kdna demo judgment ./judgment
 kdna pack ./judgment ./judgment.kdna
 kdna validate ./judgment.kdna --runtime
 kdna plan-load ./judgment.kdna --json
-kdna load ./judgment.kdna --profile=compact --as=prompt
+kdna load ./judgment.kdna --profile=compact --as=json
 ```
 
 `kdna setup` installs the `kdna-loader` skill where supported. Cursor may
@@ -22,12 +22,12 @@ require manual skill placement depending on local setup.
 
 ## Real Domain Assets
 
-Use a checked-in or locally exported v1 asset:
+Use a checked-in or locally exported asset:
 
 ```bash
-kdna validate ./writing-v1.kdna --runtime
-kdna plan-load ./writing-v1.kdna --json
-kdna load ./writing-v1.kdna --profile=compact --as=prompt
+kdna validate ./writing.kdna --runtime
+kdna plan-load ./writing.kdna --json
+kdna load ./writing.kdna --profile=compact --as=json
 ```
 
 The loader should apply KDNA silently. The user should see better judgment, not

@@ -1,6 +1,6 @@
 # KDNA on GitHub Copilot-Compatible Agents
 
-Load local KDNA Core v1 assets in agents that read OpenCode-style skills from
+Load local KDNA assets in agents that read OpenCode-style skills from
 `~/.agents/skills`.
 
 > New to KDNA? See [Start Here](https://github.com/aikdna/kdna/blob/main/docs/start-here.md).
@@ -13,7 +13,7 @@ kdna demo judgment ./judgment
 kdna pack ./judgment ./judgment.kdna
 kdna validate ./judgment.kdna --runtime
 kdna plan-load ./judgment.kdna --json
-kdna load ./judgment.kdna --profile=compact --as=prompt
+kdna load ./judgment.kdna --profile=compact --as=json
 ```
 
 ## Manual Skill Installation
