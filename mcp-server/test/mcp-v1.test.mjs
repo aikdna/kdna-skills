@@ -183,6 +183,23 @@ test('initialize reports the package version', () => {
   assert.equal(response.result.serverInfo.version, packageInfo.version);
 });
 
+test('tools/list exposes only current local-asset tools and load credentials', () => {
+  const tools = listTools();
+  assert.equal(tools.length, 6);
+  assert.equal(tools.some((tool) => tool.name === 'kdna.available'), false);
+  const loadTool = tools.find((tool) => tool.name === 'kdna.load');
+  assert.ok(loadTool);
+  assert.equal(loadTool.inputSchema.properties.password.type, 'string');
+  assert.ok(loadTool.inputSchema.properties.entitlementStatus);
+});
+
+test('tool errors preserve the JSON-RPC request id', () => {
+  const response = callToolRaw('kdna.load', { assetPath: '/not/a/current/asset.kdna' });
+  assert.equal(response.id, 1);
+  assert.ok(response.error);
+  assert.match(response.error.message, /not a current KDNA asset/);
+});
+
 test('kdna.load refuses an asset when LoadPlan cannot load now', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-load-denied-'));
   const secret = 'MCP_SECRET_PAYLOAD_SHOULD_NOT_LEAK';

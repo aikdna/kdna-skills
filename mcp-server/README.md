@@ -23,7 +23,7 @@ server provides a lower-level bridge for structured tool calls.
 | `kdna.inspect` | Inspect a `.kdna` asset | File path | Structured metadata |
 | `kdna.verify` | Verify asset integrity state | File path | Pass/fail with reasons |
 | `kdna.plan-load` | Return Core LoadPlan before loading | File path, optional password or entitlement state | LoadPlan JSON |
-| `kdna.load` | Load an authorized `.kdna` profile | File path, optional profile | Runtime Capsule |
+| `kdna.load` | Load an authorized `.kdna` profile | File path, optional profile, password, or entitlement state | Runtime Capsule |
 | `kdna.available-local` | List local `.kdna` assets | Root directory | Local asset inventory |
 | `kdna.match` | Rank candidate assets for a task string | Task description | Scored list with fit signals |
 

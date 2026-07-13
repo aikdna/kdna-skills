@@ -51,6 +51,8 @@ const tools = [
         assetPath: { type: 'string' },
         profile: { type: 'string', enum: ['index', 'compact', 'scenario', 'full'] },
         input: { type: 'string' },
+        password: { type: 'string' },
+        entitlementStatus: { type: 'string', enum: ['active', 'expired', 'revoked', 'offline_grace'] },
       },
     },
   },
@@ -88,14 +90,6 @@ const tools = [
         input: { type: 'string' },
         assetPaths: { type: 'array', items: { type: 'string' } },
       },
-    },
-  },
-  {
-    name: 'kdna.available',
-    description: 'Legacy: list assets from a local Registry domains.json file.',
-    inputSchema: {
-      type: 'object',
-      properties: { registryFile: { type: 'string' } },
     },
   },
 ];
@@ -167,20 +161,6 @@ function findLocalAssets(root = defaultAssetRoot(), maxDepth = 3) {
   return found;
 }
 
-function listRegistry(registryFile) {
-  const file = registryFile || process.env.KDNA_REGISTRY_FILE;
-  if (!file) return [];
-  const registry = JSON.parse(fs.readFileSync(file, 'utf8'));
-  const domains = Array.isArray(registry.domains) ? registry.domains : Object.values(registry.domains || {});
-  return domains.map((d) => ({
-    legacy_registry: true,
-    name: d.name,
-    version: d.version,
-    asset_url: d.asset_url,
-    asset_digest: d.asset_digest,
-  }));
-}
-
 function runCliPlanLoad(args = {}) {
   const cliArgs = ['plan-load', args.assetPath, '--json'];
   if (args.hasPassword) cliArgs.push('--has-password');
@@ -237,6 +217,8 @@ async function callTool(name, args = {}) {
       profile: args.profile || 'compact',
       as: 'json',
       input: args.input || '',
+      password: args.password,
+      entitlement: args.entitlementStatus ? { status: args.entitlementStatus } : undefined,
     }));
   }
   if (name === 'kdna.plan-load') {
@@ -247,9 +229,6 @@ async function callTool(name, args = {}) {
   }
   if (name === 'kdna.available-local') {
     return textResult(findLocalAssets(args.root, args.maxDepth || 3));
-  }
-  if (name === 'kdna.available') {
-    return textResult(listRegistry(args.registryFile));
   }
   throw new Error(`Unknown tool: ${name}`);
 }
@@ -278,9 +257,11 @@ async function handle(message) {
 const rl = readline.createInterface({ input: process.stdin });
 rl.on('line', async (line) => {
   if (!line.trim()) return;
+  let message;
   try {
-    await handle(JSON.parse(line));
+    message = JSON.parse(line);
+    await handle(message);
   } catch (e) {
-    send(undefined, null, e);
+    send(message?.id ?? null, null, e);
   }
 });
