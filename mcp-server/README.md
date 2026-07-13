@@ -7,7 +7,9 @@ minimal footprint. The npm package source lives in this repository under
 
 ## Why MCP instead of the kdna-loader skill?
 
-The `kdna-loader` skill teaches an agent the full KDNA protocol (8-part protocol: routing, planning, loading, silent application, and boundary respect). The MCP server provides a lower-level bridge — use it when you need programmatic access to `.kdna` assets through structured tool calls rather than letting the agent drive the CLI.
+The `kdna-loader` skill teaches an agent the full toolchain-only protocol:
+routing, planning, Capsule loading, application, and boundary respect. The MCP
+server provides a lower-level bridge for structured tool calls.
 
 | Approach | Best for |
 |----------|----------|
@@ -18,11 +20,11 @@ The `kdna-loader` skill teaches an agent the full KDNA protocol (8-part protocol
 
 | Tool | Purpose | Input | Output |
 |------|---------|-------|--------|
-| `kdna.inspect` | Inspect a v1 `.kdna` asset | File path | Structured metadata |
+| `kdna.inspect` | Inspect a `.kdna` asset | File path | Structured metadata |
 | `kdna.verify` | Verify asset integrity state | File path | Pass/fail with reasons |
 | `kdna.plan-load` | Return Core LoadPlan before loading | File path, optional password or entitlement state | LoadPlan JSON |
-| `kdna.load` | Load and render a `.kdna` profile for agent context | File path, optional profile | Prompt-mode text or raw JSON |
-| `kdna.available-local` | List local v1 `.kdna` assets | Root directory | Local v1 asset inventory |
+| `kdna.load` | Load an authorized `.kdna` profile | File path, optional profile | Runtime Capsule |
+| `kdna.available-local` | List local `.kdna` assets | Root directory | Local asset inventory |
 | `kdna.match` | Rank candidate assets for a task string | Task description | Scored list with fit signals |
 
 ## Install & Run
@@ -101,7 +103,7 @@ node bin/kdna-mcp.mjs
 # Client calls kdna.plan-load { assetPath: "./dist/writing.kdna" }
 # Or kdna.plan-load { assetPath: "./dist/writing.kdna", entitlementStatus: "active" }
 # Client calls kdna.load { assetPath: "./dist/writing.kdna", profile: "compact" }
-# Agent injects prompt text into system context
+# Agent consumes only the returned Runtime Capsule context
 ```
 
 ## Relationship to kdna-loader skill

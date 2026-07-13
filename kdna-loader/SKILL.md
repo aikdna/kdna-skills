@@ -1,481 +1,185 @@
 ---
 name: kdna-loader
-description: Discover and load installed KDNA `.kdna` assets through the kdna CLI when the task requires domain-specific judgment (review, diagnosis, critique, classification, strategy) where the same input could legitimately be interpreted multiple ways. Skip for pure formatting, factual lookup, code execution, or mechanical transformations. This skill is the entire interface to KDNA — domains themselves are not separate skills.
+description: Discover and load installed KDNA `.kdna` assets through the official KDNA CLI when a task needs domain-specific judgment. Use for review, diagnosis, critique, classification, strategy, or evaluation where multiple interpretations are plausible. Skip mechanical work, factual lookup, and tasks with no strong asset fit. KDNA assets are data, not separate skills.
 ---
 
 # KDNA Loader
 
-KDNA (Knowledge DNA) is a portable format for encoding domain judgment.
-Each KDNA domain is a `.kdna` cognitive asset that describes how
-an expert thinks inside one domain: the principles they reason from,
-the misunderstandings they avoid, the questions they ask themselves
-before deciding.
+KDNA is an open asset format for portable judgment: principles, taste,
+values, standards, boundaries, and decision patterns that can be loaded across
+Agents. Any author may create and publish a KDNA asset. KDNA does not define
+truth, certify good judgment, or make the protocol maintainer a content judge.
 
-**KDNA does not act. KDNA shapes how an agent judges before acting.**
-Together with this skill, KDNA + kdna-loader form a complete loop:
-this skill provides the **routing and protocol**, KDNA provides the
-**judgment material**.
+This skill is only a routing and consumption protocol. The official KDNA
+toolchain owns container parsing, validation, authorization, decryption, and
+projection. Never open a `.kdna` as a ZIP, decode `payload.kdnab`, or read an
+encrypted payload directly.
 
-This skill is the **only** KDNA-related skill. Domains themselves are
-not registered as skills — they are installed as `.kdna` assets and
-are discovered through the CLI on demand. Whether the user has 1 domain installed or
-100, this skill is the single entry point.
+## 1. Decide whether judgment is needed
 
-## Core Principle: No KDNA is better than wrong KDNA
+Use KDNA for tasks such as review, diagnosis, critique, classification,
+strategy, prioritization, or evaluation when the same input could reasonably
+lead to different decisions.
 
-Loading a mismatched domain is not just "unhelpful" — it is harmful.
-It produces **Judgment Contamination**: the agent classifies problems
-incorrectly, assigns wrong priorities, applies wrong risk models, and
-offers wrong recommendations — all with the false confidence of having
-"loaded expert judgment."
+Skip KDNA for formatting, translation, lookup, arithmetic, deterministic code
+execution, or any task with no strong installed asset fit. When skipping,
+answer normally and do not announce that KDNA was considered.
 
-*No KDNA*: the agent uses model capability, tools, MCP, project files,
-and normal prompts. It may lack domain-specific judgment, but it is
-not polluted by incorrect judgment.
+The routing rule is conservative:
 
-*Wrong KDNA*: the agent applies a mismatched framework — e.g., diagnosing
-a website design task through a team management lens, or treating a
-price question as an editing issue. The output is worse than baseline.
+> No KDNA is better than the wrong KDNA.
 
-**When in doubt, skip.** This is the first law of KDNA routing.
+## 2. Discover through the toolchain
 
----
+For installed assets:
 
-## Part 1 — Decide whether KDNA applies at all
+```bash
+kdna available --json
+```
 
-Most tasks do **not** need KDNA. Run this check first.
-
-### Use KDNA when
-
-- The same input could mean different things, and the wrong reading
-  produces a wrong response. Examples:
-  - "Your price is too high" → could be value uncertainty, budget,
-    or risk aversion. Wrong diagnosis → wrong response.
-  - "Review this article opening" → could need polish, or structural
-    rewrite. Wrong frame → wasted edit cycle.
-  - "Did our meeting reach a decision?" → could be a real commitment
-    or just discussion. Wrong call → fake progress.
-- The task is **review / diagnosis / critique / classification /
-  strategy / evaluation** in a specific domain.
-- The user expects expert judgment, not a procedure.
-
-### Skip KDNA when
-
-- The task is mechanical: format conversion, syntax fixes, lookups,
-  arithmetic, code execution.
-- The task is purely creative without a judgment dimension.
-- The user explicitly asked for one-shot output without analysis.
-- No installed domain plausibly covers the task.
-
-If you decide to skip, **answer normally** and do not mention KDNA.
-The user should never see "I considered loading KDNA but didn't."
-
----
-
-## Part 2 — Discover what's installed
-
-Do **not** assume any specific domains exist. Ask the CLI every time.
+For an explicit file supplied by the user:
 
 ```bash
 kdna inspect <file.kdna> --json
 ```
 
-When an MCP runtime is available, use:
+With the KDNA MCP server, use `kdna.available-local` and `kdna.inspect`.
+
+Only consider entries with `loadable: true`. Treat `issues[]` and a
+non-loadable `load_state` as hard blocks. Do not inspect package directories,
+unpack containers, or read payload files to work around a blocked result.
+
+If the CLI or MCP tool is unavailable, or no loadable asset exists, continue
+without KDNA.
+
+## 3. Select one strong-fit asset
+
+Read the candidate description, keywords, `applies_when`,
+`does_not_apply_when`, and `failure_risks` semantically.
+
+Apply these rules in order:
+
+1. A matching `does_not_apply_when` excludes the asset.
+2. A strong fit requires a clear domain match and at least one applicable
+   situation.
+3. A failure risk that describes the likely misuse is a reason to skip.
+4. Weak keyword overlap is not a fit decision.
+5. If two assets imply materially different frames, ask the user to choose or
+   skip; do not silently blend them.
+
+`kdna match "<task>" --json` may be used as a hint. Its `dropped` entries are
+hard exclusions; its `hints` are not recommendations.
+
+Single-asset consumption is the foundation and default. Load at most one
+primary asset unless the user or application explicitly chose Cluster mode.
+
+## 4. Plan before loading
+
+```bash
+kdna plan-load <asset-or-installed-name> --json
+```
+
+Proceed only when `can_load_now` is exactly `true`. Otherwise obey
+`required_action` and `issues[].code`:
+
+- `needs_password`: obtain a password only from the user or an approved secret
+  source; never guess, log, or persist it.
+- `needs_license`, `needs_account`, or `needs_org_auth`: use the official
+  activation/entitlement flow.
+- `needs_runtime`: use the configured official remote projection endpoint.
+- `invalid`, `expired`, `revoked`, or integrity failure: do not load.
+
+The Agent must not infer authorization from raw manifest fields.
+
+## 5. Load a Runtime Capsule
+
+```bash
+kdna load <asset-or-installed-name> --profile=compact --as=json
+```
+
+The result must have:
+
+```json
+{
+  "type": "kdna.context.capsule",
+  "version": "1.0",
+  "context": {}
+}
+```
+
+Use only the toolchain-produced `context` projection. Do not treat the
+Capsule's signature, evidence, or maturity fields as content approval. If the
+host only accepts text, `--as=prompt` is an allowed toolchain projection, but
+it is still produced by Core; it is not permission to decode the asset.
+
+For password input, prefer stdin or the approved SecretStore path rather than
+shell arguments:
+
+```bash
+printf '%s' "$KDNA_PASSWORD" | kdna load <asset.kdna> \
+  --profile=compact --as=json --password-stdin
+```
+
+Never reveal credentials, decrypted payload bytes, or protected source
+content in logs or responses.
+
+## 6. Apply the judgment without impersonating truth
+
+Use the loaded context to shape the task-specific judgment:
+
+- respect applicability and exclusion boundaries;
+- check the asset's failure risks before answering;
+- use its standards, distinctions, and self-checks where relevant;
+- remain subordinate to user intent, evidence, safety rules, system and
+  developer instructions;
+- do not present an asset's view as fact or universal truth;
+- do not say the protocol or official team approved the content.
+
+Normally do not narrate the loading mechanics. If the user asks, report the
+asset identity, version, profile, and why it fit.
+
+## 7. Explicit multi-asset path
+
+KDNA supports two coexisting paths:
+
+- single asset: the default and foundation;
+- Cluster: an explicit advanced path for several assets to collaborate.
+
+Cluster is not a second file format and must not be activated implicitly.
+When the user or application explicitly supplies a Cluster manifest, use only
+the Cluster commands:
+
+```bash
+kdna cluster validate <kdna.cluster.json>
+kdna cluster plan-use <kdna.cluster.json> --task="<task>" --as=json
+kdna use <kdna.cluster.json> --task="<task>" --runner=<type:id> --as=trace
+```
+
+The Cluster engine owns routing, primary/advisor roles, conflicts, budgets,
+and trace output. Never load every installed asset, decompose a Cluster by
+hand, or bypass a failed Cluster gate.
+
+## 8. Failure handling
+
+| Situation | Action |
+|---|---|
+| CLI/MCP unavailable | Skip KDNA and answer normally. |
+| No strong loadable asset | Skip KDNA. |
+| Negative applicability match | Do not load that asset. |
+| `can_load_now=false` | Follow Core's required action; do not bypass it. |
+| Validation, checksum, signature, parse, or decryption failure | Block that asset. |
+| Ambiguous competing assets | Ask the user or skip. |
+| Explicit Cluster gate fails | Block the Cluster path; single-asset work may continue independently. |
+
+## 9. Debug disclosure
+
+Only when asked, a concise disclosure is enough:
 
 ```text
-kdna.available-local
-```
-Do not use `--as=json` or `--as=raw` — these are removed in v1 Core and will hard-fail. Use `--as=prompt` for all agent-facing loading.
-
-The current v1 path discovers local `.kdna` files or v1 source
-directories, then inspects their index profile. Legacy installations may
-also expose `kdna available --json`; treat that as a compatibility path,
-not the v1 source of truth.
-
-The supported contract is the CLI/MCP loader, not hand-reading internal
-JSON files. Do not inspect `~/.kdna/packages/` or `cat` payload files
-directly unless the user explicitly asks for debugging.
-
-If the command returns `[]` or fails (CLI not installed) → no KDNA
-available → answer normally, mention installation only if the user is
-asking about KDNA itself.
-
----
-
-## Part 3 — Evaluate fit (per candidate domain)
-
-The index profile or MCP local inventory gives you each domain's title,
-summary, keywords, and profile availability. For each candidate, load
-the compact profile only after the task plausibly fits. Decide whether
-it fits by **reading the language**, not by token matching.
-
-For a hint signal (optional, low-confidence), legacy installations may
-also support:
-
-```bash
-kdna match "<task in user's own words>" --json
+Loaded: @author/asset@1.2.0
+Profile: compact Runtime Capsule
+Reason: the task matched the asset's declared applicability and no exclusion
+matched.
 ```
 
-This returns two things:
-
-- `dropped`: domains whose `does_not_apply_when` matched the task
-  with high enough confidence to mechanically disqualify them.
-  **Respect this.** Even if your own reading thinks the domain
-  could fit, the author explicitly excluded the case.
-- `hints`: domains with weak surface keyword overlap. Many false
-  positives are normal — treat as one input among many, not as a
-  decision.
-
-The decision is yours, not the CLI's. The CLI only mechanically
-disqualifies (via `dropped`); it cannot pick the winner.
-
-### How to decide
-
-For each domain still in play after `dropped` exclusion:
-
-1. Does the domain's **description** match what the user is asking?
-2. Does **any** `applies_when` entry describe a situation that
-   matches this specific task?
-3. Does **any** `does_not_apply_when` entry describe what the user
-   actually wants (e.g. they explicitly asked for copy edit)?
-
-If 1 and 2 are yes and 3 is no → strong fit.
-If 2 is unclear → weak fit. Prefer skipping over forcing.
-
-A domain's `failure_risks` (also in `available --json`) tells you
-what bad output the author warns about. Pre-check: is this exactly
-what you'd produce if you loaded the domain? If yes, skip it.
-
----
-
-## Part 4 — Selection (7-State Router)
-
-After evaluating against `applies_when`, `does_not_apply_when`, and
-`failure_risks`, classify into one of 7 states:
-
-| State | Condition | Action |
-|-------|-----------|--------|
-| **SKIP_NO_JUDGMENT_NEEDED** | Task is mechanical: format, translate, lookup, execute | Answer normally. Do not mention KDNA. |
-| **SKIP_NO_LOCAL_DOMAIN** | Task may need judgment, but no installed domain covers it | Answer normally. Only mention KDNA if user explicitly asks. |
-| **SKIP_WEAK_FIT** | A domain is weakly related but insufficiently matches | Answer normally. Trace notes "weak match, skipped." |
-| **REJECT_NEGATIVE_MATCH** | A domain's `does_not_apply_when` explicitly excludes this task | Block loading. Respect the author's boundary. |
-| **ASK_AMBIGUOUS_DOMAIN** | 2+ domains could apply but with different judgment frameworks | Ask user to choose. Do **not** silently blend. |
-| **LOAD_STRONG_FIT** | One local domain strongly matches and validates | Load it. |
-| **BLOCK_INTEGRITY_FAILED** | Domain matches but validation, checksum, parsing, or runtime loading fails | Block loading. Notify if appropriate. |
-
-**Rule: Negative Match First.** Check `does_not_apply_when` before
-checking `applies_when`. A domain that says "not for visual design"
-must be excluded before evaluating whether it matches "design task."
-
-**Rule: When in doubt, skip.** Weak fit → skip. Ambiguous without
-clear user preference → ask, don't guess. Integrity failure → block.
-
-Never load more than one domain as primary. A secondary domain can
-constrain (e.g. `@aikdna/agent_safety` always advises on irreversible
-actions), but the primary judgment frame is always one.
-
----
-
-## Part 5 — Plan, then Load (v1 & legacy)
-
-### 5a — Consumption Plan (0.9 recommended)
-
-The recommended path is to first generate a ConsumptionPlan, then execute:
-
-```bash
-# Deterministic — no model call, no runner needed
-kdna plan-use <file.kdna> --task="<task description>" --as=json
-```
-
-This emits a ConsumptionPlan 0.9 with applicability decision, budget, projection
-reference, and trace policy. If the asset does not apply (`does_not_apply` or
-`blocked`), the plan records this — do not proceed to execution.
-
-To execute through a registered Runner:
-
-```bash
-kdna use <file.kdna> --task="<task description>" --runner <type:id> --as json
-```
-
-Output formats: `--as=json` (plan+result+trace), `--as=trace` (trace only).
-List available runners: `kdna use --list-runners`.
-
-For Cluster mode:
-
-```bash
-kdna cluster plan-use <kdna.cluster.json> --task="<task>" --as=json
-kdna use <kdna.cluster.json> --task="<task>" --runner <type:id>
-```
-
-### 5b — Legacy plan-load
-
-The older path is still available:
-
-```bash
-kdna plan-load <file.kdna> --json
-```
-
-If the LoadPlan does not return `can_load_now=true`, do not load the asset.
-Follow `required_action` and `issues[].code` instead.
-
-**Remote assets** (`access: "remote"` in the manifest) require a
-self-hosted projection server. Pass the server URL at load time:
-
-```bash
-kdna load <file.kdna> --remote-server https://your-server/v1/project \
-  --profile=compact --as=prompt
-# or set KDNA_REMOTE_SERVER env var to avoid repeating the flag
-```
-
-The CLI routes the request to the server, receives the projected
-judgment, and emits the same `--as=prompt` output. If no
-`--remote-server` is configured for a remote asset, `plan-load`
-returns `can_load_now=false` with a `KDNA_REMOTE_SERVER_REQUIRED`
-issue code — surface that to the user.
-
-Only after `can_load_now=true`, load the domain via the official KDNA CLI.
-Two paths are supported:
-
-```bash
-kdna load <file.kdna> --profile=compact --as=prompt
-kdna load <source-dir> --profile=compact --as=prompt
-
-Legacy installed domains may still support: kdna load @scope/name
-```
-
-The default output (`--as=prompt`) is a compact text rendering
-optimized for system-prompt injection: axioms with their
-`applies_when` / `does_not_apply_when` / `failure_risk`, stances,
-banned terms, misunderstandings, and self-checks. Typically
-~30–50% smaller than the raw JSON.
-
-**Watermark header**: if the asset author enabled payload watermarking,
-the `--as=prompt` output begins with a `[WATERMARK]` header line
-containing a compact HMAC trace token. Treat this line as metadata —
-do not quote it to users, do not omit it when forwarding the loaded
-prompt to another system.
-
-**Trust level and deprecation**: `kdna load` checks the asset's
-`trust_level` and `deprecation` fields. If the asset is deprecated,
-a non-blocking warning is emitted to stderr — the load still proceeds.
-If `trust_level` is invalid or revoked, the load exits with an error.
-Check the exit code and stderr when loading from automated contexts.
-
-Use `--as=prompt` for normal loading. For raw inspection (debugging only):
-
-```bash
-kdna dev decode domain.kdna --reveal
-```
-
-**Token discipline**: the prompt output already includes everything
-the agent needs to apply judgment. Do not also `cat` the optional
-files (`KDNA_Scenarios.json`, `KDNA_Cases.json`, etc.) unless the
-user explicitly asks for examples, reasoning chains, or capability
-stages.
-
----
-
-## Part 6 — Apply silently
-
-You have now internalized the domain's judgment surface. From this
-point on:
-
-1. **Adopt the axioms as your reasoning frame** — reason *from*
-   them, not *around* them.
-2. **Honour the boundaries** — for each axiom you'd apply, confirm
-   the task is in `applies_when` AND not in `does_not_apply_when`.
-3. **Pre-check failure_risk** — before producing output, ask:
-   "Am I about to commit the failure this domain explicitly warns
-   about?" If yes, step back.
-4. **Use preferred terminology** — even if the user uses banned
-   terms, gently substitute the domain's terms.
-5. **Detect named misunderstandings** in the user's framing.
-6. **Apply frameworks** when their `when_to_use` matches.
-7. **Run self-checks** before final output. If a self-check fails,
-   revise.
-8. **Output a domain-shaped answer** — never quote KDNA, never list
-   axioms, never say "according to the loaded KDNA." The user sees
-   sharper judgment, not the source.
-
----
-
-## Part 7 — Boundary respect
-
-KDNA does not override:
-
-- **User intent**: if the user asks for grammar fixes, give grammar
-  fixes — do not lecture about structural void.
-- **Evidence**: if the user provides facts contradicting an axiom,
-  evidence wins.
-- **Safety**: if `@aikdna/agent_safety` (or equivalent) says halt,
-  halt.
-- **Skills' execution layer**: KDNA shapes judgment; other skills /
-  tools do the action.
-
----
-
-## Part 8 — Bundle and multi-asset coexistence
-
-> **Added in RFC #148 v2.0 (roadmap-2026.md Story 7).**
-
-A **Bundle** is a multi-component KDNA v2 asset (`asset_type: "bundle"`).
-From this skill's perspective a Bundle is **one asset**, not many. The
-7-State Router evaluates the Bundle as a unit. Core handles component
-resolution, topological ordering, and conflict analysis internally — the
-skill does not see or manage the individual components.
-
-### Rule 1 — Treat a Bundle like a single domain
-
-A Bundle appears as a single entry in `kdna available`. Load it with the
-same command used for single-domain assets:
-
-```bash
-kdna plan-load <bundle.kdna> --json   # check readiness first
-kdna load <bundle.kdna> --profile=compact --as=prompt
-```
-
-Do **not** decompose a Bundle into its components and load them one by
-one. That bypasses topological ordering and conflict resolution, and
-produces inconsistent judgment.
-
-### Rule 2 — Check plan-load before loading a Bundle
-
-`kdna plan-load <bundle> --json` returns a `resolved_dependencies[]`
-array listing every component the Bundle will load in topological order.
-Read it before loading to understand cost and scope.
-
-If `can_load_now=false`, follow `required_action` and `issues[].code`
-exactly as for a single domain. A common code is
-`KDNA_DEPENDENCY_RESOLUTION_FAILED` (circular dependency or version
-mismatch in the Bundle's component graph). In that case, block loading
-and surface the issue code to the user if they ask.
-
-### Rule 3 — Conflict warnings are informational, errors are blocking
-
-`kdna validate --bundle <bundle.kdna>` reports:
-
-- `conflicts.error_count > 0` → treat as `BLOCK_INTEGRITY_FAILED`.
-  The Bundle cannot be safely loaded.
-- `conflicts.warning_count > 0` → informational only. The Bundle
-  author acknowledged the overlap. Load proceeds normally. Do not
-  surface warnings to the user unless they ask about Bundle health.
-
-### Rule 4 — Remote components in a Bundle
-
-If any component inside a Bundle has `access: remote`, the Bundle's
-`runtime.endpoint` is the single projection endpoint. Do **not**
-attempt per-component remote calls. The CLI handles projection routing
-from the Bundle level. Treat `remote`-containing Bundles exactly as
-you treat single `remote` assets: load through the CLI, receive a
-task projection, never the full payload.
-
-### Rule 5 — Context budget (forward compatibility)
-
-Story 8 (context budget) will add `context_budget` and
-`context_budget_strategy` fields to Bundle manifests. When those fields
-are present, `kdna plan-load <bundle> --json` will report the estimated
-token cost for the Bundle. Before that ships, use `resolved_dependencies`
-length as a proxy: a Bundle with many components deserves a quick
-mental check that the task actually needs the full composed judgment
-before loading.
-
-### Rule 6 — The 7-State Router still applies
-
-Evaluate the Bundle as a whole against the user's task. A Bundle
-covering three domains is still wrong to load if the task falls outside
-all three. The routing rules in Part 3–4 apply without modification.
-The Bundle's combined `does_not_apply_when` is the union of all
-components' exclusions — if the task is excluded by any component, the
-Bundle as a whole is excluded.
-
----
-
-## Failure handling
-
-| Situation | What to do |
-|---|---|
-| `kdna` CLI not installed | Skip KDNA. Answer normally. Mention installation only if user asks about KDNA itself. |
-| No local v1 assets are found | No domains installed. Skip KDNA. |
-| `kdna plan-load <asset>` returns `can_load_now=false` | Do not load. Follow `required_action` and `issues[].code`. |
-| `kdna load <name>` exits non-zero | That domain is broken (validation, authorization, parse, or runtime loading failure). Try next candidate or skip KDNA. The error message tells you why. |
-| User explicitly asks for a domain that isn't installed | Tell them, suggest `kdna install <name>`. Do not fabricate the domain. |
-| Two domains' stances directly conflict on the task | Surface to user. Do not blend. |
-| Bundle `plan-load` returns `KDNA_DEPENDENCY_RESOLUTION_FAILED` | Block loading. Surface the issue code. The Bundle has a broken component graph (circular dependency or version mismatch). |
-| Bundle `validate --bundle` returns `error_count > 0` | Treat as `BLOCK_INTEGRITY_FAILED`. Do not load. |
-| Bundle contains a `remote` component and no `--remote-server` configured | Treat as `can_load_now=false`. Block loading. Suggest user configure `KDNA_REMOTE_SERVER`. |
-| Asset deprecated, load still proceeds | Deprecation is non-blocking. Stderr warning is informational; the loaded judgment is still valid. |
-| Asset has invalid or revoked `trust_level` | Load exits non-zero. Do not use the judgment. Surface the error to the user. |
-
----
-
-## Debug mode
-
-If the user asks "did you use KDNA?" or "which domain did you load?",
-you may reveal:
-
-```
-Loaded: @aikdna/writing@0.7.2 (judgment_version 2026.05)
-Reason: matched axiom_problem_not_prose.applies_when
-        on "user asked for content review"
-Applied modules: KDNA_Core, KDNA_Patterns
-Skipped: @aikdna/code_review (task is not code-related)
-```
-
-For a Bundle, the debug output may list `resolved_dependencies`:
-
-```
-Loaded: @aikdna/comms-bundle@1.0.0 (bundle, 2 components)
-  └─ loaded: @aikdna/writing@0.7.2 (topological order: 1)
-  └─ loaded: @aikdna/speaking@0.3.1 (topological order: 2)
-Reason: Bundle matched task "prepare keynote draft"
-```
-
-Otherwise, stay silent about the loading mechanics.
-
----
-
-## Asset management commands
-
-These commands manage installed assets. Use them when the user asks
-about what's installed, needs to add or remove an asset, or wants to
-verify an asset's signature.
-
-```bash
-kdna list                          # list all installed .kdna assets
-kdna install <file-or-url>         # install a .kdna asset
-kdna remove <name>[@version]       # remove an installed asset
-
-kdna sign <file.kdna>              # sign an asset with your Ed25519 identity key
-kdna verify <file.kdna> [--key <pubkey.pub>]  # verify a signature
-kdna identity init [--name <name>] # create a local Ed25519 signing key
-kdna identity show                 # show your public key (PEM, hex, base64)
-
-kdna revoke <file.kdsig> [--reason <text>]    # revoke a previously issued signature
-kdna revocation-status <file.kdsig>           # check whether a signature has been revoked
-```
-
-Signing and revocation are author-side operations. As a loader-skill
-agent, you will typically only use `kdna verify` when the user asks
-"is this asset from a trusted source?" The signature check is
-informational — `kdna plan-load` already enforces trust policy before
-you reach `kdna load`.
-
----
-
-## What this skill is NOT
-
-- Not a list of available KDNA domains (those are installed `.kdna` assets,
-  discovered on demand through the CLI)
-- Not a registry browser. Legacy registry commands are compatibility-only.
-- Not a domain creator. Agents may draft judgment proposals or candidate cards,
-  but formal `.kdna` assets are created through the official KDNA Studio toolchain.
-  compile/export.
-- Not an auto-loader that runs on every request — you decide per
-  request whether the task needs KDNA at all
-- Not a Bundle orchestrator. The skill treats a Bundle as one asset.
-  Component resolution, topological ordering, and conflict analysis are
-  handled by Core and the CLI — the skill never manages individual
-  Bundle components directly.
-
-The skill teaches the protocol. The KDNA files supply the judgment.
-Both are required; neither is sufficient alone.
+Never disclose protected internals or credentials.

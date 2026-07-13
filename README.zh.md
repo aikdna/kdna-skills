@@ -8,7 +8,7 @@
 
 这个仓库不是把 KDNA 变成 Skill。它提供的是适配器 Skill，让不同 AI Agent 能够加载 KDNA。
 
-`kdna-loader` 技能教会 AI Agent 一套协议，用于发现、加载和应用本地 KDNA Core v1 `.kdna` 判断资产。资产是文件，不是独立的技能。支持矩阵见 [`docs/agent-support-matrix.json`](docs/agent-support-matrix.json)。
+`kdna-loader` 技能教会 AI Agent 一套协议，用于通过官方工具链发现、加载和应用本地 `.kdna` 判断资产。资产是文件，不是独立的技能。支持矩阵见 [`docs/agent-support-matrix.json`](docs/agent-support-matrix.json)。
 
 需要 `@aikdna/kdna-cli` CLI：
 
@@ -48,7 +48,7 @@ kdna demo judgment ./judgment
 kdna pack ./judgment ./judgment.kdna
 kdna validate ./judgment.kdna --runtime
 kdna plan-load ./judgment.kdna --json
-kdna load ./judgment.kdna --profile=compact --as=prompt
+kdna load ./judgment.kdna --profile=compact --as=json
 kdna doctor --agents
 ```
 
@@ -61,12 +61,12 @@ Agent 在每个任务中自动判断是否需要 KDNA。当领域匹配时，静
 ### 使用真实领域资产
 
 ```bash
-kdna validate ./writing-v1.kdna --runtime
-kdna plan-load ./writing-v1.kdna --json
-kdna load ./writing-v1.kdna --profile=compact --as=prompt
+kdna validate ./writing.kdna --runtime
+kdna plan-load ./writing.kdna --json
+kdna load ./writing.kdna --profile=compact --as=json
 ```
 
-### 创建自己的 v1 KDNA
+### 创建自己的 KDNA
 
 ```bash
 npm install -g @aikdna/kdna-studio-cli
@@ -79,7 +79,7 @@ kdna-studio card add my_expertise axiom \
   --field does_not_apply_when='["pure formatting"]' \
   --field failure_risk="generic advice"
 kdna-studio card approve my_expertise --all --by expert --statement "I confirm this judgment."
-kdna-studio export my_expertise --format v1 --out dist/my_expertise.kdna
+kdna-studio export my_expertise --out dist/my_expertise.kdna
 kdna validate dist/my_expertise.kdna --runtime
 kdna plan-load dist/my_expertise.kdna --json
 ```
@@ -89,7 +89,7 @@ KDNA 工具链或兼容 SDK 产出标准 packaged `.kdna` 文件。当前 public
 推荐使用 Studio CLI 创建和导出，再用官方 CLI validate、plan-load 和 load。
 
 Human Lock、签名、发布证据、加密和付费授权都是可选或后续 trust layer，
-不是 KDNA Core v1 格式有效性的前提。
+不是 KDNA 格式有效性的前提。
 
 ## kdna-loader 如何工作（八步协议）
 
@@ -98,7 +98,7 @@ Human Lock、签名、发布证据、加密和付费授权都是可选或后续 
 3. **评估** 每个候选领域的匹配度（检查适用边界）
 4. **选择** 0 或 1 个领域（绝不静默混合多个）
 5. **计划加载** 通过 `kdna plan-load <asset.kdna> --json`
-6. **加载** 仅当 `can_load_now=true` 时，通过 `kdna load <asset.kdna> --profile=compact --as=prompt`
+6. **加载** 仅当 `can_load_now=true` 时，通过 `kdna load <asset.kdna> --profile=compact --as=json` 获取 Runtime Capsule
 7. **应用** 静默执行——基于公理推理，不向用户引用 KDNA
 8. **遵守** 边界——用户意图 > 证据 > 安全 > 技能
 

@@ -26,7 +26,7 @@ npm i -g @aikdna/kdna-cli
 |---|---|
 | **kdna-loader** (single skill) | Installed manually into your agent. Teaches the agent the protocol for KDNA discovery and application. |
 | **KDNA assets** (data) | Local `.kdna` KDNA Asset Containers. Discover them through local paths or MCP `kdna.available-local`; load them on demand per task. |
-| **kdna CLI** (tool) | `kdna inspect`, `kdna validate`, `kdna plan-load`, `kdna load`. Stable runtime control plane for KDNA Core v1 assets. |
+| **kdna CLI** (tool) | `kdna inspect`, `kdna validate`, `kdna plan-load`, `kdna load`. Runtime control plane for the current KDNA Asset Container. |
 
 For most agent requests, the loader uses the conservative single-primary path.
 Applications that need explicit multi-asset composition should use the CLI
@@ -80,7 +80,7 @@ kdna demo judgment ./judgment
 kdna pack ./judgment ./judgment.kdna
 kdna validate ./judgment.kdna --runtime
 kdna plan-load ./judgment.kdna --json
-kdna load ./judgment.kdna --profile=compact --as=prompt
+kdna load ./judgment.kdna --profile=compact --as=json
 ```
 
 ## After Installing
@@ -94,7 +94,7 @@ The agent automatically decides per task whether KDNA applies. When a domain fit
 ```bash
 kdna validate ./your-domain.kdna
 kdna plan-load ./your-domain.kdna
-kdna load ./your-domain.kdna --profile=compact --as=prompt
+kdna load ./your-domain.kdna --profile=compact --as=json
 ```
 
 ### Create your own KDNA
@@ -107,14 +107,14 @@ path is:
 npm i -g @aikdna/kdna-studio-cli @aikdna/kdna-cli
 kdna-studio create my_domain --name @yourscope/my_domain
 kdna-studio card add my_domain axiom --field one_sentence="..."
-kdna-studio export my_domain --format v1 --out ./my_domain.kdna
+kdna-studio export my_domain --out ./my_domain.kdna
 kdna validate ./my_domain.kdna
 kdna plan-load ./my_domain.kdna
-kdna load ./my_domain.kdna --profile=compact --as=prompt
+kdna load ./my_domain.kdna --profile=compact --as=json
 ```
 
 Review evidence and provenance records can be added by authoring tools when a
-publisher needs them. They are not KDNA Core v1 format-validity requirements.
+publisher needs them. They are not KDNA format-validity requirements.
 
 ## How kdna-loader works (8-part protocol)
 
@@ -123,7 +123,7 @@ publisher needs them. They are not KDNA Core v1 format-validity requirements.
 3. **Evaluate** fit per domain (checks `applies_when` / `does_not_apply_when`)
 4. **Select** 0 or 1 domain (never silently blend multiple)
 5. **Plan** via `kdna plan-load <file.kdna>`
-6. **Load** only when Core/CLI reports `can_load_now=true`, via `kdna load <file.kdna> --profile=compact --as=prompt`
+6. **Load** only when Core/CLI reports `can_load_now=true`, then consume the Runtime Capsule from `kdna load <file.kdna> --profile=compact --as=json`
 7. **Apply** silently -- reason from axioms, never quote KDNA to user
 8. **Respect** boundaries -- user intent > evidence > safety > skills
 
