@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Remove the hidden legacy `kdna.available` MCP method so the advertised tool
+  list and callable surface are identical.
+- Preserve JSON-RPC request IDs on tool failures and pass password and
+  entitlement inputs through the current `kdna.load` contract.
+- Make MCP release readiness reject dirty inputs and version tags that do not
+  point to the current commit.
+
 ## 2026-07 (MCP v0.3.1)
 
 - Make silent application a hard loader rule after local Codex, Claude Code,
