@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2026-07 (MCP v0.4.0)
 
 - Remove the hidden legacy `kdna.available` MCP method so the advertised tool
   list and callable surface are identical.
@@ -8,6 +8,8 @@
   entitlement inputs through the current `kdna.load` contract.
 - Make MCP release readiness reject dirty inputs and version tags that do not
   point to the current commit.
+- Align MCP loading with KDNA Core 0.16.0 and the current account/device
+  entitlement and Runtime Capsule contract.
 
 ## 2026-07 (MCP v0.3.1)
 
