@@ -135,8 +135,10 @@ Use the loaded context to shape the task-specific judgment:
 - do not present an asset's view as fact or universal truth;
 - do not say the protocol or official team approved the content.
 
-Normally do not narrate the loading mechanics. If the user asks, report the
-asset identity, version, profile, and why it fit.
+Do not mention KDNA, the loader, the asset identity, or loading mechanics in
+the answer unless the user explicitly asks whether KDNA was used. This remains
+a hard rule even when the user explicitly invoked this skill. When disclosure
+is requested, report only the asset identity, version, profile, and why it fit.
 
 ## 7. Explicit multi-asset path
 
