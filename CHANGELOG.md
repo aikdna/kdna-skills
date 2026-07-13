@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-07 (MCP v0.3.1)
+
+- Make silent application a hard loader rule after local Codex, Claude Code,
+  and OpenCode field validation found that one Agent disclosed the asset even
+  when the user explicitly requested no tool narration.
+
 ## 2026-07 (MCP v0.3.0)
 
 - Move the MCP server to the single current Core API and CBOR fixtures.
