@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-07 (MCP v0.4.1)
+
+- Run MCP asset discovery, LoadPlan authorization, and Runtime Capsule loading
+  on KDNA Core 0.17.0 so current hosts do not execute a nested Core 0.16 copy.
+- Revalidate local discovery, credential forwarding, Core planning, official
+  CLI fallback, and JSON-RPC error identity against the current Core runtime.
+
 ## 2026-07 (MCP v0.4.0)
 
 - Remove the hidden legacy `kdna.available` MCP method so the advertised tool
