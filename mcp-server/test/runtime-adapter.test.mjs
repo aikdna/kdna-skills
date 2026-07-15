@@ -137,7 +137,7 @@ function makeKdnaContainer(root, name = 'writing.kdna') {
 }
 
 test('available-local discovers .kdna files and load returns a Runtime Capsule', () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-v1-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-runtime-'));
   try {
     const assetPath = makeKdnaContainer(root);
     const available = callTool('kdna.available-local', { root, maxDepth: 1 });
@@ -336,7 +336,7 @@ test('kdna.load refuses an asset when LoadPlan cannot load now', () => {
     const manifestPath = path.join(sourceDir, 'kdna.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     manifest.access = 'remote';
-    manifest.runtime = { endpoint: 'https://runtime.example.test/v1/project' };
+    manifest.runtime = { endpoint: 'https://runtime.example.test/project' };
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
     const payloadPath = path.join(sourceDir, 'payload.kdnab');
     const payload = cbor.decode(fs.readFileSync(payloadPath));
