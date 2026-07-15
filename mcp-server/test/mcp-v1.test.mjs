@@ -280,7 +280,7 @@ test('JSON-RPC rejects every invalid MCP request envelope instead of silently dr
     ['wrong protocol version', JSON.stringify({ jsonrpc: '1.0', id: 1, method: 'tools/list' })],
     ['non-string method', JSON.stringify({ jsonrpc: '2.0', id: 1, method: 3 })],
     ['null MCP request id', JSON.stringify({ jsonrpc: '2.0', id: null, method: 'tools/list' })],
-    ['fractional MCP request id', JSON.stringify({ jsonrpc: '2.0', id: 1.5, method: 'tools/list' })],
+    ['boolean MCP request id', JSON.stringify({ jsonrpc: '2.0', id: true, method: 'tools/list' })],
     ['single-message transport batch', JSON.stringify([
       { jsonrpc: '2.0', id: 1, method: 'tools/list' },
     ])],
@@ -291,6 +291,25 @@ test('JSON-RPC rejects every invalid MCP request envelope instead of silently dr
       const response = sendRawLine(line);
       assert.equal(response.id, null);
       assert.deepEqual(response.error, { code: -32600, message: 'Invalid Request' });
+    });
+  }
+});
+
+test('finite numeric and string request ids are preserved exactly', async (t) => {
+  const validIds = [1.5, -7.25, Number.MAX_VALUE, '', 'request-id'];
+  for (const id of validIds) {
+    await t.test(JSON.stringify(id), () => {
+      const response = sendRawLine(JSON.stringify({ jsonrpc: '2.0', id, method: 'kdna.unknown' }));
+      assert.equal(response.id, id);
+      assert.deepEqual(response.error, { code: -32601, message: 'Method not found' });
+    });
+  }
+
+  for (const token of ['NaN', 'Infinity', '-Infinity']) {
+    await t.test(`non-JSON numeric token ${token}`, () => {
+      const response = sendRawLine(`{"jsonrpc":"2.0","id":${token},"method":"tools/list"}`);
+      assert.equal(response.id, null);
+      assert.deepEqual(response.error, { code: -32700, message: 'Parse error' });
     });
   }
 });

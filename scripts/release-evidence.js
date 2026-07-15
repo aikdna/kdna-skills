@@ -61,8 +61,28 @@ function parsePax(buffer) {
   return values;
 }
 
+function packagePathFromTar(name) {
+  assert(typeof name === 'string' && name.startsWith('package/'), 'packed entry must be rooted under package/');
+  const packagePath = name.slice('package/'.length);
+  const segments = packagePath.split('/');
+  assert(
+    packagePath &&
+      !packagePath.startsWith('/') &&
+      !/[\\\0-\x1f\x7f]/.test(packagePath) &&
+      !segments.some((segment) => segment === '' || segment === '.' || segment === '..'),
+    'unsafe packed path',
+  );
+  return packagePath;
+}
+
 function parseTarFiles(tarball) {
-  const archive = zlib.gunzipSync(tarball);
+  assert(Buffer.isBuffer(tarball) && tarball.length > 0, 'packed tarball is empty');
+  let archive;
+  try {
+    archive = zlib.gunzipSync(tarball);
+  } catch {
+    throw new Error('packed artifact is not a complete gzip stream');
+  }
   const files = [];
   let offset = 0;
   let pax = {};
@@ -72,6 +92,9 @@ function parseTarFiles(tarball) {
   while (offset + 512 <= archive.length) {
     const header = archive.subarray(offset, offset + 512);
     if (header.every((byte) => byte === 0)) {
+      const second = archive.subarray(offset + 512, offset + 1024);
+      assert(second.length === 512 && second.every((byte) => byte === 0), 'tar archive has an incomplete end marker');
+      assert(archive.subarray(offset + 1024).every((byte) => byte === 0), 'tar archive contains data after its end marker');
       sawEnd = true;
       break;
     }
@@ -89,37 +112,64 @@ function parseTarFiles(tarball) {
     const headerName = prefix ? `${prefix}/${name}` : name;
     const dataStart = offset + 512;
     const dataEnd = dataStart + size;
-    assert(dataEnd <= archive.length, 'truncated tar entry');
+    const nextOffset = dataStart + Math.ceil(size / 512) * 512;
+    assert(dataEnd <= archive.length && nextOffset <= archive.length, 'truncated tar entry');
     const data = archive.subarray(dataStart, dataEnd);
 
     if (type === 'x') {
       pax = parsePax(data);
     } else if (type === 'L') {
       longName = data.toString('utf8').replace(/\0.*$/, '');
+      assert(longName.length > 0, 'GNU long-name record is empty');
     } else {
       const effectiveName = pax.path || longName || headerName;
-      const effectiveSize = pax.size === undefined ? size : Number(pax.size);
+      let effectiveSize = size;
+      if (pax.size !== undefined) {
+        assert(/^\d+$/.test(pax.size), 'invalid PAX file size');
+        effectiveSize = Number(pax.size);
+      }
       assert(Number.isSafeInteger(effectiveSize) && effectiveSize >= 0, 'invalid PAX file size');
+      assert(effectiveSize === size, 'PAX file size does not match the tar entry');
       if (type === '0' || type === '\0') {
-        assert(effectiveName.startsWith('package/'), 'packed file must be rooted under package/');
-        const packagePath = effectiveName.slice('package/'.length);
-        assert(
-          packagePath && !packagePath.startsWith('/') &&
-            !packagePath.split('/').some((segment) => segment === '..' || segment === ''),
-          'unsafe packed path',
-        );
-        files.push({ path: packagePath, size: effectiveSize });
+        files.push({ path: packagePathFromTar(effectiveName), size: effectiveSize });
+      } else if (type === '5') {
+        assert(size === 0, 'tar directory entry must be empty');
+        packagePathFromTar(effectiveName.replace(/\/$/, ''));
+      } else {
+        throw new Error(`unsupported tar entry type: ${JSON.stringify(type)}`);
       }
       pax = {};
       longName = null;
     }
-    offset = dataStart + Math.ceil(size / 512) * 512;
+    offset = nextOffset;
   }
 
-  assert(sawEnd, 'tar archive is missing its zero-block terminator');
+  assert(sawEnd, 'tar archive is missing its two-block end marker');
+  assert(Object.keys(pax).length === 0 && longName === null, 'tar metadata record has no target entry');
   files.sort((left, right) => left.path.localeCompare(right.path));
   assert(new Set(files.map((file) => file.path)).size === files.length, 'tar archive contains duplicate file paths');
+  assert(files.length > 0, 'tar archive contains no package files');
   return files;
+}
+
+function validateFiles(files) {
+  assert(Array.isArray(files) && files.length > 0, 'npm pack must report files');
+  const normalized = files.map((file) => {
+    assert(file && typeof file === 'object', 'npm pack file entry is invalid');
+    assert(
+      typeof file.path === 'string' &&
+        file.path.length > 0 &&
+        !path.isAbsolute(file.path) &&
+        !/[\\\0-\x1f\x7f]/.test(file.path) &&
+        !file.path.split('/').some((part) => part === '' || part === '.' || part === '..'),
+      'npm pack reported an unsafe path',
+    );
+    assert(Number.isSafeInteger(file.size) && file.size >= 0, 'npm pack file size is invalid');
+    return { path: file.path, size: file.size };
+  });
+  normalized.sort((left, right) => left.path.localeCompare(right.path));
+  assert(new Set(normalized.map((file) => file.path)).size === normalized.length, 'duplicate pack path');
+  return normalized;
 }
 
 function validatePackReport({ reportText, tarball, pkg, source }) {
@@ -132,7 +182,11 @@ function validatePackReport({ reportText, tarball, pkg, source }) {
   const report = reports[0];
   assert(report && typeof report === 'object' && !Array.isArray(report), 'npm pack report is invalid');
   assert(report.name === pkg.name && report.version === pkg.version, 'npm pack identity mismatch');
-  assert(typeof report.filename === 'string' && path.basename(report.filename) === report.filename, 'unsafe pack filename');
+  const expectedFilename = `${pkg.name.slice(1).replace('/', '-')}-${pkg.version}.tgz`;
+  assert(
+    report.filename === expectedFilename && path.basename(report.filename) === report.filename,
+    'npm pack filename mismatch',
+  );
   assert(Buffer.isBuffer(tarball) && tarball.length > 0, 'packed tarball is empty');
 
   const shasum = crypto.createHash('sha1').update(tarball).digest('hex');
@@ -142,10 +196,7 @@ function validatePackReport({ reportText, tarball, pkg, source }) {
   assert(report.size === tarball.length, 'npm pack size does not match the tarball bytes');
 
   const files = parseTarFiles(tarball);
-  const reportedFiles = Array.isArray(report.files)
-    ? report.files.map((file) => ({ path: file.path, size: file.size })).sort((a, b) => a.path.localeCompare(b.path))
-    : null;
-  assert(reportedFiles !== null, 'npm pack must report its files');
+  const reportedFiles = validateFiles(report.files);
   assert(JSON.stringify(reportedFiles) === JSON.stringify(files), 'npm pack file report does not match the tarball');
   const unpackedSize = files.reduce((total, file) => total + file.size, 0);
   assert(report.entryCount === files.length, 'npm pack entry count does not match the tarball');
@@ -176,12 +227,23 @@ function validateReleaseEvidence(evidence) {
   assert(evidence.source && evidence.source.ref === `refs/tags/v${evidence.package.version}`, 'release evidence ref mismatch');
   assert(COMMIT_RE.test(evidence.source.commit || ''), 'release evidence commit is invalid');
   const artifact = evidence.artifact;
+  assert(
+    artifact?.filename ===
+      `${evidence.package.name.slice(1).replace('/', '-')}-${evidence.package.version}.tgz` &&
+      path.basename(artifact.filename) === artifact.filename,
+    'release evidence filename mismatch',
+  );
   assert(artifact && isCanonicalSha512Integrity(artifact.integrity), 'release evidence integrity is invalid');
   assert(/^[0-9a-f]{40}$/.test(artifact.shasum || ''), 'release evidence shasum is invalid');
   assert(Number.isSafeInteger(artifact.packed_size) && artifact.packed_size > 0, 'release evidence packed size is invalid');
   assert(Number.isSafeInteger(artifact.unpacked_size) && artifact.unpacked_size > 0, 'release evidence unpacked size is invalid');
   assert(Number.isSafeInteger(artifact.file_count) && artifact.file_count > 0, 'release evidence file count is invalid');
-  assert(Array.isArray(artifact.files) && artifact.files.length === artifact.file_count, 'release evidence files mismatch');
+  const files = validateFiles(artifact.files);
+  assert(files.length === artifact.file_count, 'release evidence files mismatch');
+  assert(
+    files.reduce((total, file) => total + file.size, 0) === artifact.unpacked_size,
+    'release evidence unpacked size mismatch',
+  );
   return evidence;
 }
 
@@ -194,7 +256,8 @@ function validateEvidenceArtifact(rawEvidence, tarball) {
   assert(shasum === evidence.artifact.shasum, 'verified artifact shasum mismatch');
   assert(integrity === evidence.artifact.integrity, 'verified artifact integrity mismatch');
   const files = parseTarFiles(tarball);
-  assert(JSON.stringify(files) === JSON.stringify(evidence.artifact.files), 'verified artifact files mismatch');
+  const evidenceFiles = validateFiles(evidence.artifact.files);
+  assert(JSON.stringify(files) === JSON.stringify(evidenceFiles), 'verified artifact files mismatch');
   assert(files.length === evidence.artifact.file_count, 'verified artifact file count mismatch');
   assert(files.reduce((total, file) => total + file.size, 0) === evidence.artifact.unpacked_size, 'verified artifact unpacked size mismatch');
   return evidence;

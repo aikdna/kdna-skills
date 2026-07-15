@@ -7,13 +7,14 @@ import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import zlib from 'node:zlib';
 
 const require = createRequire(import.meta.url);
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.resolve(packageRoot, '..');
 const { validateCurrentReleaseBinding } = require('../../scripts/current-release-binding');
 const { validateReleaseContext } = require('../../scripts/release-policy');
-const { validateEvidenceArtifact, validatePackReport } = require('../../scripts/release-evidence');
+const { parseTarFiles, validateEvidenceArtifact, validatePackReport } = require('../../scripts/release-evidence');
 const { publishArguments, publishCandidate } = require('../../scripts/publish-verified-artifact');
 const { guardCandidate } = require('../../scripts/registry-duplicate-guard');
 const { evaluateRegistryResult, expectedE404 } = require('../../scripts/registry-duplicate-policy');
@@ -21,6 +22,92 @@ const { evaluateRegistryResult, expectedE404 } = require('../../scripts/registry
 const HASH = 'a'.repeat(40);
 const CHECKOUT_V7_SHA = '9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0';
 const SETUP_NODE_V6_SHA = '249970729cb0ef3589644e2896645e5dc5ba9c38';
+
+function writeTarString(header, offset, length, value) {
+  const bytes = Buffer.from(value);
+  assert.ok(bytes.length <= length, `tar field is too long: ${value}`);
+  bytes.copy(header, offset);
+}
+
+function writeTarOctal(header, offset, length, value) {
+  const octal = value.toString(8).padStart(length - 1, '0');
+  assert.ok(octal.length < length, `tar numeric field is too large: ${value}`);
+  header.write(octal, offset, length - 1, 'ascii');
+  header[offset + length - 1] = 0;
+}
+
+function tarEntry({ name, content = Buffer.alloc(0), type = '0' }) {
+  const data = Buffer.isBuffer(content) ? content : Buffer.from(content);
+  const header = Buffer.alloc(512);
+  writeTarString(header, 0, 100, name);
+  writeTarOctal(header, 100, 8, 0o644);
+  writeTarOctal(header, 108, 8, 0);
+  writeTarOctal(header, 116, 8, 0);
+  writeTarOctal(header, 124, 12, data.length);
+  writeTarOctal(header, 136, 12, 0);
+  header.fill(0x20, 148, 156);
+  header[156] = type.charCodeAt(0);
+  writeTarString(header, 257, 6, 'ustar');
+  writeTarString(header, 263, 2, '00');
+  const checksum = header.reduce((total, byte) => total + byte, 0);
+  header.write(checksum.toString(8).padStart(6, '0'), 148, 6, 'ascii');
+  header[154] = 0;
+  header[155] = 0x20;
+  return Buffer.concat([header, data, Buffer.alloc((512 - (data.length % 512)) % 512)]);
+}
+
+function tarGzip(entries, { endBlocks = 2, trailing = Buffer.alloc(0) } = {}) {
+  return zlib.gzipSync(
+    Buffer.concat([
+      ...entries.map((entry) => tarEntry(entry)),
+      Buffer.alloc(512 * endBlocks),
+      trailing,
+    ]),
+  );
+}
+
+function paxRecord(key, value) {
+  const body = `${key}=${value}\n`;
+  let length = Buffer.byteLength(`0 ${body}`);
+  while (true) {
+    const record = `${length} ${body}`;
+    const actual = Buffer.byteLength(record);
+    if (actual === length) return Buffer.from(record);
+    length = actual;
+  }
+}
+
+function releaseTarball() {
+  return tarGzip([{ name: 'package/package.json', content: '{"name":"mcp-release"}\n' }]);
+}
+
+function packReport(bytes, files = parseTarFiles(bytes)) {
+  return [{
+    name: '@aikdna/kdna-mcp-server',
+    version: '1.2.3',
+    filename: 'aikdna-kdna-mcp-server-1.2.3.tgz',
+    integrity: `sha512-${crypto.createHash('sha512').update(bytes).digest('base64')}`,
+    shasum: crypto.createHash('sha1').update(bytes).digest('hex'),
+    size: bytes.length,
+    unpackedSize: files.reduce((total, file) => total + file.size, 0),
+    entryCount: files.length,
+    files,
+  }];
+}
+
+function evidenceForBytes(bytes) {
+  return evidence({
+    artifact: {
+      filename: 'aikdna-kdna-mcp-server-1.2.3.tgz',
+      integrity: `sha512-${crypto.createHash('sha512').update(bytes).digest('base64')}`,
+      shasum: crypto.createHash('sha1').update(bytes).digest('hex'),
+      packed_size: bytes.length,
+      unpacked_size: 200,
+      file_count: 1,
+      files: [{ path: 'package.json', size: 200 }],
+    },
+  });
+}
 
 function releaseInput(overrides = {}) {
   const version = overrides.pkg?.version || '1.2.3';
@@ -157,6 +244,137 @@ test('pack evidence independently verifies identity, file list, sizes, SHA-1, an
   const tampered = Buffer.from(tarball);
   tampered[tampered.length - 1] ^= 1;
   assert.throws(() => validateEvidenceArtifact(candidate, tampered), /shasum|integrity|tar/i);
+});
+
+test('independent tar parser supports strict PAX paths and GNU long names', () => {
+  const paxPath = `package/nested/${'p'.repeat(96)}.js`;
+  const paxBytes = tarGzip([
+    { name: 'PaxHeader', type: 'x', content: paxRecord('path', paxPath) },
+    { name: 'package/placeholder', content: 'pax' },
+  ]);
+  assert.deepEqual(parseTarFiles(paxBytes), [{ path: paxPath.slice('package/'.length), size: 3 }]);
+
+  const longPath = `package/nested/${'g'.repeat(96)}.js`;
+  const longNameBytes = tarGzip([
+    { name: '././@LongLink', type: 'L', content: `${longPath}\0` },
+    { name: 'package/placeholder', content: 'gnu' },
+  ]);
+  assert.deepEqual(parseTarFiles(longNameBytes), [{ path: longPath.slice('package/'.length), size: 3 }]);
+});
+
+test('independent tar parser rejects hostile archive structure and paths', () => {
+  const valid = releaseTarball();
+  const tar = zlib.gunzipSync(valid);
+  const checksumDamage = Buffer.from(tar);
+  checksumDamage[0] ^= 1;
+  const danglingPax = tarGzip([
+    { name: 'PaxHeader', type: 'x', content: paxRecord('path', 'package/unbound.js') },
+  ]);
+  const danglingLongName = tarGzip([
+    { name: '././@LongLink', type: 'L', content: 'package/unbound.js\0' },
+  ]);
+  const paxSizeMismatch = tarGzip([
+    { name: 'PaxHeader', type: 'x', content: paxRecord('size', '99') },
+    { name: 'package/package.json', content: '{}' },
+  ]);
+  const cases = [
+    ['non-gzip', Buffer.from('ordinary bytes'), /gzip/],
+    ['truncated gzip', valid.subarray(0, valid.length - 8), /gzip/],
+    ['truncated tar entry', zlib.gzipSync(tar.subarray(0, 520)), /truncated tar entry/],
+    ['header checksum', zlib.gzipSync(checksumDamage), /checksum/],
+    [
+      'single end block',
+      tarGzip([{ name: 'package/package.json', content: '{}' }], { endBlocks: 1 }),
+      /end marker/,
+    ],
+    [
+      'trailing data',
+      tarGzip([{ name: 'package/package.json', content: '{}' }], { trailing: Buffer.from('hidden') }),
+      /data after/,
+    ],
+    [
+      'duplicate path',
+      tarGzip([
+        { name: 'package/package.json', content: '{}' },
+        { name: 'package/package.json', content: '[]' },
+      ]),
+      /duplicate/,
+    ],
+    ['parent traversal', tarGzip([{ name: 'package/../escape.js', content: 'x' }]), /unsafe/],
+    ['dot segment', tarGzip([{ name: 'package/./escape.js', content: 'x' }]), /unsafe/],
+    ['absolute-like path', tarGzip([{ name: 'package//escape.js', content: 'x' }]), /unsafe/],
+    ['backslash path', tarGzip([{ name: 'package/..\\escape.js', content: 'x' }]), /unsafe/],
+    ['symbolic link', tarGzip([{ name: 'package/link', type: '2' }]), /unsupported/],
+    ['hard link', tarGzip([{ name: 'package/link', type: '1' }]), /unsupported/],
+    ['PAX size mismatch', paxSizeMismatch, /PAX file size/],
+    ['dangling PAX metadata', danglingPax, /metadata record/],
+    ['dangling GNU long name', danglingLongName, /metadata record/],
+  ];
+  for (const [name, bytes, pattern] of cases) {
+    assert.throws(() => parseTarFiles(bytes), pattern, name);
+  }
+});
+
+test('npm report and retained evidence must exactly match the parsed tar manifest', () => {
+  const bytes = releaseTarball();
+  const report = packReport(bytes);
+  report[0].files = [{ path: 'README.md', size: report[0].files[0].size }];
+  assert.throws(
+    () => validatePackReport({
+      reportText: JSON.stringify(report),
+      tarball: bytes,
+      pkg: { name: '@aikdna/kdna-mcp-server', version: '1.2.3' },
+      source: { ref: 'refs/tags/v1.2.3', commit: HASH },
+    }),
+    /file report/,
+  );
+
+  const candidate = validatePackReport({
+    reportText: JSON.stringify(packReport(bytes)),
+    tarball: bytes,
+    pkg: { name: '@aikdna/kdna-mcp-server', version: '1.2.3' },
+    source: { ref: 'refs/tags/v1.2.3', commit: HASH },
+  });
+  const drifted = {
+    ...candidate,
+    artifact: {
+      ...candidate.artifact,
+      files: [{ path: 'README.md', size: candidate.artifact.files[0].size }],
+    },
+  };
+  assert.throws(() => validateEvidenceArtifact(drifted, bytes), /artifact files/);
+});
+
+test('non-tar bytes cannot reach registry lookup or npm publication with matching outer hashes', () => {
+  const bytes = Buffer.from('ordinary strings are not npm tarballs');
+  const candidate = evidenceForBytes(bytes);
+  let lookupCalls = 0;
+  let publishCalls = 0;
+  assert.throws(
+    () => guardCandidate({
+      evidence: candidate,
+      tarball: bytes,
+      bindCurrent: () => candidate,
+      lookup: () => {
+        lookupCalls += 1;
+      },
+    }),
+    /gzip/,
+  );
+  assert.throws(
+    () => publishCandidate({
+      evidence: candidate,
+      tarball: bytes,
+      artifactPath: '/tmp/not-reached.tgz',
+      bindCurrent: () => candidate,
+      publish: () => {
+        publishCalls += 1;
+      },
+    }),
+    /gzip/,
+  );
+  assert.equal(lookupCalls, 0);
+  assert.equal(publishCalls, 0);
 });
 
 test(

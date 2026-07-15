@@ -115,7 +115,9 @@ function validatedJsonRpcMessage(message) {
 
   const hasId = Object.prototype.hasOwnProperty.call(message, 'id');
   if (hasId) {
-    const validId = typeof message.id === 'string' || Number.isSafeInteger(message.id);
+    const validId =
+      typeof message.id === 'string' ||
+      (typeof message.id === 'number' && Number.isFinite(message.id));
     if (!validId) throw new JsonRpcError(-32600, 'Invalid Request');
   }
 
