@@ -133,6 +133,11 @@ test('pack evidence independently verifies identity, file list, sizes, SHA-1, an
   const packed = spawnSync('npm', ['pack', '--json', '--ignore-scripts', '--pack-destination', temp], {
     cwd: packageRoot,
     encoding: 'utf8',
+    env: {
+      ...process.env,
+      npm_config_dry_run: 'false',
+      NPM_CONFIG_DRY_RUN: 'false',
+    },
     maxBuffer: 16 * 1024 * 1024,
     shell: false,
   });
@@ -153,6 +158,46 @@ test('pack evidence independently verifies identity, file list, sizes, SHA-1, an
   tampered[tampered.length - 1] ^= 1;
   assert.throws(() => validateEvidenceArtifact(candidate, tampered), /shasum|integrity|tar/i);
 });
+
+test(
+  'npm publish --dry-run completes nested pack verification before the real release tag gate',
+  { skip: process.env.KDNA_MCP_NESTED_PUBLISH_TEST === '1' },
+  () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
+    const publishEnv = { ...process.env };
+    delete publishEnv.NODE_TEST_CONTEXT;
+    delete publishEnv.npm_lifecycle_event;
+    delete publishEnv.npm_lifecycle_script;
+    delete publishEnv.npm_command;
+    const result = spawnSync(
+      'npm',
+      ['publish', '--dry-run', '--access', 'public', '--registry=https://registry.npmjs.org/'],
+      {
+        cwd: packageRoot,
+        encoding: 'utf8',
+        env: {
+          ...publishEnv,
+          KDNA_MCP_NESTED_PUBLISH_TEST: '1',
+          GITHUB_EVENT_NAME: 'release',
+          RELEASE_EVENT_ACTION: 'published',
+          RELEASE_TAG_NAME: `v${pkg.version}.wrong`,
+          RELEASE_IS_DRAFT: 'false',
+          RELEASE_IS_PRERELEASE: 'false',
+          GITHUB_REF: `refs/tags/v${pkg.version}.wrong`,
+          GITHUB_SHA: HASH,
+        },
+        maxBuffer: 32 * 1024 * 1024,
+        shell: false,
+      },
+    );
+    const output = `${result.stdout || ''}\n${result.stderr || ''}`;
+    assert.notEqual(result.status, 0, output);
+    assert.match(output, /pack evidence independently verifies identity/);
+    assert.match(output, /Release context rejected:/);
+    assert.match(output, new RegExp(`v${pkg.version.replaceAll('.', '\\.')}.*(?:tag|commit)|tag.*v${pkg.version.replaceAll('.', '\\.')}`, 'is'));
+    assert.doesNotMatch(output, /ENOENT|no such file[^\n]*\.tgz/i);
+  },
+);
 
 test('stale release evidence blocks lookup and publish before either side effect', () => {
   let calls = 0;

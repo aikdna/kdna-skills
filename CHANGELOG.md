@@ -5,6 +5,9 @@
 - Run MCP discovery, authorization planning, verification, matching, and
   Runtime Capsule loading on the formal KDNA Core 0.18.0 release without
   changing the six-tool surface or the loader's conservative defaults.
+- Honor `maxDepth: 0` as a root-only local inventory, constrain depth to
+  non-negative integers, return canonical JSON-RPC protocol errors, and report
+  tool execution failures through MCP `isError` results.
 - Bind future npm publication to one stable GitHub Release, its exact tag and
   commit, a clean source tree, the finalized changelog entry, and the exact
   independently verified tarball with provenance.

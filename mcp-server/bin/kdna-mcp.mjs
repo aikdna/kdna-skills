@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const Ajv = require('ajv');
 const packageInfo = require('../package.json');
 const {
   detectContainerFormat,
@@ -76,7 +77,7 @@ const tools = [
       type: 'object',
       properties: {
         root: { type: 'string' },
-        maxDepth: { type: 'number' },
+        maxDepth: { type: 'integer', minimum: 0 },
       },
     },
   },
@@ -94,17 +95,48 @@ const tools = [
   },
 ];
 
-function send(id, result, error) {
-  const msg = error
-    ? { jsonrpc: '2.0', id, error: { code: -32000, message: error.message || String(error) } }
-    : { jsonrpc: '2.0', id, result };
-  process.stdout.write(`${JSON.stringify(msg)}\n`);
+const ajv = new Ajv({ allErrors: true, strict: false });
+const toolValidators = new Map(tools.map((tool) => [tool.name, ajv.compile(tool.inputSchema)]));
+
+class JsonRpcError extends Error {
+  constructor(code, message) {
+    super(message);
+    this.code = code;
+  }
+}
+
+function sendResult(id, result) {
+  process.stdout.write(`${JSON.stringify({ jsonrpc: '2.0', id, result })}\n`);
+}
+
+function sendError(id, code, message) {
+  process.stdout.write(`${JSON.stringify({ jsonrpc: '2.0', id, error: { code, message } })}\n`);
 }
 
 function textResult(value) {
   return {
     content: [{ type: 'text', text: typeof value === 'string' ? value : JSON.stringify(value, null, 2) }],
   };
+}
+
+function toolErrorResult(error) {
+  return {
+    content: [{ type: 'text', text: error?.message || String(error) }],
+    isError: true,
+  };
+}
+
+function validatedToolCall(params) {
+  if (!params || typeof params !== 'object' || Array.isArray(params)) {
+    throw new JsonRpcError(-32602, 'Invalid params');
+  }
+  if (typeof params.name !== 'string' || !toolValidators.has(params.name)) {
+    throw new JsonRpcError(-32602, 'Invalid params');
+  }
+  const args = params.arguments === undefined ? {} : params.arguments;
+  const validateInput = toolValidators.get(params.name);
+  if (!validateInput(args)) throw new JsonRpcError(-32602, 'Invalid params');
+  return { name: params.name, args };
 }
 
 function isKdnaAsset(assetPath) {
@@ -228,7 +260,7 @@ async function callTool(name, args = {}) {
     return textResult(await matchDomain(args.input || '', args.assetPaths || []));
   }
   if (name === 'kdna.available-local') {
-    return textResult(findLocalAssets(args.root, args.maxDepth || 3));
+    return textResult(findLocalAssets(args.root, args.maxDepth ?? 3));
   }
   throw new Error(`Unknown tool: ${name}`);
 }
@@ -236,7 +268,7 @@ async function callTool(name, args = {}) {
 async function handle(message) {
   const { id, method, params = {} } = message;
   if (method === 'initialize') {
-    send(id, {
+    sendResult(id, {
       protocolVersion: '2024-11-05',
       capabilities: { tools: {} },
       serverInfo: { name: '@aikdna/kdna-mcp-server', version: packageInfo.version },
@@ -244,14 +276,28 @@ async function handle(message) {
     return;
   }
   if (method === 'tools/list') {
-    send(id, { tools });
+    sendResult(id, { tools });
     return;
   }
   if (method === 'tools/call') {
-    send(id, await callTool(params.name, params.arguments || {}));
+    let call;
+    try {
+      call = validatedToolCall(params);
+    } catch (error) {
+      if (error instanceof JsonRpcError) {
+        sendError(id, error.code, error.message);
+        return;
+      }
+      throw error;
+    }
+    try {
+      sendResult(id, await callTool(call.name, call.args));
+    } catch (error) {
+      sendResult(id, toolErrorResult(error));
+    }
     return;
   }
-  if (id !== undefined) send(id, {});
+  if (id !== undefined) sendError(id, -32601, 'Method not found');
 }
 
 const rl = readline.createInterface({ input: process.stdin });
@@ -260,8 +306,13 @@ rl.on('line', async (line) => {
   let message;
   try {
     message = JSON.parse(line);
+  } catch {
+    sendError(null, -32700, 'Parse error');
+    return;
+  }
+  try {
     await handle(message);
-  } catch (e) {
-    send(message?.id ?? null, null, e);
+  } catch {
+    sendError(message?.id ?? null, -32603, 'Internal error');
   }
 });

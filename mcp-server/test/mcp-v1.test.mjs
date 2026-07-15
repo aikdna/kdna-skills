@@ -47,6 +47,15 @@ function callToolRaw(name, args, options = {}) {
   return JSON.parse(r.stdout.trim());
 }
 
+function sendRawLine(line) {
+  const r = spawnSync(process.execPath, [server], {
+    input: `${line}\n`,
+    encoding: 'utf8',
+  });
+  assert.equal(r.status, 0, r.stderr);
+  return JSON.parse(r.stdout.trim());
+}
+
 function initialize() {
   const request = { jsonrpc: '2.0', id: 1, method: 'initialize' };
   const r = spawnSync(process.execPath, [server], {
@@ -142,6 +151,31 @@ test('available-local discovers .kdna files and load returns a Runtime Capsule',
   }
 });
 
+test('available-local treats maxDepth 0 as root-only and declares a non-negative integer', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-depth-zero-'));
+  try {
+    const rootAsset = makeKdnaContainer(root, 'root.kdna');
+    const nested = path.join(root, 'nested');
+    fs.mkdirSync(nested);
+    const nestedAsset = makeKdnaContainer(nested, 'nested.kdna');
+
+    const rootOnly = callTool('kdna.available-local', { root, maxDepth: 0 });
+    assert.deepEqual(rootOnly.map((asset) => asset.path), [rootAsset]);
+    assert.equal(rootOnly.some((asset) => asset.path === nestedAsset), false);
+
+    const withNested = callTool('kdna.available-local', { root, maxDepth: 1 });
+    assert.deepEqual(new Set(withNested.map((asset) => asset.path)), new Set([rootAsset, nestedAsset]));
+
+    const availableTool = listTools().find((tool) => tool.name === 'kdna.available-local');
+    assert.deepEqual(availableTool.inputSchema.properties.maxDepth, {
+      type: 'integer',
+      minimum: 0,
+    });
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('available-local does not list source directories as loadable assets', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-source-dir-'));
   try {
@@ -193,11 +227,37 @@ test('tools/list exposes only current local-asset tools and load credentials', (
   assert.ok(loadTool.inputSchema.properties.entitlementStatus);
 });
 
-test('tool errors preserve the JSON-RPC request id', () => {
+test('tool execution errors preserve the request id and use MCP isError results', () => {
   const response = callToolRaw('kdna.load', { assetPath: '/not/a/current/asset.kdna' });
   assert.equal(response.id, 1);
-  assert.ok(response.error);
-  assert.match(response.error.message, /not a current KDNA asset/);
+  assert.equal(response.error, undefined);
+  assert.equal(response.result.isError, true);
+  assert.match(response.result.content[0].text, /not a current KDNA asset/);
+});
+
+test('JSON-RPC reports unknown methods, parse failures, and invalid tool params canonically', async (t) => {
+  const unknown = sendRawLine(JSON.stringify({ jsonrpc: '2.0', id: 71, method: 'kdna.unknown' }));
+  assert.equal(unknown.id, 71);
+  assert.deepEqual(unknown.error, { code: -32601, message: 'Method not found' });
+
+  const parse = sendRawLine('{"jsonrpc":"2.0","id":');
+  assert.equal(parse.id, null);
+  assert.deepEqual(parse.error, { code: -32700, message: 'Parse error' });
+
+  const invalidCases = [
+    ['missing required assetPath', 'kdna.load', {}],
+    ['negative maxDepth', 'kdna.available-local', { maxDepth: -1 }],
+    ['fractional maxDepth', 'kdna.available-local', { maxDepth: 0.5 }],
+    ['non-object arguments', 'kdna.available-local', []],
+    ['unknown tool', 'kdna.not-a-tool', {}],
+  ];
+  for (const [name, tool, args] of invalidCases) {
+    await t.test(name, () => {
+      const response = callToolRaw(tool, args);
+      assert.equal(response.id, 1);
+      assert.deepEqual(response.error, { code: -32602, message: 'Invalid params' });
+    });
+  }
 });
 
 test('kdna.load refuses an asset when LoadPlan cannot load now', () => {
@@ -223,9 +283,10 @@ test('kdna.load refuses an asset when LoadPlan cannot load now', () => {
     assert.equal(plan.state, 'needs_runtime');
 
     const response = callToolRaw('kdna.load', { assetPath, profile: 'compact' });
-    assert.ok(response.error, JSON.stringify(response));
-    assert.match(response.error.message, /LoadPlan denied loading/);
-    assert.ok(!response.error.message.includes(secret));
+    assert.equal(response.error, undefined, JSON.stringify(response));
+    assert.equal(response.result.isError, true);
+    assert.match(response.result.content[0].text, /LoadPlan denied loading/);
+    assert.ok(!response.result.content[0].text.includes(secret));
     assert.ok(!JSON.stringify(response).includes(secret));
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
