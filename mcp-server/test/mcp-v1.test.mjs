@@ -47,13 +47,19 @@ function callToolRaw(name, args, options = {}) {
   return JSON.parse(r.stdout.trim());
 }
 
-function sendRawLine(line) {
+function sendRawLineText(line) {
   const r = spawnSync(process.execPath, [server], {
     input: `${line}\n`,
     encoding: 'utf8',
   });
   assert.equal(r.status, 0, r.stderr);
-  return JSON.parse(r.stdout.trim());
+  return r.stdout.trim();
+}
+
+function sendRawLine(line) {
+  const output = sendRawLineText(line);
+  assert.notEqual(output, '', 'request must produce a response');
+  return JSON.parse(output);
 }
 
 function initialize() {
@@ -244,6 +250,12 @@ test('JSON-RPC reports unknown methods, parse failures, and invalid tool params 
   assert.equal(parse.id, null);
   assert.deepEqual(parse.error, { code: -32700, message: 'Parse error' });
 
+  const invalidMcpParams = sendRawLine(JSON.stringify({
+    jsonrpc: '2.0', id: 72, method: 'tools/list', params: [],
+  }));
+  assert.equal(invalidMcpParams.id, 72);
+  assert.deepEqual(invalidMcpParams.error, { code: -32602, message: 'Invalid params' });
+
   const invalidCases = [
     ['missing required assetPath', 'kdna.load', {}],
     ['negative maxDepth', 'kdna.available-local', { maxDepth: -1 }],
@@ -256,6 +268,43 @@ test('JSON-RPC reports unknown methods, parse failures, and invalid tool params 
       const response = callToolRaw(tool, args);
       assert.equal(response.id, 1);
       assert.deepEqual(response.error, { code: -32602, message: 'Invalid params' });
+    });
+  }
+});
+
+test('JSON-RPC rejects every invalid MCP request envelope instead of silently dropping it', async (t) => {
+  const invalidRequests = [
+    ['null', 'null'],
+    ['empty array', '[]'],
+    ['empty object', '{}'],
+    ['wrong protocol version', JSON.stringify({ jsonrpc: '1.0', id: 1, method: 'tools/list' })],
+    ['non-string method', JSON.stringify({ jsonrpc: '2.0', id: 1, method: 3 })],
+    ['null MCP request id', JSON.stringify({ jsonrpc: '2.0', id: null, method: 'tools/list' })],
+    ['fractional MCP request id', JSON.stringify({ jsonrpc: '2.0', id: 1.5, method: 'tools/list' })],
+    ['single-message transport batch', JSON.stringify([
+      { jsonrpc: '2.0', id: 1, method: 'tools/list' },
+    ])],
+  ];
+
+  for (const [name, line] of invalidRequests) {
+    await t.test(name, () => {
+      const response = sendRawLine(line);
+      assert.equal(response.id, null);
+      assert.deepEqual(response.error, { code: -32600, message: 'Invalid Request' });
+    });
+  }
+});
+
+test('valid known and unknown notifications never produce JSON-RPC responses', async (t) => {
+  const notifications = [
+    ['known request method without id', { jsonrpc: '2.0', method: 'tools/list' }],
+    ['known MCP notification', { jsonrpc: '2.0', method: 'notifications/initialized' }],
+    ['unknown notification', { jsonrpc: '2.0', method: 'kdna.unknown' }],
+  ];
+
+  for (const [name, notification] of notifications) {
+    await t.test(name, () => {
+      assert.equal(sendRawLineText(JSON.stringify(notification)), '');
     });
   }
 });

@@ -105,6 +105,31 @@ class JsonRpcError extends Error {
   }
 }
 
+function validatedJsonRpcMessage(message) {
+  if (!message || typeof message !== 'object' || Array.isArray(message)) {
+    throw new JsonRpcError(-32600, 'Invalid Request');
+  }
+  if (message.jsonrpc !== '2.0' || typeof message.method !== 'string') {
+    throw new JsonRpcError(-32600, 'Invalid Request');
+  }
+
+  const hasId = Object.prototype.hasOwnProperty.call(message, 'id');
+  if (hasId) {
+    const validId = typeof message.id === 'string' || Number.isSafeInteger(message.id);
+    if (!validId) throw new JsonRpcError(-32600, 'Invalid Request');
+  }
+
+  return {
+    id: message.id,
+    method: message.method,
+    params: message.params === undefined ? {} : message.params,
+    paramsValid:
+      message.params === undefined ||
+      (message.params !== null && typeof message.params === 'object' && !Array.isArray(message.params)),
+    isNotification: !hasId,
+  };
+}
+
 function sendResult(id, result) {
   process.stdout.write(`${JSON.stringify({ jsonrpc: '2.0', id, result })}\n`);
 }
@@ -265,8 +290,7 @@ async function callTool(name, args = {}) {
   throw new Error(`Unknown tool: ${name}`);
 }
 
-async function handle(message) {
-  const { id, method, params = {} } = message;
+async function handle({ id, method, params }) {
   if (method === 'initialize') {
     sendResult(id, {
       protocolVersion: '2024-11-05',
@@ -310,9 +334,27 @@ rl.on('line', async (line) => {
     sendError(null, -32700, 'Parse error');
     return;
   }
+
+  let request;
   try {
-    await handle(message);
+    request = validatedJsonRpcMessage(message);
+  } catch (error) {
+    if (error instanceof JsonRpcError) {
+      sendError(null, error.code, error.message);
+      return;
+    }
+    sendError(null, -32603, 'Internal error');
+    return;
+  }
+
+  if (request.isNotification) return;
+  if (!request.paramsValid) {
+    sendError(request.id, -32602, 'Invalid params');
+    return;
+  }
+  try {
+    await handle(request);
   } catch {
-    sendError(message?.id ?? null, -32603, 'Internal error');
+    sendError(request.id, -32603, 'Internal error');
   }
 });
