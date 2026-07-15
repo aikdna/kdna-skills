@@ -1,58 +1,38 @@
 #!/usr/bin/env node
 'use strict';
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
 
-const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'mcp-server', 'package.json'), 'utf8'));
-const version = pkg.version;
-const name = pkg.name;
-const tag = `v${version}`;
-const failures = [];
+const { execFileSync } = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const { validateReleaseContext } = require('./release-policy');
 
-function check(label, fn) {
-  try { fn(); console.log(`  PASS ${label}`); }
-  catch (e) { failures.push(`${label}: ${e.message}`); console.error(`  FAIL ${label}: ${e.message}`); }
+const root = path.resolve(__dirname, '..');
+const packageRoot = path.join(root, 'mcp-server');
+const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
+const changelog = fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8');
+
+function git(args) {
+  return execFileSync('git', args, {
+    cwd: root,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
 }
 
-console.log(`Release readiness check: ${name}@${version}\n`);
-
-check('worktree is clean', () => {
-  const out = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
-  if (out) throw new Error('tracked or untracked release inputs are not committed');
-});
-
-check('git tag exists', () => {
-  const out = execSync(`git tag -l "${tag}"`, { encoding: 'utf8' }).trim();
-  if (!out) throw new Error(`tag ${tag} not found. Run: git tag ${tag} && git push origin ${tag}`);
-});
-
-check('version tag points to HEAD', () => {
-  const head = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
-  const tagged = execSync(`git rev-list -n 1 "${tag}"`, { encoding: 'utf8' }).trim();
-  if (head !== tagged) {
-    throw new Error(`${tag} points to ${tagged.slice(0, 12)}, not HEAD ${head.slice(0, 12)}`);
-  }
-});
-
-check('GitHub Release exists', () => {
-  const repo = pkg.repository.directory
-    ? pkg.repository.url.match(/github\.com\/([^/]+\/[^.]+)/)[1]
-    : pkg.repository.url.match(/github\.com\/([^/]+\/[^.]+)/)[1];
-  execSync(`gh release view ${tag} --repo ${repo}`, { stdio: 'ignore' });
-});
-
-check('CHANGELOG has version entry', () => {
-  const changelog = fs.readFileSync(path.join(__dirname, '..', 'CHANGELOG.md'), 'utf8');
-  if (!changelog.includes(version)) throw new Error(`CHANGELOG.md missing entry for ${version}`);
-});
-
-check('package.json version matches tag', () => {
-  if (!tag.endsWith(version)) throw new Error(`tag ${tag} does not match version ${version}`);
-});
-
-if (failures.length > 0) {
-  console.error(`\n${failures.length} check(s) failed. Fix before publishing.`);
-  process.exit(1);
+try {
+  const tag = `v${pkg.version}`;
+  const context = validateReleaseContext({
+    pkg,
+    changelog,
+    env: process.env,
+    git: {
+      status: git(['status', '--porcelain=v1', '--untracked-files=all']),
+      head: git(['rev-parse', 'HEAD']),
+      tagCommit: git(['rev-parse', `${tag}^{commit}`]),
+    },
+  });
+  console.log(`Release context verified: ${context.name}@${context.version} ${context.commit}`);
+} catch (error) {
+  console.error(`Release context rejected: ${error.message}`);
+  process.exitCode = 1;
 }
-console.log('\nAll checks passed. Ready to publish.');

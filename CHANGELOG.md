@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.2 (2026-07-15)
+
+- Run MCP discovery, authorization planning, verification, matching, and
+  Runtime Capsule loading on the formal KDNA Core 0.18.0 release without
+  changing the six-tool surface or the loader's conservative defaults.
+- Bind future npm publication to one stable GitHub Release, its exact tag and
+  commit, a clean source tree, the finalized changelog entry, and the exact
+  independently verified tarball with provenance.
+- Fail closed on registry lookup, authentication, timeout, malformed output,
+  or an existing-version artifact collision; only a target-bound E404 may
+  authorize a new publication.
+
 ## 2026-07 (MCP v0.4.1)
 
 - Run MCP asset discovery, LoadPlan authorization, and Runtime Capsule loading

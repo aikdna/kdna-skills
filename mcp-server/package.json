@@ -1,6 +1,6 @@
 {
   "name": "@aikdna/kdna-mcp-server",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "MCP server for loading, inspecting, verifying, and matching KDNA .kdna assets.",
   "type": "module",
   "homepage": "https://aikdna.com",
@@ -30,11 +30,13 @@
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "prepublishOnly": "npm test && node ../scripts/release-check.js"
+    "release:check": "node ../scripts/release-check.js",
+    "release:preflight": "node ../scripts/release-preflight.js",
+    "prepublishOnly": "npm test && npm run release:check"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aikdna/kdna-core": "0.17.0",
+    "@aikdna/kdna-core": "0.18.0",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1"
   },
