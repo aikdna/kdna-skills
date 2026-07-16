@@ -16,6 +16,7 @@ jobs:
       github.event.release.prerelease == false &&
       startsWith(github.event.release.tag_name, 'v')
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
@@ -38,8 +39,10 @@ jobs:
         run: git fetch --force --tags origin
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: 22
+          node-version: 22.23.1
+          check-latest: false
           registry-url: 'https://registry.npmjs.org'
+      - run: node --version | grep -Fx v22.23.1
       - name: Pin the audited npm release client
         run: |
           npm install --global npm@11.17.0 --ignore-scripts --registry=https://registry.npmjs.org/
@@ -49,6 +52,8 @@ jobs:
         run: npm run release:check
       - name: Run the complete release preflight
         run: npm run release:preflight
+      - name: Require the coordinated Core registry artifact
+        run: npm run release:dependency-guard
       - name: Build independently verified pack evidence
         run: >-
           node ../scripts/generate-release-evidence.js

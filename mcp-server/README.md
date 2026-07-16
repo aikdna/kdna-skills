@@ -22,12 +22,17 @@ server provides a lower-level bridge for structured tool calls.
 |------|---------|-------|--------|
 | `kdna.inspect` | Inspect a `.kdna` asset | File path | Structured metadata |
 | `kdna.verify` | Verify asset integrity state | File path | Pass/fail with reasons |
-| `kdna.plan-load` | Return Core LoadPlan before loading | File path, optional password or entitlement state | LoadPlan JSON |
+| `kdna.plan-load` | Return Core LoadPlan before loading | File path, optional password-presence or entitlement state | LoadPlan JSON |
 | `kdna.load` | Load an authorized `.kdna` profile | File path, optional profile, password, or entitlement state | Runtime Capsule |
 | `kdna.available-local` | List local `.kdna` assets | Root directory | Local asset inventory |
 | `kdna.match` | Rank candidate assets for a task string | Task description | Scored list with fit signals |
 
 ## Install & Run
+
+The commands below currently resolve the published MCP 0.4.1 package. They do
+not install or prove the MCP 0.4.2 / Core 0.19.0 source checkpoint described in
+this repository's current changelog; those candidates must remain a coordinated
+package set and must not be mixed with the published wave.
 
 ```bash
 npm install -g @aikdna/kdna-mcp-server
@@ -105,6 +110,14 @@ node bin/kdna-mcp.mjs
 # Client calls kdna.load { assetPath: "./dist/writing.kdna", profile: "compact" }
 # Agent consumes only the returned Runtime Capsule context
 ```
+
+In the 0.4.2 source checkpoint, the returned Capsule uses
+`type: "kdna.runtime-capsule"` and
+`contract_version: "0.1.0"`. The KDNA Agent Host protocol has the independent
+coordinate `protocol_version: "0.1.0"`; it is not the MCP transport's
+`protocolVersion`. This bridge does not execute an Agent Host and therefore
+does not create or claim a Host receipt or Judgment Trace. A consuming Host
+must use Core's correlated runtime-contract APIs for that boundary.
 
 ## Relationship to kdna-loader skill
 

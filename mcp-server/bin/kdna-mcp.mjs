@@ -8,6 +8,9 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const Ajv = require('ajv');
+const Ajv2020 = require('ajv/dist/2020');
+const addFormats = require('ajv-formats');
+const loadPlanSchema = require('@aikdna/kdna-core/schema/load-plan.schema.json');
 const packageInfo = require('../package.json');
 const {
   detectContainerFormat,
@@ -24,6 +27,7 @@ const tools = [
     description: 'Inspect a .kdna asset without extracting it.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       required: ['assetPath'],
       properties: { assetPath: { type: 'string' }, verify: { type: 'boolean' } },
     },
@@ -33,6 +37,7 @@ const tools = [
     description: 'Verify a .kdna asset integrity state.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       required: ['assetPath'],
       properties: {
         assetPath: { type: 'string' },
@@ -47,6 +52,7 @@ const tools = [
     description: 'Load a .kdna profile and return agent context.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       required: ['assetPath'],
       properties: {
         assetPath: { type: 'string' },
@@ -62,6 +68,7 @@ const tools = [
     description: 'Return the Core LoadPlan for a .kdna asset before loading.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       required: ['assetPath'],
       properties: {
         assetPath: { type: 'string' },
@@ -75,6 +82,7 @@ const tools = [
     description: 'List local .kdna files without using a registry.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         root: { type: 'string' },
         maxDepth: { type: 'integer', minimum: 0 },
@@ -86,6 +94,7 @@ const tools = [
     description: 'Rank .kdna assets for a task string.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       required: ['input', 'assetPaths'],
       properties: {
         input: { type: 'string' },
@@ -97,6 +106,9 @@ const tools = [
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const toolValidators = new Map(tools.map((tool) => [tool.name, ajv.compile(tool.inputSchema)]));
+const contractAjv = new Ajv2020({ allErrors: true, strict: false });
+addFormats(contractAjv);
+const validateLoadPlan = contractAjv.compile(loadPlanSchema);
 
 class JsonRpcError extends Error {
   constructor(code, message) {
@@ -198,20 +210,35 @@ function findLocalAssets(root = defaultAssetRoot(), maxDepth = 3) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         visit(full, depth + 1);
-      } else if (entry.isFile() && entry.name.endsWith('.kdna') && detectContainerFormat(full) === 'kdna') {
-        const inspection = inspect(full);
-        const validation = validate(full);
-        found.push({
-          path: full,
-          kind: 'kdna_asset',
-          asset_id: inspection.asset_id,
-          title: inspection.title,
-          version: inspection.version,
-          judgment_version: inspection.judgment_version,
-          checksums_present: Boolean(inspection.checksums_present),
-          loadable: Boolean(validation.overall_valid),
-          problems: validation.overall_valid ? [] : validation.problems || [],
-        });
+      } else if (entry.isFile() && entry.name.endsWith('.kdna')) {
+        try {
+          if (detectContainerFormat(full) !== 'kdna') continue;
+          const inspection = inspect(full);
+          const validation = validate(full);
+          found.push({
+            path: full,
+            kind: 'kdna_asset',
+            asset_id: inspection.asset_id,
+            title: inspection.title,
+            version: inspection.version,
+            judgment_version: inspection.judgment_version,
+            checksums_present: Boolean(inspection.checksums_present),
+            loadable: Boolean(validation.overall_valid),
+            problems: validation.overall_valid ? [] : validation.problems || [],
+          });
+        } catch {
+          found.push({
+            path: full,
+            kind: 'kdna_asset',
+            asset_id: null,
+            title: null,
+            version: null,
+            judgment_version: null,
+            checksums_present: false,
+            loadable: false,
+            problems: ['KDNA_ASSET_INVALID'],
+          });
+        }
       }
     }
   }
@@ -233,15 +260,31 @@ function runCliPlanLoad(args = {}) {
   if (result.error) {
     throw new Error(`Core planLoad is unavailable and kdna CLI failed: ${result.error.message}`);
   }
+  if (result.status !== 0 && result.status !== 3) {
+    throw new Error(`Core planLoad is unavailable and kdna CLI exited ${result.status}`);
+  }
+  let plan;
   try {
-    if (result.stdout && result.stdout.trim()) return JSON.parse(result.stdout);
+    if (result.stdout && result.stdout.trim()) plan = JSON.parse(result.stdout);
   } catch (error) {
     throw new Error(`Core planLoad is unavailable and kdna CLI returned non-JSON output: ${error.message}`);
   }
-  if (result.status !== 0) {
-    throw new Error(`Core planLoad is unavailable and kdna CLI exited ${result.status}: ${result.stderr || result.stdout}`);
+  if (!validateLoadPlan(plan)) {
+    throw new Error('Core planLoad is unavailable and kdna CLI returned an invalid LoadPlan');
   }
-  throw new Error('Core planLoad is unavailable and kdna CLI returned empty output');
+  if (
+    plan.source.kind !== 'file' ||
+    path.resolve(plan.source.path) !== path.resolve(args.assetPath)
+  ) {
+    throw new Error('Core planLoad is unavailable and kdna CLI returned an uncorrelated LoadPlan');
+  }
+  if (result.status === 0 && plan.can_load_now !== true) {
+    throw new Error('Core planLoad is unavailable and kdna CLI returned a non-loadable success');
+  }
+  if (result.status === 3 && plan.can_load_now !== false) {
+    throw new Error('Core planLoad is unavailable and kdna CLI returned a loadable denial');
+  }
+  return plan;
 }
 
 function planLoadThroughCoreOrCli(args = {}) {

@@ -20,8 +20,8 @@ const { guardCandidate } = require('../../scripts/registry-duplicate-guard');
 const { evaluateRegistryResult, expectedE404 } = require('../../scripts/registry-duplicate-policy');
 
 const HASH = 'a'.repeat(40);
-const CHECKOUT_V7_SHA = '9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0';
-const SETUP_NODE_V6_SHA = '249970729cb0ef3589644e2896645e5dc5ba9c38';
+const CHECKOUT_ACTION_SHA = '9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0';
+const SETUP_NODE_ACTION_SHA = '249970729cb0ef3589644e2896645e5dc5ba9c38';
 
 function writeTarString(header, offset, length, value) {
   const bytes = Buffer.from(value);
@@ -168,15 +168,19 @@ function registryMetadata(candidate = evidence(), overrides = {}) {
   });
 }
 
-test('formal Runtime pair resolves exactly one Core 0.18.0 copy', () => {
+test('source Runtime pair resolves exactly one Core 0.19.0 candidate copy', () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
   const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package-lock.json'), 'utf8'));
   const installed = JSON.parse(fs.readFileSync(path.join(packageRoot, 'node_modules/@aikdna/kdna-core/package.json'), 'utf8'));
   assert.equal(pkg.version, '0.4.2');
-  assert.equal(pkg.dependencies['@aikdna/kdna-core'], '0.18.0');
-  assert.equal(lock.packages[''].dependencies['@aikdna/kdna-core'], '0.18.0');
-  assert.equal(lock.packages['node_modules/@aikdna/kdna-core'].version, '0.18.0');
-  assert.equal(installed.version, '0.18.0');
+  assert.equal(pkg.dependencies['@aikdna/kdna-core'], '0.19.0');
+  assert.equal(lock.packages[''].dependencies['@aikdna/kdna-core'], '0.19.0');
+  assert.equal(lock.packages['node_modules/@aikdna/kdna-core'].version, '0.19.0');
+  assert.equal(
+    lock.packages['node_modules/@aikdna/kdna-core'].resolved,
+    'file:test/fixtures/runtime-candidates/kdna-core-0.19.0.tgz',
+  );
+  assert.equal(installed.version, '0.19.0');
   const coreEntries = Object.keys(lock.packages).filter((entry) => entry.endsWith('node_modules/@aikdna/kdna-core'));
   assert.deepEqual(coreEntries, ['node_modules/@aikdna/kdna-core']);
 });
@@ -187,9 +191,10 @@ test('publish workflow is stable release-only and publishes only the verified ta
   assert.match(workflow, /release:\n\s+types: \[published\]/);
   assert.match(workflow, /release\.draft == false/);
   assert.match(workflow, /release\.prerelease == false/);
-  assert.match(workflow, new RegExp(`actions/checkout@${CHECKOUT_V7_SHA}`));
-  assert.match(workflow, new RegExp(`actions/setup-node@${SETUP_NODE_V6_SHA}`));
+  assert.match(workflow, new RegExp(`actions/checkout@${CHECKOUT_ACTION_SHA}`));
+  assert.match(workflow, new RegExp(`actions/setup-node@${SETUP_NODE_ACTION_SHA}`));
   assert.match(workflow, /npm@11\.17\.0/);
+  assert.match(workflow, /release:dependency-guard/);
   assert.match(workflow, /registry-duplicate-guard\.js/);
   assert.match(workflow, /publish-verified-artifact\.js/);
   assert.match(workflow, /--artifact "\$RUNNER_TEMP\/kdna-mcp-release\.tgz"/);

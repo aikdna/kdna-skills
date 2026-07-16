@@ -5,6 +5,13 @@ description: Discover and load installed KDNA `.kdna` assets through the officia
 
 # KDNA Loader
 
+> Source compatibility boundary: this checked-in skill is paired with the
+> Core 0.19.0 and CLI 0.34.0 source candidates. The current npm install command
+> still resolves the earlier published package wave. Use the skill bundled by
+> that published CLI for registry installations, and never mix its runtime
+> output with this source contract before the coordinated package set is
+> released.
+
 KDNA is an open asset format for portable judgment: principles, taste,
 values, standards, boundaries, and decision patterns that can be loaded across
 Agents. Any author may create and publish a KDNA asset. KDNA does not define
@@ -101,8 +108,8 @@ The result must have:
 
 ```json
 {
-  "type": "kdna.context.capsule",
-  "version": "1.0",
+  "type": "kdna.runtime-capsule",
+  "contract_version": "0.1.0",
   "context": {}
 }
 ```

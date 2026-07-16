@@ -2,9 +2,17 @@
 
 ## 0.4.2 (2026-07-15)
 
-- Run MCP discovery, authorization planning, verification, matching, and
-  Runtime Capsule loading on the formal KDNA Core 0.18.0 release without
-  changing the six-tool surface or the loader's conservative defaults.
+- Bind MCP discovery, authorization planning, verification, matching, and
+  Runtime Capsule loading to the exact KDNA Core 0.19.0 source candidate while
+  keeping the six-tool surface and the loader's conservative defaults. This is
+  a source checkpoint; Core 0.19.0 and MCP 0.4.2 are not registry releases.
+- Use the current container, payload-profile, Runtime Capsule, and KDNA Agent
+  Host compatibility coordinates. The MCP bridge returns a Capsule but does
+  not claim Host execution or fabricate receipts or Judgment Traces.
+- Fail closed when an official CLI fallback exits unexpectedly or returns an
+  invalid LoadPlan, and isolate malformed local assets during discovery.
+- Add exact Core-candidate, current-name, packed-artifact, hostile-input, and
+  immutable-workflow gates for the source checkpoint.
 - Honor `maxDepth: 0` as a root-only local inventory, constrain depth to
   non-negative integers, return canonical JSON-RPC protocol errors, and report
   tool execution failures through MCP `isError` results.

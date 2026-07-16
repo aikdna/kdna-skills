@@ -29,14 +29,18 @@
     "NOTICE"
   ],
   "scripts": {
-    "test": "node --test test/*.test.mjs",
+    "test": "node scripts/verify-core-candidate.mjs && node ../scripts/check-current-names.mjs && node --test test/*.test.mjs",
+    "check:core-candidate": "node scripts/verify-core-candidate.mjs",
+    "check:current-names": "node ../scripts/check-current-names.mjs",
+    "naming:check": "node ../scripts/check-current-names.mjs",
     "release:check": "node ../scripts/release-check.js",
+    "release:dependency-guard": "node ../scripts/release-dependency-guard.js",
     "release:preflight": "node ../scripts/release-preflight.js",
-    "prepublishOnly": "npm test && npm run release:check"
+    "prepublishOnly": "npm test && npm run release:check && npm run release:dependency-guard"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aikdna/kdna-core": "0.18.0",
+    "@aikdna/kdna-core": "0.19.0",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1"
   },

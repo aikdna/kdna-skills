@@ -3,19 +3,41 @@ on: [pull_request, push]
 jobs:
   mcp-server:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18.20.8, 22.23.1]
     defaults:
       run:
         working-directory: mcp-server
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: 22
-      - run: npm ci
+          node-version: ${{ matrix.node }}
+          check-latest: false
+          cache: npm
+          cache-dependency-path: mcp-server/package-lock.json
+      - run: node --version | grep -Fx "v${{ matrix.node }}"
+      - run: npm ci --ignore-scripts
       - run: npm test
   lint-scripts:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - run: sudo apt-get update
       - run: sudo apt-get install -y shellcheck
       - run: shellcheck install.sh install-cli.sh
+  agent-support:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.23.1
+          check-latest: false
+      - run: node --version | grep -Fx v22.23.1
+      - run: node scripts/validate-agent-support.js
