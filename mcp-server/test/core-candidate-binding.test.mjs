@@ -35,7 +35,7 @@ test('Core source candidate binding rejects authority and artifact drift', async
     ['artifact authority extension', (facts) => { facts.binding.artifact.compatibility_exception = true; }],
     ['upstream evidence drift', (facts) => { facts.binding.upstream_evidence.path = 'missing.json'; }],
     ['registry observation drift', (facts) => { facts.binding.registry_boundary.observed_at = 'not-a-timestamp'; }],
-    ['registry claim drift', (facts) => { facts.binding.registry_boundary.published = true; }],
+    ['registry claim drift', (facts) => { facts.binding.registry_boundary.published = false; }],
     ['registry authority extension', (facts) => { facts.binding.registry_boundary.compatibility_exception = true; }],
     ['top-level release claim', (facts) => { facts.binding.release_authority = 'published'; }],
     ['artifact byte drift', (facts) => { facts.artifactBytes = Buffer.from(facts.artifactBytes); facts.artifactBytes[100] ^= 1; }],

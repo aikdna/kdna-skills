@@ -20,18 +20,18 @@ const SOURCE = Object.freeze({
   package_subtree: '0131c843649ac2899180acb1ae70bc398171a1fe',
 });
 const ARTIFACT_FACTS = Object.freeze({
-  size: 113936,
-  sha1: 'cf63f5e24c413b2db24bf085d98ae3a0a91cff64',
-  sha256: '7dc736fd860fb54c428e80a1b30615c62a9217979d7b73dfb72854f26d6eec99',
-  integrity: 'sha512-17t5Ztiuf0sGUKKZnAQxEsgMOgVDGiVc6IrzNwipwHiJeQQtGpDrGsadiNQ+9x7FEeBZg3X9BrtA1mda0jjHrQ==',
+  size: 114267,
+  sha1: '358e33e009399379775335ef6ad35ff565cca57f',
+  sha256: '8b3938405b60cf611623dd5496e5e7334b2b5545fb6b8c84f56c48dae8cfbf62',
+  integrity: 'sha512-Ewm+Lx1VEAf9hjIeoulwZNNC3/TnnOzgW59lQNNguleKBnCf+2cptdBjM0oAOQe8oPKneTWE5owmZpI1Lmdgxg==',
   entry_count: 42,
   source_pack_equivalence: 'strict_install_equivalent',
 });
 const UPSTREAM_EVIDENCE = Object.freeze({
   repo: 'aikdna/kdna-cli',
-  commit: 'c6088118bc4bfe6474dbdae1cdf4c7deb2266418',
+  commit: '220d95aa8640ccce52701173a5a8b14de60fda44',
   path: 'tests/fixtures/core-0.19-candidate-evidence.json',
-  sha256: '04e63a0ed6c5a04e55b4a6804f4784adac76f06809c66f195ddc96d41df34007',
+  sha256: '4ad002d84addd99e29cb25863bf5771ca2a5bd6d0006d2734ce7e7a5db59de8e',
 });
 
 function hash(algorithm, bytes, encoding = 'hex') {
@@ -117,9 +117,9 @@ export function validateCandidateFacts({
   assertExactKeys(binding.upstream_evidence, Object.keys(UPSTREAM_EVIDENCE), 'upstream evidence');
   assert.deepEqual(binding.upstream_evidence, UPSTREAM_EVIDENCE);
   assert.deepEqual(binding.registry_boundary, {
-    published: false,
-    observed_at: '2026-07-16T11:08:58Z',
-    http_status: 404,
+    published: true,
+    observed_at: '2026-07-16T15:23:00Z',
+    http_status: 200,
   });
 
   assert.equal(artifactBytes.length, ARTIFACT_FACTS.size);
@@ -138,7 +138,14 @@ export function validateCandidateFacts({
   assert.equal(lock.packages[''].dependencies[CORE], VERSION);
   const locked = lock.packages[`node_modules/${CORE}`];
   assert.equal(locked.version, VERSION);
-  assert.equal(locked.resolved, `file:${ARTIFACT}`);
+  const allowedResolutions = new Set([
+    `file:${ARTIFACT}`,
+    `https://registry.npmjs.org/${CORE}/-/kdna-core-${VERSION}.tgz`,
+  ]);
+  assert.ok(
+    allowedResolutions.has(locked.resolved),
+    `Core lock resolution must be the checked-in artifact or the canonical registry artifact: ${locked.resolved}`,
+  );
   assert.equal(locked.integrity, ARTIFACT_FACTS.integrity);
   assert.equal(installed.name, CORE);
   assert.equal(installed.version, VERSION);
@@ -190,6 +197,6 @@ export function verifyCoreCandidate(root = PACKAGE_ROOT) {
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   const result = verifyCoreCandidate();
   console.log(
-    `Core source candidate verified: ${CORE}@${VERSION} ${result.commit.slice(0, 12)} ${result.sha256.slice(0, 12)} (${result.entry_count} Core entries; ${result.packed_file_count} MCP pack files)`,
+    `Core registry artifact verified: ${CORE}@${VERSION} ${result.commit.slice(0, 12)} ${result.sha256.slice(0, 12)} (${result.entry_count} Core entries; ${result.packed_file_count} MCP pack files)`,
   );
 }

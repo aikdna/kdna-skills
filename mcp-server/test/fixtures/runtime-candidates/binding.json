@@ -12,22 +12,22 @@
   },
   "artifact": {
     "path": "test/fixtures/runtime-candidates/kdna-core-0.19.0.tgz",
-    "size": 113936,
-    "sha1": "cf63f5e24c413b2db24bf085d98ae3a0a91cff64",
-    "sha256": "7dc736fd860fb54c428e80a1b30615c62a9217979d7b73dfb72854f26d6eec99",
-    "integrity": "sha512-17t5Ztiuf0sGUKKZnAQxEsgMOgVDGiVc6IrzNwipwHiJeQQtGpDrGsadiNQ+9x7FEeBZg3X9BrtA1mda0jjHrQ==",
+    "size": 114267,
+    "sha1": "358e33e009399379775335ef6ad35ff565cca57f",
+    "sha256": "8b3938405b60cf611623dd5496e5e7334b2b5545fb6b8c84f56c48dae8cfbf62",
+    "integrity": "sha512-Ewm+Lx1VEAf9hjIeoulwZNNC3/TnnOzgW59lQNNguleKBnCf+2cptdBjM0oAOQe8oPKneTWE5owmZpI1Lmdgxg==",
     "entry_count": 42,
     "source_pack_equivalence": "strict_install_equivalent"
   },
   "upstream_evidence": {
     "repo": "aikdna/kdna-cli",
-    "commit": "c6088118bc4bfe6474dbdae1cdf4c7deb2266418",
+    "commit": "220d95aa8640ccce52701173a5a8b14de60fda44",
     "path": "tests/fixtures/core-0.19-candidate-evidence.json",
-    "sha256": "04e63a0ed6c5a04e55b4a6804f4784adac76f06809c66f195ddc96d41df34007"
+    "sha256": "4ad002d84addd99e29cb25863bf5771ca2a5bd6d0006d2734ce7e7a5db59de8e"
   },
   "registry_boundary": {
-    "published": false,
-    "observed_at": "2026-07-16T11:08:58Z",
-    "http_status": 404
+    "published": true,
+    "observed_at": "2026-07-16T15:23:00Z",
+    "http_status": 200
   }
 }

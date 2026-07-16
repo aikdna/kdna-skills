@@ -178,7 +178,7 @@ test('source Runtime pair resolves exactly one Core 0.19.0 candidate copy', () =
   assert.equal(lock.packages['node_modules/@aikdna/kdna-core'].version, '0.19.0');
   assert.equal(
     lock.packages['node_modules/@aikdna/kdna-core'].resolved,
-    'file:test/fixtures/runtime-candidates/kdna-core-0.19.0.tgz',
+    'https://registry.npmjs.org/@aikdna/kdna-core/-/kdna-core-0.19.0.tgz',
   );
   assert.equal(installed.version, '0.19.0');
   const coreEntries = Object.keys(lock.packages).filter((entry) => entry.endsWith('node_modules/@aikdna/kdna-core'));

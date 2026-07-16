@@ -50,15 +50,17 @@ test('release dependency guard accepts only an exact official-registry Core arti
   );
 });
 
-test('source candidate lock cannot reach a registry lookup or release', () => {
+test('release dependency guard accepts the real registry-bound lock', () => {
   const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
   const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package-lock.json'), 'utf8'));
-  let calls = 0;
-  assert.throws(
-    () => guardReleaseDependency({ packageJson, lock, lookup: () => { calls += 1; } }),
-    /official registry, not a source candidate/,
+  const localIntegrity = lock.packages[`node_modules/${CORE}`].integrity;
+  assert.doesNotThrow(() =>
+    guardReleaseDependency({
+      packageJson,
+      lock,
+      lookup: () => metadata({ 'dist.integrity': localIntegrity, 'dist.shasum': SHASUM }),
+    }),
   );
-  assert.equal(calls, 0);
 });
 
 test('release dependency guard rejects local and registry ambiguity', async (t) => {
