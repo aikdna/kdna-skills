@@ -9,7 +9,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const readJson = (relative) => JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8'));
 const canonical = () => ({
   binding: readJson('test/fixtures/runtime-candidates/binding.json'),
-  artifactBytes: fs.readFileSync(path.join(root, 'test/fixtures/runtime-candidates/kdna-core-0.19.0.tgz')),
+  artifactBytes: fs.readFileSync(path.join(root, 'test/fixtures/runtime-candidates/kdna-core-0.20.0.tgz')),
   packageJson: readJson('package.json'),
   lock: readJson('package-lock.json'),
   installed: readJson('node_modules/@aikdna/kdna-core/package.json'),
@@ -35,7 +35,7 @@ test('Core source candidate binding rejects authority and artifact drift', async
     ['artifact authority extension', (facts) => { facts.binding.artifact.compatibility_exception = true; }],
     ['upstream evidence drift', (facts) => { facts.binding.upstream_evidence.path = 'missing.json'; }],
     ['registry observation drift', (facts) => { facts.binding.registry_boundary.observed_at = 'not-a-timestamp'; }],
-    ['registry claim drift', (facts) => { facts.binding.registry_boundary.published = false; }],
+    ['registry claim drift', (facts) => { facts.binding.registry_boundary.published = true; }],
     ['registry authority extension', (facts) => { facts.binding.registry_boundary.compatibility_exception = true; }],
     ['top-level release claim', (facts) => { facts.binding.release_authority = 'published'; }],
     ['artifact byte drift', (facts) => { facts.artifactBytes = Buffer.from(facts.artifactBytes); facts.artifactBytes[100] ^= 1; }],
@@ -43,7 +43,7 @@ test('Core source candidate binding rejects authority and artifact drift', async
     ['lock dependency drift', (facts) => { facts.lock.packages[''].dependencies['@aikdna/kdna-core'] = '0.18.0'; }],
     ['lock resolution drift', (facts) => { facts.lock.packages['node_modules/@aikdna/kdna-core'].resolved = 'https://registry.invalid/core.tgz'; }],
     ['installed version drift', (facts) => { facts.installed.version = '0.18.0'; }],
-    ['shadow Core copy', (facts) => { facts.lock.packages['node_modules/foreign/node_modules/@aikdna/kdna-core'] = { version: '0.19.0' }; }],
+    ['shadow Core copy', (facts) => { facts.lock.packages['node_modules/foreign/node_modules/@aikdna/kdna-core'] = { version: '0.20.0' }; }],
     ['candidate leaked into pack', (facts) => { facts.packedFiles.push({ path: 'test/fixtures/runtime-candidates/core.tgz' }); }],
   ];
   for (const [name, mutate] of mutations) {

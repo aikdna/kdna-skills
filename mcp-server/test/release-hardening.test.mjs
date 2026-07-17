@@ -168,19 +168,19 @@ function registryMetadata(candidate = evidence(), overrides = {}) {
   });
 }
 
-test('source Runtime pair resolves exactly one Core 0.19.0 candidate copy', () => {
+test('source Runtime pair resolves exactly one Core 0.20.0 candidate copy', () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
   const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package-lock.json'), 'utf8'));
   const installed = JSON.parse(fs.readFileSync(path.join(packageRoot, 'node_modules/@aikdna/kdna-core/package.json'), 'utf8'));
   assert.equal(pkg.version, '0.4.2');
-  assert.equal(pkg.dependencies['@aikdna/kdna-core'], '0.19.0');
-  assert.equal(lock.packages[''].dependencies['@aikdna/kdna-core'], '0.19.0');
-  assert.equal(lock.packages['node_modules/@aikdna/kdna-core'].version, '0.19.0');
+  assert.equal(pkg.dependencies['@aikdna/kdna-core'], '0.20.0');
+  assert.equal(lock.packages[''].dependencies['@aikdna/kdna-core'], '0.20.0');
+  assert.equal(lock.packages['node_modules/@aikdna/kdna-core'].version, '0.20.0');
   assert.equal(
     lock.packages['node_modules/@aikdna/kdna-core'].resolved,
-    'https://registry.npmjs.org/@aikdna/kdna-core/-/kdna-core-0.19.0.tgz',
+    'file:test/fixtures/runtime-candidates/kdna-core-0.20.0.tgz',
   );
-  assert.equal(installed.version, '0.19.0');
+  assert.equal(installed.version, '0.20.0');
   const coreEntries = Object.keys(lock.packages).filter((entry) => entry.endsWith('node_modules/@aikdna/kdna-core'));
   assert.deepEqual(coreEntries, ['node_modules/@aikdna/kdna-core']);
 });

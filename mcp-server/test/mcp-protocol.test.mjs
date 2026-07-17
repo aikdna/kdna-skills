@@ -108,7 +108,7 @@ function makeKdnaSource(root) {
     lineage: { type: 'original', fork_of: null, derived_from: null },
     payload: { path: 'payload.kdnab', encoding: 'cbor', encrypted: false },
     compatibility: {
-      min_loader_version: '0.19.0',
+      min_loader_version: '0.20.0',
       profile: 'kdna.payload.judgment',
       profile_version: '0.1.0',
     },

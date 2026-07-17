@@ -10,8 +10,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PACKAGE_ROOT = path.join(ROOT, 'mcp-server');
 const ALLOWLIST = 'scripts/naming-integrity-allowlist.json';
-const CANDIDATE = 'mcp-server/test/fixtures/runtime-candidates/kdna-core-0.19.0.tgz';
-const CANDIDATE_SHA256 = '8b3938405b60cf611623dd5496e5e7334b2b5545fb6b8c84f56c48dae8cfbf62';
+const CANDIDATE = 'mcp-server/test/fixtures/runtime-candidates/kdna-core-0.20.0.tgz';
+const CANDIDATE_SHA256 = '194621d8f7362686cdbfb0ebec4e690f620b1f4445f776eeb45cfafa816d1d12';
 const EXACT_OLD_NAMES = Object.freeze([
   ['judgment-profile', '-v1'].join(''),
   ['/v1', '/project'].join(''),

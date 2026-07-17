@@ -30,7 +30,7 @@ server provides a lower-level bridge for structured tool calls.
 ## Install & Run
 
 The commands below currently resolve the published MCP 0.4.1 package. They do
-not install or prove the MCP 0.4.2 / Core 0.19.0 source checkpoint described in
+not install or prove the MCP 0.4.2 / Core 0.20.0 source checkpoint described in
 this repository's current changelog; those candidates must remain a coordinated
 package set and must not be mixed with the published wave.
 

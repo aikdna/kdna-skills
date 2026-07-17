@@ -2,32 +2,32 @@
   "schema": "kdna.core.source-candidate-binding",
   "schema_version": "1.0.0",
   "package": "@aikdna/kdna-core",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "source": {
     "repository": "aikdna/kdna",
-    "commit": "556f8cec37c94fc9c006035b0bdeefc80d04d9c2",
-    "tree": "d8cd795ba12045217f413f40cbf89f910d50c31d",
+    "commit": "1e77e3e0d486c330fe9f9262b514ef24c859d469",
+    "tree": "0b6e2d1deab6286dd84cbac453d27782295588d4",
     "package_root": "packages/kdna-core",
-    "package_subtree": "0131c843649ac2899180acb1ae70bc398171a1fe"
+    "package_subtree": "dfe1161336a4f7e0f5e71972d55d2a96c2e17f06"
   },
   "artifact": {
-    "path": "test/fixtures/runtime-candidates/kdna-core-0.19.0.tgz",
-    "size": 114267,
-    "sha1": "358e33e009399379775335ef6ad35ff565cca57f",
-    "sha256": "8b3938405b60cf611623dd5496e5e7334b2b5545fb6b8c84f56c48dae8cfbf62",
-    "integrity": "sha512-Ewm+Lx1VEAf9hjIeoulwZNNC3/TnnOzgW59lQNNguleKBnCf+2cptdBjM0oAOQe8oPKneTWE5owmZpI1Lmdgxg==",
+    "path": "test/fixtures/runtime-candidates/kdna-core-0.20.0.tgz",
+    "size": 114101,
+    "sha1": "6f3833920c651529613b8957d9c6c71d0088f8bf",
+    "sha256": "194621d8f7362686cdbfb0ebec4e690f620b1f4445f776eeb45cfafa816d1d12",
+    "integrity": "sha512-+qD8RLrvvSZmZacGfFfiP4ydG/AZKL0Ifq8co0jfCvGQD7iRRmaHBP4+/uSFt5AkDstA0DYPajO43YW0nMdlDg==",
     "entry_count": 42,
     "source_pack_equivalence": "strict_install_equivalent"
   },
   "upstream_evidence": {
     "repo": "aikdna/kdna-cli",
-    "commit": "220d95aa8640ccce52701173a5a8b14de60fda44",
-    "path": "tests/fixtures/core-0.19-candidate-evidence.json",
-    "sha256": "4ad002d84addd99e29cb25863bf5771ca2a5bd6d0006d2734ce7e7a5db59de8e"
+    "commit": "08455da5b7466e55d23400064c38488e1d41056e",
+    "path": "tests/fixtures/core-0.20-candidate-evidence.json",
+    "sha256": "042cb29a02eab6dcfdb701f46e645dd372784add4385f943d9ed360e4c477c25"
   },
   "registry_boundary": {
-    "published": true,
-    "observed_at": "2026-07-16T15:23:00Z",
-    "http_status": 200
+    "published": false,
+    "observed_at": "2026-07-17T07:20:00Z",
+    "http_status": 404
   }
 }
