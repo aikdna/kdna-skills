@@ -11,7 +11,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PACKAGE_ROOT = path.join(ROOT, 'mcp-server');
 const ALLOWLIST = 'scripts/naming-integrity-allowlist.json';
 const CANDIDATE = 'mcp-server/test/fixtures/runtime-candidates/kdna-core-0.20.0.tgz';
-const CANDIDATE_SHA256 = '194621d8f7362686cdbfb0ebec4e690f620b1f4445f776eeb45cfafa816d1d12';
+const CANDIDATE_SHA256 = 'b1614d14b77d6b8eac1c0a3902e2270a46cb0f52708e524b12b3990256ff8dee';
 const EXACT_OLD_NAMES = Object.freeze([
   ['judgment-profile', '-v1'].join(''),
   ['/v1', '/project'].join(''),
@@ -50,7 +50,10 @@ function candidateFiles() {
 
 export function findCurrentNameResiduals(entries) {
   const residuals = [];
-  for (const { path: entryPath, text } of entries) {
+  for (const { path: entryPath, text: rawText } of entries) {
+    const text = entryPath.endsWith('.json')
+      ? rawText.replace(/("integrity"\s*:\s*")[^"]+(")/g, '$1<opaque digest>$2')
+      : rawText;
     for (const token of EXACT_OLD_NAMES) {
       if (text.includes(token)) residuals.push({ path: entryPath, token });
     }

@@ -3,9 +3,10 @@
 ## 0.4.2 (2026-07-15)
 
 - Bind MCP discovery, authorization planning, verification, matching, and
-  Runtime Capsule loading to the exact KDNA Core 0.20.0 source candidate while
-  keeping the six-tool surface and the loader's conservative defaults. This is
-  a source checkpoint; Core 0.20.0 and MCP 0.4.2 are not registry releases.
+  Runtime Capsule loading to the published KDNA Core 0.20.0 registry artifact
+  while keeping the six-tool surface and the loader's conservative defaults.
+  Core 0.20.0 is a formal registry release; MCP 0.4.2 remains a source
+  checkpoint until its own publication.
 - Use the current container, payload-profile, Runtime Capsule, and KDNA Agent
   Host compatibility coordinates. The MCP bridge returns a Capsule but does
   not claim Host execution or fabricate receipts or Judgment Traces.
