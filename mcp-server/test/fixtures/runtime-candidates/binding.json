@@ -21,9 +21,9 @@
   },
   "upstream_evidence": {
     "repo": "aikdna/kdna-cli",
-    "commit": "3da24b06a752892079a0a1ca02620e9c5f55ddde",
+    "commit": "36f333cd341d03a7a6b10dd7b87a8172e9a18130",
     "path": "tests/fixtures/core-0.20-candidate-evidence.json",
-    "sha256": "eb1020ece4a03498aa3a6e3ce8bf71958ff675db9ba573f01e954d4cb71cae40"
+    "sha256": "2d573d4413dd6f2c0568f51dc157d826cb30fee3c6b828c235704cf560938d8e"
   },
   "registry_boundary": {
     "published": true,
