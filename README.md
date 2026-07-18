@@ -20,6 +20,12 @@ Requires `@aikdna/kdna-cli` CLI:
 npm i -g @aikdna/kdna-cli
 ```
 
+The current verified registry baseline is `@aikdna/kdna-cli@0.35.0`, with the
+exact runtime dependency `@aikdna/kdna-core@0.20.0`. The loader bundled by that
+CLI and this repository adapter both use the official
+`inspect` → `plan-load` → `load` boundary. The unversioned install command
+tracks npm's current `latest` CLI release.
+
 ## How it works
 
 | What | Where |

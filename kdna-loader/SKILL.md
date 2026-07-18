@@ -5,12 +5,11 @@ description: Discover and load installed KDNA `.kdna` assets through the officia
 
 # KDNA Loader
 
-> Source compatibility boundary: this checked-in skill is paired with the
-> Core 0.19.0 and CLI 0.34.0 source candidates. The current npm install command
-> still resolves the earlier published package wave. Use the skill bundled by
-> that published CLI for registry installations, and never mix its runtime
-> output with this source contract before the coordinated package set is
-> released.
+> Verified registry boundary: `@aikdna/kdna-cli@0.35.0` depends on the exact
+> `@aikdna/kdna-core@0.20.0` runtime. Use either the loader bundled by that CLI
+> or this checked-in adapter through the official `inspect` → `plan-load` →
+> `load` path below. Never parse the container directly or substitute an
+> unverified source candidate for the published runtime.
 
 KDNA is an open asset format for portable judgment: principles, taste,
 values, standards, boundaries, and decision patterns that can be loaded across

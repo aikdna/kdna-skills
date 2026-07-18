@@ -33,6 +33,8 @@ const rootReadme = read('README.md');
 const zhReadme = read('README.zh.md');
 const loaderSkill = read(matrix.loader_skill);
 const mcpReadme = read('mcp-server/README.md');
+const verifiedCli = '@aikdna/kdna-cli@0.35.0';
+const verifiedCore = '@aikdna/kdna-core@0.20.0';
 
 requireText('README.md', rootReadme, 'docs/agent-support-matrix.json');
 requireText('README.zh.md', zhReadme, 'docs/agent-support-matrix.json');
@@ -42,9 +44,20 @@ requireText('README.md', rootReadme, 'kdna demo judgment ./judgment');
 requireText('README.zh.md', zhReadme, 'kdna demo judgment ./judgment');
 requireText('README.md', rootReadme, 'kdna pack ./judgment ./judgment.kdna');
 requireText('README.zh.md', zhReadme, 'kdna pack ./judgment ./judgment.kdna');
+requireText('README.md', rootReadme, verifiedCli);
+requireText('README.md', rootReadme, verifiedCore);
+requireText('README.zh.md', zhReadme, verifiedCli);
+requireText('README.zh.md', zhReadme, verifiedCore);
 requireText('kdna-loader/SKILL.md', loaderSkill, '## 1. Decide whether judgment is needed');
 requireText('kdna-loader/SKILL.md', loaderSkill, '## 7. Explicit multi-asset path');
+requireText('kdna-loader/SKILL.md', loaderSkill, verifiedCli);
+requireText('kdna-loader/SKILL.md', loaderSkill, verifiedCore);
+requireText('kdna-loader/SKILL.md', loaderSkill, '`inspect` → `plan-load` →');
 requireText('mcp-server/README.md', mcpReadme, 'toolchain-only protocol');
+
+if (/Core 0\.19\.0|CLI 0\.34\.0|earlier published package wave/i.test(loaderSkill)) {
+  fail('kdna-loader/SKILL.md must not present published runtime releases as source candidates');
+}
 
 if (rootReadme.includes('viral-topic-selection')) {
   fail('README.md must use kdna demo judgment instead of superseded release downloads');

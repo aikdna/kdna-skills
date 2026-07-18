@@ -17,6 +17,11 @@ npm i -g @aikdna/kdna-cli
 kdna setup
 ```
 
+当前已验证的 registry 基线是 `@aikdna/kdna-cli@0.35.0`，其精确运行时依赖为
+`@aikdna/kdna-core@0.20.0`。该 CLI 内置的 loader 与本仓库适配器都只使用官方
+`inspect` → `plan-load` → `load` 边界。未指定版本的安装命令跟随 npm 当前的
+`latest` CLI 发行版。
+
 ## 架构
 
 | 角色 | 说明 |
