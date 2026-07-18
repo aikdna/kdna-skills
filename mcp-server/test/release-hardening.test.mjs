@@ -394,7 +394,7 @@ test(
     delete publishEnv.npm_command;
     const result = spawnSync(
       'npm',
-      ['publish', '--dry-run', '--access', 'public', '--registry=https://registry.npmjs.org/'],
+      ['publish', '--dry-run', '--ignore-scripts=false', '--access', 'public', '--registry=https://registry.npmjs.org/'],
       {
         cwd: packageRoot,
         encoding: 'utf8',
