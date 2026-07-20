@@ -20,8 +20,6 @@ const { guardCandidate } = require('../../scripts/registry-duplicate-guard');
 const { evaluateRegistryResult, expectedE404 } = require('../../scripts/registry-duplicate-policy');
 
 const HASH = 'a'.repeat(40);
-const CHECKOUT_ACTION_SHA = '9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0';
-const SETUP_NODE_ACTION_SHA = '249970729cb0ef3589644e2896645e5dc5ba9c38';
 
 function writeTarString(header, offset, length, value) {
   const bytes = Buffer.from(value);
@@ -185,20 +183,8 @@ test('source Runtime pair resolves exactly one Core 0.20.0 registry artifact', (
   assert.deepEqual(coreEntries, ['node_modules/@aikdna/kdna-core']);
 });
 
-test('publish workflow is stable release-only and publishes only the verified tarball', () => {
-  const workflow = fs.readFileSync(path.join(root, '.github/workflows/publish.yml'), 'utf8');
-  assert.doesNotMatch(workflow, /workflow_dispatch/);
-  assert.match(workflow, /release:\n\s+types: \[published\]/);
-  assert.match(workflow, /release\.draft == false/);
-  assert.match(workflow, /release\.prerelease == false/);
-  assert.match(workflow, new RegExp(`actions/checkout@${CHECKOUT_ACTION_SHA}`));
-  assert.match(workflow, new RegExp(`actions/setup-node@${SETUP_NODE_ACTION_SHA}`));
-  assert.match(workflow, /npm@11\.17\.0/);
-  assert.match(workflow, /release:dependency-guard/);
-  assert.match(workflow, /registry-duplicate-guard\.js/);
-  assert.match(workflow, /publish-verified-artifact\.js/);
-  assert.match(workflow, /--artifact "\$RUNNER_TEMP\/kdna-mcp-release\.tgz"/);
-  assert.doesNotMatch(workflow, /npm publish --provenance/);
+test('frozen repository has no automated publish workflow', () => {
+  assert.equal(fs.existsSync(path.join(root, '.github/workflows/publish.yml')), false);
 });
 
 test('release context binds event, stable package, tag, ref, SHA, HEAD, clean tree, and changelog', async (t) => {
