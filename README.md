@@ -1,3 +1,10 @@
+> **Frozen historical repository**
+>
+> This repository is not part of the current supported KDNA toolchain. It
+> receives no feature or compatibility work and will not publish new releases.
+> Do not use it for new integrations. Its code remains available as development
+> history.
+
 > [aikdna.com](https://aikdna.com) — Official website
 >
 > [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli)
