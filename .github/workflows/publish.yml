@@ -1,0 +1,79 @@
+name: Publish MCP server to npm
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      github.event.action == 'published' &&
+      github.event.release.draft == false &&
+      github.event.release.prerelease == false &&
+      startsWith(github.event.release.tag_name, 'v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_EVENT_ACTION: ${{ github.event.action }}
+      RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
+      RELEASE_IS_DRAFT: ${{ github.event.release.draft }}
+      RELEASE_IS_PRERELEASE: ${{ github.event.release.prerelease }}
+    defaults:
+      run:
+        working-directory: mcp-server
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ github.event.release.tag_name }}
+      - name: Fetch the canonical release tag
+        working-directory: .
+        run: git fetch --force --tags origin
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.23.1
+          check-latest: false
+          registry-url: 'https://registry.npmjs.org'
+      - run: node --version | grep -Fx v22.23.1
+      - name: Pin the audited npm release client
+        run: |
+          npm install --global npm@11.17.0 --ignore-scripts --registry=https://registry.npmjs.org/
+          npm --version | grep -Fx 11.17.0
+      - run: npm ci --ignore-scripts
+      - name: Verify release event, tag, commit, package, and changelog
+        run: npm run release:check
+      - name: Run the complete release preflight
+        run: npm run release:preflight
+      - name: Require the coordinated Core registry artifact
+        run: npm run release:dependency-guard
+      - name: Build independently verified pack evidence
+        run: >-
+          node ../scripts/generate-release-evidence.js
+          --out "$RUNNER_TEMP/kdna-mcp-release-evidence.json"
+          --artifact "$RUNNER_TEMP/kdna-mcp-release.tgz"
+      - name: Apply fail-closed registry duplicate policy
+        id: registry
+        run: >-
+          node ../scripts/registry-duplicate-guard.js
+          --evidence "$RUNNER_TEMP/kdna-mcp-release-evidence.json"
+          --artifact "$RUNNER_TEMP/kdna-mcp-release.tgz"
+      - name: Publish the verified package
+        if: steps.registry.outputs.should_publish == 'true'
+        run: >-
+          node ../scripts/publish-verified-artifact.js
+          --evidence "$RUNNER_TEMP/kdna-mcp-release-evidence.json"
+          --artifact "$RUNNER_TEMP/kdna-mcp-release.tgz"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Remove transient release artifacts
+        if: always()
+        working-directory: .
+        run: rm -f "$RUNNER_TEMP/kdna-mcp-release-evidence.json" "$RUNNER_TEMP/kdna-mcp-release.tgz"
