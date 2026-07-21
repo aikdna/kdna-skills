@@ -2,9 +2,15 @@
 set -euo pipefail
 
 # KDNA CLI Installer
-# One-command install: curl -fsSL https://aikdna.com/install | bash
 #
-# This script is open source and auditable.
+# STATUS (2026-07-21): the hosted one-command endpoint
+# https://aikdna.com/install currently returns HTTP 410 and is NOT the
+# install path. Install the CLI directly from npm instead:
+#
+#   npm install -g @aikdna/kdna-cli
+#
+# This script is a convenience wrapper around that npm install. It is open
+# source and auditable.
 # Source: https://github.com/aikdna/kdna-skills/blob/main/install-cli.sh
 
 NPM_PKG="@aikdna/kdna-cli"
@@ -52,10 +58,11 @@ fi
 INSTALLED_VERSION=$(kdna version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "?")
 log "Version: ${INSTALLED_VERSION}"
 
-# ─── Run setup ──────────────────────────────────────────────────────────
-
-log "Running kdna setup..."
-kdna setup || warn "kdna setup had warnings — check output above"
+# ─── Setup ──────────────────────────────────────────────────────────────
+# `kdna setup` still exists in the CLI, but it is a historical interactive
+# wizard and is not the recommended path. The current recommended path is
+# file-first: obtain a .kdna asset explicitly, then validate/load it.
+# Skipping the wizard here.
 
 # ─── Done ─────────────────────────────────────────────────────────────────
 
@@ -65,9 +72,22 @@ echo "  CLI:       $(which kdna)"
 echo "  Version:   ${INSTALLED_VERSION}"
 echo "  KDNA root: ${KDNA_ROOT}"
 echo ""
-echo "  Next steps:"
-echo "    kdna list --available        # browse domains"
-echo "    kdna install @aikdna/writing # install a domain"
+echo "  Next steps (file-first path):"
+echo "    # Public reference assets live in aikdna/kdna-assets. Download an"
+echo "    # asset and its .sha256 from its release page, verify the checksum,"
+echo "    # then install the local file:"
+echo "    curl -fLO https://github.com/aikdna/kdna-assets/releases/download/0.1.1/laozi-wuwei-0.1.1.kdna"
+echo "    curl -fLO https://github.com/aikdna/kdna-assets/releases/download/0.1.1/laozi-wuwei-0.1.1.kdna.sha256"
+echo "    shasum -a 256 -c laozi-wuwei-0.1.1.kdna.sha256"
+echo "    kdna install ./laozi-wuwei-0.1.1.kdna"
+echo ""
+echo "    kdna list                    # show installed packages (only --json is supported)"
+echo "    kdna validate ./laozi-wuwei-0.1.1.kdna"
 echo "    kdna doctor --agents         # verify agent integration"
+echo ""
+echo "  Note: 'kdna install @scope/name' requires a configured registry"
+echo "  (KDNA_REGISTRY_URL); no default registry is set."
+echo ""
+echo "  Authoring:"
 echo "    npm install -g @aikdna/kdna-studio-cli"
 echo "    kdna-studio create my_domain # create a Studio project"

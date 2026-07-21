@@ -1,136 +1,47 @@
-> [aikdna.com](https://aikdna.com) — 官方网站
->
-> [![npm](https://img.shields.io/npm/v/@aikdna/kdna-cli)](https://www.npmjs.com/package/@aikdna/kdna-cli)
+# KDNA Agent 适配器
 
-# KDNA 技能安装
+本仓库保留 KDNA 的 Agent、Skill 与 MCP 集成使命。当前 `kdna-loader` Skill 在
+重新验证用户授权与 Host 可见性合同期间，状态为 **Unassessed（未评估）**。
 
-**一个 Loader。多个领域。**
+KDNA 不是 Skill。`.kdna` 文件是可携带的判断资产；适配器只是 Host 调用官方
+KDNA 工具链的一种方式。
 
-这个仓库不是把 KDNA 变成 Skill。它提供的是适配器 Skill，让不同 AI Agent 能够加载 KDNA。
-
-`kdna-loader` 技能教会 AI Agent 一套协议，用于通过官方工具链发现、加载和应用本地 `.kdna` 判断资产。资产是文件，不是独立的技能。支持矩阵见 [`docs/agent-support-matrix.json`](docs/agent-support-matrix.json)。
-
-需要 `@aikdna/kdna-cli` CLI：
+## 当前安全路径
 
 ```bash
-npm i -g @aikdna/kdna-cli
-kdna setup
-```
-
-当前已验证的 registry 基线是 `@aikdna/kdna-cli@0.35.0`，其精确运行时依赖为
-`@aikdna/kdna-core@0.20.0`。该 CLI 内置的 loader 与本仓库适配器都只使用官方
-`inspect` → `plan-load` → `load` 边界。未指定版本的安装命令跟随 npm 当前的
-`latest` CLI 发行版。
-
-## 架构
-
-| 角色 | 说明 |
-|---|---|
-| **kdna-loader**（唯一技能） | 由 `kdna setup` 安装到你的 Agent。教会 Agent 发现和应用 KDNA 的协议。 |
-| **KDNA 资产**（数据） | 本地 `.kdna` 文件。通过 `kdna validate` 校验，通过 `kdna plan-load` 判断能否加载，再通过 `kdna load` 加载。按任务按需进入上下文。 |
-| **kdna CLI**（工具） | `kdna inspect`、`kdna validate`、`kdna plan-load`、`kdna pack`、`kdna unpack`、`kdna load`。已有资产的运行控制平面。 |
-
-## 支持的 Agent
-
-`kdna setup` 在支持自动检测时会把 `kdna-loader` 安装到下列路径。其他兼容 Agent 使用同一个 skill 文件手动放置：
-
-- **Codex** — `~/.codex/skills/kdna-loader/`
-- **Claude Code** — `~/.claude/skills/kdna-loader/`
-- **OpenCode** — `~/.agents/skills/kdna-loader/`
-- **Cursor** — `~/.cursor/skills/kdna-loader/`
-- **GitHub Copilot-compatible agents** — `~/.agents/skills/kdna-loader/`
-
-所有 Agent 可以共享同一批本地 `.kdna` 文件；默认本地包目录是
-`~/.kdna/packages/`，也可以通过显式文件路径或 MCP `kdna.available-local`
-指定目录。当前 public beta 路径从本地 packaged `.kdna` 文件开始。
-
-## 一键安装
-
-```bash
-npm i -g @aikdna/kdna-cli
-kdna setup
-kdna demo judgment ./judgment
-kdna pack ./judgment ./judgment.kdna
-kdna validate ./judgment.kdna --runtime
+npm install -g @aikdna/kdna-cli
+kdna validate ./judgment.kdna
 kdna plan-load ./judgment.kdna --json
 kdna load ./judgment.kdna --profile=compact --as=json
-kdna doctor --agents
 ```
 
-## 安装后可以做什么
+必须先由用户选择文件，或批准一个精确的 Host 附加项。适配器不能扫描全局资产
+库、根据任务关键词自行选择资产、从文件存在推断同意，也不能隐藏是否使用了
+KDNA。
 
-### 加载领域认知
+## 适配器合同
 
-Agent 在每个任务中自动判断是否需要 KDNA。当领域匹配时，静默加载——应用公理、使用首选术语、遵守边界、运行自检。用户看到的是更好的判断，而不是 KDNA 内部结构。
+- 只接收一个显式文件或精确的用户已批准附加项；
+- 把解析、完整性、授权、解密和投影交给 Core；
+- 只有 LoadPlan 允许时才加载；
+- 显示当前资产身份、版本或摘要、作用域和原因；
+- 提供停用、切换和回滚控制；
+- 当前事实、用户意图、法律、安全、系统规则与 Host 权限高于资产内容。
 
-### 使用真实领域资产
+详见[加载器合同](docs/KDNA_LOADER_CONTRACT.md)和
+[支持矩阵](docs/agent-support-matrix.json)。
 
-```bash
-kdna validate ./writing.kdna --runtime
-kdna plan-load ./writing.kdna --json
-kdna load ./writing.kdna --profile=compact --as=json
-```
+## 仓库组件
 
-### 创建自己的 KDNA
+| 组件 | 当前状态 |
+|---|---|
+| `kdna-loader/SKILL.md` | 未评估的适配器候选 |
+| MCP server | 实验性工具适配器；发现类工具不产生授权 |
+| Agent 放置指南 | 未评估的集成说明 |
+| legacy 安装脚本 | 已发布的历史实现；不是推荐路径 |
 
-```bash
-npm install -g @aikdna/kdna-studio-cli
-kdna-studio create my_expertise --name @yourscope/my_expertise
-kdna-studio card add my_expertise axiom \
-  --field one_sentence="Prefer specific evidence over broad claims" \
-  --field full_statement="When reviewing content, prefer specific evidence over broad claims because unsupported generalizations make the judgment impossible to verify or improve." \
-  --field why="Broad claims hide the actual reason for a judgment, so reviewers cannot tell whether the conclusion is evidence based, reusable, or merely plausible sounding." \
-  --field applies_when='["reviewing content"]' \
-  --field does_not_apply_when='["pure formatting"]' \
-  --field failure_risk="generic advice"
-kdna-studio card approve my_expertise --all --by expert --statement "I confirm this judgment."
-kdna-studio export my_expertise --out dist/my_expertise.kdna
-kdna validate dist/my_expertise.kdna --runtime
-kdna plan-load dist/my_expertise.kdna --json
-```
+警告：仓库中的 legacy 安装脚本（`install.sh`、`install-cli.sh`）是历史
+发布物，不属于当前推荐路径。当前推荐路径是 file-first：显式获取一个
+`.kdna` 资产，再用 CLI 验证与加载。
 
-人、Agent、工具和混合工作流都可以创建 `.kdna` 资产，前提是通过官方
-KDNA 工具链或兼容 SDK 产出标准 packaged `.kdna` 文件。当前 public beta
-推荐使用 Studio CLI 创建和导出，再用官方 CLI validate、plan-load 和 load。
-
-Human Lock、签名、发布证据、加密和付费授权都是可选或后续 trust layer，
-不是 KDNA 格式有效性的前提。
-
-## kdna-loader 如何工作（八步协议）
-
-1. **判断** KDNA 是否适用于当前任务（格式化、查询、代码执行等场景跳过）
-2. **发现** 可用的本地 `.kdna` 资产
-3. **评估** 每个候选领域的匹配度（检查适用边界）
-4. **选择** 0 或 1 个领域（绝不静默混合多个）
-5. **计划加载** 通过 `kdna plan-load <asset.kdna> --json`
-6. **加载** 仅当 `can_load_now=true` 时，通过 `kdna load <asset.kdna> --profile=compact --as=json` 获取 Runtime Capsule
-7. **应用** 静默执行——基于公理推理，不向用户引用 KDNA
-8. **遵守** 边界——用户意图 > 证据 > 安全 > 技能
-
-## 手动安装
-
-```bash
-# Codex
-mkdir -p ~/.codex/skills/kdna-loader
-cp kdna-loader/SKILL.md ~/.codex/skills/kdna-loader/SKILL.md
-
-# Claude Code
-mkdir -p ~/.claude/skills/kdna-loader
-cp kdna-loader/SKILL.md ~/.claude/skills/kdna-loader/SKILL.md
-
-# OpenCode
-mkdir -p ~/.agents/skills/kdna-loader
-cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
-
-# Cursor
-mkdir -p ~/.cursor/skills/kdna-loader
-cp kdna-loader/SKILL.md ~/.cursor/skills/kdna-loader/SKILL.md
-
-# GitHub Copilot 兼容 Agent
-mkdir -p ~/.agents/skills/kdna-loader
-cp kdna-loader/SKILL.md ~/.agents/skills/kdna-loader/SKILL.md
-```
-
-## 许可
-
-Apache-2.0
+Skill 文件存在、`kdna setup` 成功或找到本地文件，都不能证明 Agent 集成正确。
