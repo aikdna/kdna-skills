@@ -7,7 +7,7 @@ set -euo pipefail
 # discover and use installed KDNA assets. KDNA domains themselves are
 # immutable .kdna assets managed by the CLI and are not registered as skills.
 
-KDNA_REPO="https://github.com/aikdna/kdna"
+KDNA_ASSETS_REPO="https://github.com/aikdna/kdna-assets"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -159,7 +159,12 @@ echo ""
 warn "Restart your agent session to use the updated skill."
 echo ""
 echo "Next steps:"
-echo "  1. Install a KDNA domain: kdna install @aikdna/writing"
+echo "  1. Get a KDNA asset (file-first path): download a .kdna asset and its"
+echo "     .sha256 from the reference index at $KDNA_ASSETS_REPO"
+echo "     (e.g. @aikdna/laozi-wuwei or @aikdna/epictetus-control-and-character),"
+echo "     verify the checksum, then run: kdna install ./<asset>.kdna"
+echo "     Note: 'kdna install @scope/name' requires KDNA_REGISTRY_URL;"
+echo "     no default registry is configured."
 echo "  2. Ask your agent a domain-relevant question — the agent will"
 echo "     discover the installed KDNA via kdna-loader and apply it."
-echo "  3. Browse available domains: $KDNA_REPO"
+echo "  3. Browse public reference assets: $KDNA_ASSETS_REPO"
