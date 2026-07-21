@@ -5,16 +5,16 @@ packaged `.kdna` assets without learning the container internals. Stdio-only,
 minimal footprint. The npm package source lives in this repository under
 [`mcp-server/`](./); there is no separate public `kdna-mcp-server` repository.
 
-## Why MCP instead of the kdna-loader skill?
+## Adapter status
 
-The `kdna-loader` skill teaches an agent the full toolchain-only protocol:
-routing, planning, Capsule loading, application, and boundary respect. The MCP
-server provides a lower-level bridge for structured tool calls.
+The MCP server is an experimental structured bridge. The `kdna-loader` Skill is
+currently Unassessed. Neither adapter may create user authorization by finding
+or matching a file.
 
 | Approach | Best for |
 |----------|----------|
-| `kdna-loader` skill | Full KDNA protocol: routing, fit evaluation, silent application |
-| MCP server | Programmatic inspect/verify/load/match from any MCP-compatible runtime |
+| `kdna-loader` skill | Unassessed thin adapter for one exact approved attachment |
+| MCP server | Experimental inspect/verify/plan/load tools for an explicit file |
 
 ## Tools
 
@@ -92,6 +92,11 @@ When no override is provided, `kdna.available-local` scans
 `~/.kdna/packages`. Explicit local roots can be provided when a user keeps
 assets elsewhere.
 
+This is a published implementation behavior, not the canonical KDNA user
+model. Inventory output is never consent, authorization, applicability, or a
+recommendation. New integrations should pass an explicit asset path to
+`inspect`, `plan-load`, and `load`.
+
 ## Local Development
 
 ```bash
@@ -119,10 +124,9 @@ coordinate `protocol_version: "0.1.0"`; it is not the MCP transport's
 does not create or claim a Host receipt or Judgment Trace. A consuming Host
 must use Core's correlated runtime-contract APIs for that boundary.
 
-## Relationship to kdna-loader skill
+## Host responsibility
 
-The MCP server and kdna-loader skill are complementary:
-- **kdna-loader** = agents that can run CLI commands (Codex, Claude Code, OpenCode, Cursor)
-- **MCP server** = any MCP-compatible runtime (including the above, plus custom agents)
-
-For most users, the kdna-loader skill (installed by `kdna setup`) is the recommended path. Use the MCP server when you need programmatic, tool-based access.
+The MCP client must receive one explicit file or exact user-approved
+attachment, keep active identity/version/scope/reason visible, and provide
+disable/switch/rollback controls. It must not use `available-local` plus `match`
+as autonomous authority.

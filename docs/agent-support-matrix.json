@@ -1,47 +1,13 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "loader_skill": "kdna-loader/SKILL.md",
   "mcp_server": "mcp-server/",
+  "overall_status": "unassessed",
   "agents": [
-    {
-      "id": "codex",
-      "name": "Codex",
-      "support": "auto-detected",
-      "skill_path": "~/.codex/skills/kdna-loader/",
-      "guide": "integrations/codex/README.md",
-      "setup_flag": "--codex"
-    },
-    {
-      "id": "claude-code",
-      "name": "Claude Code",
-      "support": "auto-detected",
-      "skill_path": "~/.claude/skills/kdna-loader/",
-      "guide": "integrations/claude-code/README.md",
-      "setup_flag": "--claude"
-    },
-    {
-      "id": "opencode",
-      "name": "OpenCode",
-      "support": "auto-detected",
-      "skill_path": "~/.agents/skills/kdna-loader/",
-      "guide": "integrations/opencode/README.md",
-      "setup_flag": "--opencode"
-    },
-    {
-      "id": "cursor",
-      "name": "Cursor",
-      "support": "best-effort",
-      "skill_path": "~/.cursor/skills/kdna-loader/",
-      "guide": "integrations/cursor/README.md",
-      "setup_flag": null
-    },
-    {
-      "id": "copilot-compatible",
-      "name": "GitHub Copilot-compatible agents",
-      "support": "manual-compatible",
-      "skill_path": "~/.agents/skills/kdna-loader/",
-      "guide": "integrations/copilot/README.md",
-      "setup_flag": null
-    }
+    { "id": "codex", "name": "Codex", "support": "unassessed", "skill_path": "~/.codex/skills/kdna-loader/", "guide": "integrations/codex/README.md" },
+    { "id": "claude-code", "name": "Claude Code", "support": "unassessed", "skill_path": "~/.claude/skills/kdna-loader/", "guide": "integrations/claude-code/README.md" },
+    { "id": "opencode", "name": "OpenCode", "support": "unassessed", "skill_path": "~/.agents/skills/kdna-loader/", "guide": "integrations/opencode/README.md" },
+    { "id": "cursor", "name": "Cursor", "support": "unassessed", "skill_path": "~/.cursor/skills/kdna-loader/", "guide": "integrations/cursor/README.md" },
+    { "id": "copilot-compatible", "name": "GitHub Copilot-compatible agents", "support": "unassessed", "skill_path": "~/.agents/skills/kdna-loader/", "guide": "integrations/copilot/README.md" }
   ]
 }

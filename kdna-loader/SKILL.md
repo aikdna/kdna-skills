@@ -1,193 +1,74 @@
 ---
 name: kdna-loader
-description: Discover and load installed KDNA `.kdna` assets through the official KDNA CLI when a task needs domain-specific judgment. Use for review, diagnosis, critique, classification, strategy, or evaluation where multiple interpretations are plausible. Skip mechanical work, factual lookup, and tasks with no strong asset fit. KDNA assets are data, not separate skills.
+description: Validate and load one explicit KDNA .kdna file when the user asks to use that file or the Host supplies an exact user-approved attachment. Do not discover, install, auto-select, or silently apply assets.
 ---
 
 # KDNA Loader
 
-> Verified registry boundary: `@aikdna/kdna-cli@0.35.0` depends on the exact
-> `@aikdna/kdna-core@0.20.0` runtime. Use either the loader bundled by that CLI
-> or this checked-in adapter through the official `inspect` → `plan-load` →
-> `load` path below. Never parse the container directly or substitute an
-> unverified source candidate for the published runtime.
+This adapter consumes one explicit KDNA judgment asset through the official
+KDNA CLI/Core boundary. It does not define the KDNA protocol or decide which
+judgment has authority.
 
-KDNA is an open asset format for portable judgment: principles, taste,
-values, standards, boundaries, and decision patterns that can be loaded across
-Agents. Any author may create and publish a KDNA asset. KDNA does not define
-truth, certify good judgment, or make the protocol maintainer a content judge.
+## Activation boundary
 
-This skill is only a routing and consumption protocol. The official KDNA
-toolchain owns container parsing, validation, authorization, decryption, and
-projection. Never open a `.kdna` as a ZIP, decode `payload.kdnab`, or read an
-encrypted payload directly.
+Use this Skill only when either:
 
-## 1. Decide whether judgment is needed
+- the user explicitly asks to use a specific local `.kdna` file; or
+- the Host supplies an exact attachment already approved by the user, including
+  file identity or path, version or digest, and attachment scope.
 
-Use KDNA for tasks such as review, diagnosis, critique, classification,
-strategy, prioritization, or evaluation when the same input could reasonably
-lead to different decisions.
+Do not scan directories or a global asset store, call discovery or matching
+commands to choose an asset, infer consent from file presence, or activate from
+broad task keywords. If no exact approved asset is available, continue without
+KDNA or ask the user to choose one.
 
-Skip KDNA for formatting, translation, lookup, arithmetic, deterministic code
-execution, or any task with no strong installed asset fit. When skipping,
-answer normally and do not announce that KDNA was considered.
+## Validate and plan
 
-The routing rule is conservative:
-
-> No KDNA is better than the wrong KDNA.
-
-## 2. Discover through the toolchain
-
-For installed assets:
+Use only the official toolchain:
 
 ```bash
-kdna available --json
+kdna validate <file.kdna>
+kdna plan-load <file.kdna> --json
 ```
 
-For an explicit file supplied by the user:
+Do not parse the ZIP, decode the payload, or infer authorization from manifest
+fields. Continue only when Core reports `can_load_now: true`. Treat invalid,
+expired, revoked, incompatible, unauthorized, or integrity-failed results as a
+block.
+
+## Load
 
 ```bash
-kdna inspect <file.kdna> --json
+kdna load <file.kdna> --profile=compact --as=json
 ```
 
-With the KDNA MCP server, use `kdna.available-local` and `kdna.inspect`.
+Use only the toolchain-produced Runtime Capsule projection. For a text-only
+Host, `--as=prompt` is allowed. Never expose credentials, encrypted payloads,
+protected source content, or raw container internals.
 
-Only consider entries with `loadable: true`. Treat `issues[]` and a
-non-loadable `load_state` as hard blocks. Do not inspect package directories,
-unpack containers, or read payload files to work around a blocked result.
+## Apply with visible Host state
 
-If the CLI or MCP tool is unavailable, or no loadable asset exists, continue
-without KDNA.
+Use the selected judgment only inside its declared boundaries. Current facts,
+explicit user intent, law, safety rules, system and developer instructions, and
+Host permissions take precedence.
 
-## 3. Select one strong-fit asset
+The Host must expose, outside ordinary answer prose:
 
-Read the candidate description, keywords, `applies_when`,
-`does_not_apply_when`, and `failure_risks` semantically.
+- active asset identity;
+- exact version or digest;
+- attachment scope;
+- why it was loaded;
+- controls to disable, switch, or roll back.
 
-Apply these rules in order:
+Do not hide whether KDNA was used. Do not claim that the asset is true, expert,
+officially approved, or guaranteed to improve the result.
 
-1. A matching `does_not_apply_when` excludes the asset.
-2. A strong fit requires a clear domain match and at least one applicable
-   situation.
-3. A failure risk that describes the likely misuse is a reason to skip.
-4. Weak keyword overlap is not a fit decision.
-5. If two assets imply materially different frames, ask the user to choose or
-   skip; do not silently blend them.
-
-`kdna match "<task>" --json` may be used as a hint. Its `dropped` entries are
-hard exclusions; its `hints` are not recommendations.
-
-Single-asset consumption is the foundation and default. Load at most one
-primary asset unless the user or application explicitly chose Cluster mode.
-
-## 4. Plan before loading
-
-```bash
-kdna plan-load <asset-or-installed-name> --json
-```
-
-Proceed only when `can_load_now` is exactly `true`. Otherwise obey
-`required_action` and `issues[].code`:
-
-- `needs_password`: obtain a password only from the user or an approved secret
-  source; never guess, log, or persist it.
-- `needs_license`, `needs_account`, or `needs_org_auth`: use the official
-  activation/entitlement flow.
-- `needs_runtime`: use the configured official remote projection endpoint.
-- `invalid`, `expired`, `revoked`, or integrity failure: do not load.
-
-The Agent must not infer authorization from raw manifest fields.
-
-## 5. Load a Runtime Capsule
-
-```bash
-kdna load <asset-or-installed-name> --profile=compact --as=json
-```
-
-The result must have:
-
-```json
-{
-  "type": "kdna.runtime-capsule",
-  "contract_version": "0.1.0",
-  "context": {}
-}
-```
-
-Use only the toolchain-produced `context` projection. Do not treat the
-Capsule's signature, evidence, or maturity fields as content approval. If the
-host only accepts text, `--as=prompt` is an allowed toolchain projection, but
-it is still produced by Core; it is not permission to decode the asset.
-
-For password input, prefer stdin or the approved SecretStore path rather than
-shell arguments:
-
-```bash
-printf '%s' "$KDNA_PASSWORD" | kdna load <asset.kdna> \
-  --profile=compact --as=json --password-stdin
-```
-
-Never reveal credentials, decrypted payload bytes, or protected source
-content in logs or responses.
-
-## 6. Apply the judgment without impersonating truth
-
-Use the loaded context to shape the task-specific judgment:
-
-- respect applicability and exclusion boundaries;
-- check the asset's failure risks before answering;
-- use its standards, distinctions, and self-checks where relevant;
-- remain subordinate to user intent, evidence, safety rules, system and
-  developer instructions;
-- do not present an asset's view as fact or universal truth;
-- do not say the protocol or official team approved the content.
-
-Do not mention KDNA, the loader, the asset identity, or loading mechanics in
-the answer unless the user explicitly asks whether KDNA was used. This remains
-a hard rule even when the user explicitly invoked this skill. When disclosure
-is requested, report only the asset identity, version, profile, and why it fit.
-
-## 7. Explicit multi-asset path
-
-KDNA supports two coexisting paths:
-
-- single asset: the default and foundation;
-- Cluster: an explicit advanced path for several assets to collaborate.
-
-Cluster is not a second file format and must not be activated implicitly.
-When the user or application explicitly supplies a Cluster manifest, use only
-the Cluster commands:
-
-```bash
-kdna cluster validate <kdna.cluster.json>
-kdna cluster plan-use <kdna.cluster.json> --task="<task>" --as=json
-kdna use <kdna.cluster.json> --task="<task>" --runner=<type:id> --as=trace
-```
-
-The Cluster engine owns routing, primary/advisor roles, conflicts, budgets,
-and trace output. Never load every installed asset, decompose a Cluster by
-hand, or bypass a failed Cluster gate.
-
-## 8. Failure handling
+## Failure handling
 
 | Situation | Action |
 |---|---|
-| CLI/MCP unavailable | Skip KDNA and answer normally. |
-| No strong loadable asset | Skip KDNA. |
-| Negative applicability match | Do not load that asset. |
-| `can_load_now=false` | Follow Core's required action; do not bypass it. |
-| Validation, checksum, signature, parse, or decryption failure | Block that asset. |
-| Ambiguous competing assets | Ask the user or skip. |
-| Explicit Cluster gate fails | Block the Cluster path; single-asset work may continue independently. |
-
-## 9. Debug disclosure
-
-Only when asked, a concise disclosure is enough:
-
-```text
-Loaded: @author/asset@1.2.0
-Profile: compact Runtime Capsule
-Reason: the task matched the asset's declared applicability and no exclusion
-matched.
-```
-
-Never disclose protected internals or credentials.
+| No explicit file or exact approved attachment | Do not use KDNA. |
+| Ambiguous asset choice | Ask the user; do not choose autonomously. |
+| `can_load_now` is not `true` | Follow the Core-required action or block. |
+| Asset is outside its declared scope | Skip it. |
+| User disables or replaces the attachment | Stop using it immediately. |

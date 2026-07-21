@@ -1,40 +1,24 @@
 # KDNA Loader Contract
 
-Status: Implementation Contract
-Normative: No
-Protocol Source of Truth: `aikdna/kdna`
+> **Status:** Non-normative adapter contract. The protocol source of truth is
+> `aikdna/kdna`. The current Skill implementation is Unassessed.
 
-`kdna-skills` provides agent adapters. It does not define the KDNA protocol and
-must not become a parallel authorization runtime.
+An adapter may consume only a file explicitly selected by the user or an exact
+Host attachment already approved by the user. It must not make arbitrary local
+files eligible by discovery, choose a judgment autonomously, or hide active
+use.
 
-## Loader Rules
+The adapter must:
 
-- Adapters MUST use the official CLI/Core loader path for `.kdna` assets.
-- Adapters MUST NOT parse `.kdna` containers manually.
-- Adapters MUST NOT infer entitlement validity from raw manifest fields.
-- Adapters MUST call `kdna plan-load` or an equivalent Core implementation
-  before loading protected, licensed, or remote assets.
-- Adapters MUST NOT load an asset unless the Core/CLI result says
-  `can_load_now=true`.
-- Adapters MUST treat remote assets as recognized but unsupported until a
-  conforming remote runtime is available.
-- Adapters MUST NOT expose full protected payloads to tools, plugins, logs, or
-  ordinary model context by default.
-- Adapters MUST NOT claim marketplace approval, official quality endorsement,
-  or registry-required authorization.
+1. use official Core/CLI operations rather than parse the container;
+2. run LoadPlan and continue only when `can_load_now` is true;
+3. use only the toolchain-produced Runtime Capsule projection;
+4. preserve access, integrity, revocation, and scope failures;
+5. expose active identity, exact version or digest, scope, and selection reason;
+6. provide disable, switch, and rollback control;
+7. remain subordinate to current facts, user intent, law, safety, system rules,
+   and Host permissions.
 
-## Initial Support Matrix
-
-| Asset | Adapter behavior |
-|---|---|
-| `public` | May load through CLI/Core when `can_load_now=true`. |
-| `licensed/password` | May load only after CLI/Core authorizes the credential. |
-| `licensed/local_receipt` | Recognize and defer to CLI/Core receipt handling. |
-| `remote` | Recognize and block locally unless a conforming runtime is connected. |
-| invalid/tampered/expired/revoked | Fail closed and surface Core issue codes. |
-
-## Agent Boundary
-
-KDNA shapes judgment for a task. It does not override system policy, tool
-permissions, safety policy, or user intent. Agent adapters should load the
-smallest runtime projection needed for the task, not raw KDNA internals.
+Discovery and matching APIs may support an application UI, but their output is
+not consent or authority. Any future automatic applicability decision is
+limited to the exact set of attachments the user already approved.

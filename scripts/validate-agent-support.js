@@ -5,105 +5,69 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const matrixPath = path.join(root, 'docs', 'agent-support-matrix.json');
-const matrix = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
+const matrix = JSON.parse(fs.readFileSync(path.join(root, 'docs', 'agent-support-matrix.json'), 'utf8'));
 const failures = [];
-
-function fail(message) {
-  failures.push(message);
-}
 
 function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), 'utf8');
 }
 
-function exists(relativePath) {
-  return fs.existsSync(path.join(root, relativePath));
-}
-
 function requireText(label, text, needle) {
-  if (!text.includes(needle)) fail(`${label} missing ${JSON.stringify(needle)}`);
+  if (!text.includes(needle)) failures.push(`${label} missing ${JSON.stringify(needle)}`);
 }
 
-if (matrix.schema_version !== 1) fail('agent-support-matrix.json schema_version must be 1');
-if (!exists(matrix.loader_skill)) fail(`loader skill missing: ${matrix.loader_skill}`);
-if (!exists(matrix.mcp_server)) fail(`MCP server directory missing: ${matrix.mcp_server}`);
+if (matrix.schema_version !== 2) failures.push('support matrix schema_version must be 2');
+if (matrix.overall_status !== 'unassessed') failures.push('overall adapter status must be unassessed');
 
 const rootReadme = read('README.md');
 const zhReadme = read('README.zh.md');
-const loaderSkill = read(matrix.loader_skill);
-const mcpReadme = read('mcp-server/README.md');
-const verifiedCli = '@aikdna/kdna-cli@0.35.0';
-const verifiedCore = '@aikdna/kdna-core@0.20.0';
+const skill = read(matrix.loader_skill);
+const contract = read('docs/KDNA_LOADER_CONTRACT.md');
 
-requireText('README.md', rootReadme, 'docs/agent-support-matrix.json');
-requireText('README.zh.md', zhReadme, 'docs/agent-support-matrix.json');
-requireText('README.md', rootReadme, 'auto-detected where supported');
-requireText('README.zh.md', zhReadme, '支持自动检测时');
-requireText('README.md', rootReadme, 'kdna demo judgment ./judgment');
-requireText('README.zh.md', zhReadme, 'kdna demo judgment ./judgment');
-requireText('README.md', rootReadme, 'kdna pack ./judgment ./judgment.kdna');
-requireText('README.zh.md', zhReadme, 'kdna pack ./judgment ./judgment.kdna');
-requireText('README.md', rootReadme, verifiedCli);
-requireText('README.md', rootReadme, verifiedCore);
-requireText('README.zh.md', zhReadme, verifiedCli);
-requireText('README.zh.md', zhReadme, verifiedCore);
-requireText('kdna-loader/SKILL.md', loaderSkill, '## 1. Decide whether judgment is needed');
-requireText('kdna-loader/SKILL.md', loaderSkill, '## 7. Explicit multi-asset path');
-requireText('kdna-loader/SKILL.md', loaderSkill, verifiedCli);
-requireText('kdna-loader/SKILL.md', loaderSkill, verifiedCore);
-requireText('kdna-loader/SKILL.md', loaderSkill, '`inspect` → `plan-load` →');
-requireText('mcp-server/README.md', mcpReadme, 'toolchain-only protocol');
+requireText('README.md', rootReadme, '**Unassessed**');
+requireText('README.zh.md', zhReadme, '**Unassessed（未评估）**');
+requireText('SKILL.md', skill, 'one explicit KDNA judgment asset');
+requireText('SKILL.md', skill, 'Do not scan directories or a global asset store');
+requireText('SKILL.md', skill, 'Do not hide whether KDNA was used');
+requireText('contract', contract, 'Host attachment already approved by the user');
 
-if (/Core 0\.19\.0|CLI 0\.34\.0|earlier published package wave/i.test(loaderSkill)) {
-  fail('kdna-loader/SKILL.md must not present published runtime releases as source candidates');
+const forbidden = [
+  /apply KDNA silently/i,
+  /user (?:should )?see(?:s)? better judgment/i,
+  /automatically decides per task/i,
+  /discover installed KDNA/i
+];
+
+for (const [label, text] of [['README.md', rootReadme], ['README.zh.md', zhReadme], ['SKILL.md', skill], ['contract', contract]]) {
+  for (const pattern of forbidden) {
+    if (pattern.test(text)) failures.push(`${label} contains forbidden autonomous-loader claim: ${pattern}`);
+  }
 }
 
-if (rootReadme.includes('viral-topic-selection')) {
-  fail('README.md must use kdna demo judgment instead of superseded release downloads');
-}
-if (zhReadme.includes('kdna demo minimal')) {
-  fail('README.zh.md must use kdna demo judgment instead of minimal placeholder demos');
-}
-
-const allowedSupport = new Set(['auto-detected', 'best-effort', 'manual-compatible']);
 const ids = new Set();
-
 for (const agent of matrix.agents || []) {
-  if (ids.has(agent.id)) fail(`duplicate agent id: ${agent.id}`);
+  if (ids.has(agent.id)) failures.push(`duplicate agent id: ${agent.id}`);
   ids.add(agent.id);
-
-  if (!allowedSupport.has(agent.support)) fail(`${agent.id}: unsupported support value ${agent.support}`);
-  if (!agent.guide || !exists(agent.guide)) fail(`${agent.id}: guide missing: ${agent.guide}`);
-
-  const guide = exists(agent.guide) ? read(agent.guide) : '';
-  const guideDir = path.dirname(agent.guide);
-  const readmeName = agent.name === 'GitHub Copilot-compatible agents' ? 'GitHub Copilot' : agent.name;
-  const zhName = agent.name === 'GitHub Copilot-compatible agents' ? agent.name : readmeName;
-
-  requireText('README.md', rootReadme, `| **${readmeName}** | \`${agent.skill_path}\` | [Setup guide →](${guideDir}/) |`);
-  requireText('README.zh.md', zhReadme, `**${zhName}**`);
-  requireText(agent.guide, guide, agent.skill_path);
-  requireText(agent.guide, guide, 'kdna demo judgment ./judgment');
-  requireText(agent.guide, guide, 'kdna plan-load ./judgment.kdna --json');
-  requireText(agent.guide, guide, 'kdna load ./judgment.kdna --profile=compact --as=json');
-
-  if (agent.support === 'auto-detected') {
-    requireText(agent.guide, guide, 'kdna setup');
-    if (agent.setup_flag) requireText(agent.guide, guide, agent.setup_flag);
+  if (agent.support !== 'unassessed') failures.push(`${agent.id}: support must remain unassessed`);
+  const guidePath = path.join(root, agent.guide);
+  if (!fs.existsSync(guidePath)) {
+    failures.push(`${agent.id}: missing guide ${agent.guide}`);
+    continue;
   }
-
-  if (agent.support === 'manual-compatible') {
-    if (/auto-detects|auto-detected/i.test(guide)) {
-      fail(`${agent.id}: manual-compatible guide must not claim auto-detection`);
-    }
+  const guide = fs.readFileSync(guidePath, 'utf8');
+  requireText(agent.guide, guide, 'Unassessed');
+  requireText(agent.guide, guide, agent.skill_path);
+  requireText(agent.guide, guide, 'kdna plan-load ./judgment.kdna --json');
+  requireText(agent.guide, guide, 'disable/switch/rollback');
+  for (const pattern of forbidden) {
+    if (pattern.test(guide)) failures.push(`${agent.guide} contains forbidden autonomous-loader claim: ${pattern}`);
   }
 }
 
-if (failures.length > 0) {
+if (failures.length) {
   for (const failure of failures) console.error(`FAIL ${failure}`);
   console.error(`agent support validation failed: ${failures.length} failure(s)`);
   process.exit(1);
 }
 
-console.log(`agent support validation passed: ${matrix.agents.length} agent(s)`);
+console.log(`agent support validation passed: ${matrix.agents.length} unassessed adapter placement(s)`);
