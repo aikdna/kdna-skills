@@ -29,10 +29,8 @@ or matching a file.
 
 ## Install & Run
 
-The commands below currently resolve the published MCP 0.4.1 package. They do
-not install or prove the MCP 0.4.2 / Core 0.20.0 source checkpoint described in
-this repository's current changelog; those candidates must remain a coordinated
-package set and must not be mixed with the published wave.
+The commands below resolve the published MCP 0.4.2 package (built against
+Core 0.20.0), which matches this repository's current source checkpoint.
 
 ```bash
 npm install -g @aikdna/kdna-mcp-server

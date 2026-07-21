@@ -31,4 +31,17 @@ KDNA。
 详见[加载器合同](docs/KDNA_LOADER_CONTRACT.md)和
 [支持矩阵](docs/agent-support-matrix.json)。
 
+## 仓库组件
+
+| 组件 | 当前状态 |
+|---|---|
+| `kdna-loader/SKILL.md` | 未评估的适配器候选 |
+| MCP server | 实验性工具适配器；发现类工具不产生授权 |
+| Agent 放置指南 | 未评估的集成说明 |
+| legacy 安装脚本 | 已发布的历史实现；不是推荐路径 |
+
+警告：仓库中的 legacy 安装脚本（`install.sh`、`install-cli.sh`）是历史
+发布物，不属于当前推荐路径。当前推荐路径是 file-first：显式获取一个
+`.kdna` 资产，再用 CLI 验证与加载。
+
 Skill 文件存在、`kdna setup` 成功或找到本地文件，都不能证明 Agent 集成正确。
