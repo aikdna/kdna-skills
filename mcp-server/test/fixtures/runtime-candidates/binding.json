@@ -1,33 +1,64 @@
 {
-  "schema": "kdna.core.source-candidate-binding",
-  "schema_version": "1.0.0",
-  "package": "@aikdna/kdna-core",
-  "version": "0.20.0",
-  "source": {
-    "repository": "aikdna/kdna",
-    "commit": "1e77e3e0d486c330fe9f9262b514ef24c859d469",
-    "tree": "0b6e2d1deab6286dd84cbac453d27782295588d4",
-    "package_root": "packages/kdna-core",
-    "package_subtree": "dfe1161336a4f7e0f5e71972d55d2a96c2e17f06"
-  },
-  "artifact": {
-    "path": "test/fixtures/runtime-candidates/kdna-core-0.20.0.tgz",
-    "size": 114430,
-    "sha1": "abc0e3190c72a79e21732d9e0ca90cd52817967e",
-    "sha256": "b1614d14b77d6b8eac1c0a3902e2270a46cb0f52708e524b12b3990256ff8dee",
-    "integrity": "sha512-zdx5NuC4mOuN3625Dsn8Bq01/V9+MQy+kT870XXX2JHOjKJhXnBwO3BU8jke2vBrxfnzH7Jm9MmeqTM0UCBc0Q==",
-    "entry_count": 42,
-    "source_pack_equivalence": "strict_install_equivalent"
-  },
-  "upstream_evidence": {
-    "repo": "aikdna/kdna-cli",
-    "commit": "36f333cd341d03a7a6b10dd7b87a8172e9a18130",
-    "path": "tests/fixtures/core-0.20-candidate-evidence.json",
-    "sha256": "2d573d4413dd6f2c0568f51dc157d826cb30fee3c6b828c235704cf560938d8e"
-  },
-  "registry_boundary": {
-    "published": true,
-    "observed_at": "2026-07-17T09:10:00Z",
-    "http_status": 200
+  "schema": "kdna.mcp.runtime-candidate-binding",
+  "schema_version": "0.1.0",
+  "packages": [
+    {
+      "name": "@aikdna/kdna-cli",
+      "version": "0.36.0",
+      "source": {
+        "repository": "aikdna/kdna-cli",
+        "commit": "478114cda7d1f9e807b0c26b1ebd1b32721150eb",
+        "tree": "2c4ddad4f224354add065d4795bc0a705b7f08fc",
+        "package_root": ".",
+        "package_subtree": "2c4ddad4f224354add065d4795bc0a705b7f08fc"
+      },
+      "artifact": {
+        "path": "test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
+        "size": 244548,
+        "unpacked_size": 966653,
+        "sha1": "1041b899643ab06f98fee29feda3eba76edcccee",
+        "sha256": "a50f40e9977b57f1601a119bc0c5fb14e024af2f4f6450af5ed13d5730a8568f",
+        "integrity": "sha512-sjBo0KhPpuP+wiYjA3TCWAKCCayL4dSqVhrMIUBq463mewrCa00rri6LSpnG8N/4ICWpJF1FbPu67sTxLKe8dQ==",
+        "entry_count": 120,
+        "source_pack_equivalence": "strict_install_equivalent"
+      },
+      "registry_boundary": {
+        "published": false,
+        "release_required": true
+      }
+    },
+    {
+      "name": "@aikdna/kdna-core",
+      "version": "0.21.0",
+      "source": {
+        "repository": "aikdna/kdna",
+        "commit": "76bbc587ce05f7e575c2373832cc5c9eee9df98a",
+        "tree": "26be6c29458d74ce74dc63a11751b2f07583e5f5",
+        "package_root": "packages/kdna-core",
+        "package_subtree": "bfb2b6353db137a07eb829e1b6e0cf54135d9ea0"
+      },
+      "artifact": {
+        "path": "test/fixtures/runtime-candidates/aikdna-kdna-core-0.21.0.tgz",
+        "size": 116710,
+        "unpacked_size": 531891,
+        "sha1": "8181f937dc6f999b51110ebdf03262e76ac3922b",
+        "sha256": "b1de7d37b647e91371fdafbfa76d645b4d2f51cd9b77020f2a0b26087bfd03d8",
+        "integrity": "sha512-lT9+pKaQ8RV+0gZI4GAZke85SjA39ef6ppU29w/dEn8D4Byzbtsqn9MuxxShOBKDUPf4f8U4YCF24qKzMVWdxw==",
+        "entry_count": 42,
+        "source_pack_equivalence": "strict_install_equivalent"
+      },
+      "registry_boundary": {
+        "published": false,
+        "release_required": true
+      }
+    }
+  ],
+  "release_boundary": {
+    "status": "candidate_only",
+    "mcp_registry_dependency": "@aikdna/kdna-cli@0.36.0",
+    "registry_install_requires": [
+      "@aikdna/kdna-cli@0.36.0",
+      "@aikdna/kdna-core@0.21.0"
+    ]
   }
 }

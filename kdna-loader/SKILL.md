@@ -1,6 +1,6 @@
 ---
 name: kdna-loader
-description: Validate and load one explicit KDNA .kdna file when the user asks to use that file or the Host supplies an exact user-approved attachment. Do not discover, install, auto-select, or silently apply assets.
+description: Use the official KDNA MCP or CLI for one explicit .kdna file or the current workspace's user-approved attachments. Do not discover, attach, mutate, auto-select outside the approved set, or hide adoption.
 ---
 
 # KDNA Loader
@@ -14,15 +14,31 @@ judgment has authority.
 Use this Skill only when either:
 
 - the user explicitly asks to use a specific local `.kdna` file; or
-- the Host supplies an exact attachment already approved by the user, including
-  file identity or path, version or digest, and attachment scope.
+- the current Host workspace may contain an attachment record previously
+  approved by the user.
 
 Do not scan directories or a global asset store, call discovery or matching
 commands to choose an asset, infer consent from file presence, or activate from
-broad task keywords. If no exact approved asset is available, continue without
-KDNA or ask the user to choose one.
+broad task keywords. Do not read an attachment record yourself and invent a
+selection. Pass the Host's current workspace and current task to the official
+resolver. If no exact approved asset is available, continue without KDNA or ask
+the user to choose one.
 
-## Validate and plan
+## Preferred workspace flow
+
+When the Host exposes the KDNA MCP tools, call:
+
+1. `kdna.workspace-status` with the current Host workspace when status is
+   requested;
+2. `kdna.workspace-load` with that workspace and the current task before using
+   any attached judgment.
+
+Respect the returned `load`, `ask`, `skip`, or `block` decision. Only `load`
+contains a Runtime Capsule. Do not call CLI attachment mutations through this
+Skill. The user controls the relation explicitly with `kdna attachments`,
+`kdna disable`, `kdna enable`, `kdna switch`, `kdna rollback`, and `kdna remove`.
+
+## Explicit-file flow
 
 Use only the official toolchain:
 
@@ -52,23 +68,25 @@ Use the selected judgment only inside its declared boundaries. Current facts,
 explicit user intent, law, safety rules, system and developer instructions, and
 Host permissions take precedence.
 
-The Host must expose, outside ordinary answer prose:
+Before using a loaded projection, expose in the tool event or a short adoption
+notice:
 
 - active asset identity;
 - exact version or digest;
 - attachment scope;
 - why it was loaded;
-- controls to disable, switch, or roll back.
+- the CLI controls to view, disable, switch, or roll back.
 
 Do not hide whether KDNA was used. Do not claim that the asset is true, expert,
 officially approved, or guaranteed to improve the result.
 
 ## Failure handling
 
-| Situation | Action |
-|---|---|
-| No explicit file or exact approved attachment | Do not use KDNA. |
-| Ambiguous asset choice | Ask the user; do not choose autonomously. |
-| `can_load_now` is not `true` | Follow the Core-required action or block. |
-| Asset is outside its declared scope | Skip it. |
-| User disables or replaces the attachment | Stop using it immediately. |
+| Situation                                     | Action                                    |
+| --------------------------------------------- | ----------------------------------------- |
+| No explicit file or exact approved attachment | Do not use KDNA.                          |
+| Ambiguous asset choice                        | Ask the user; do not choose autonomously. |
+| Resolver returns `ask`, `skip`, or `block`    | Do not plan or load.                      |
+| `can_load_now` is not `true`                  | Follow the Core-required action or block. |
+| Asset is outside its declared scope           | Skip it.                                  |
+| User disables or replaces the attachment      | Stop using it immediately.                |

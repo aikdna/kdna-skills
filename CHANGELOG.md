@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.5.0 (2026-07-22) — source candidate
+
+- Replace global discovery and task-ranking tools with a thin workspace
+  status/resolver/load adapter that consumes only user-approved attachments.
+- Delegate every file and workspace operation to the exact merged
+  `@aikdna/kdna-cli@0.36.0` candidate and its single
+  `@aikdna/kdna-core@0.21.0` runtime; the MCP package no longer implements
+  parallel Core logic.
+- Remove password, password-presence, and caller-supplied entitlement inputs
+  from MCP so credentials cannot enter tool arguments or logs and callers
+  cannot manufacture authorization.
+- Make `load`, `ask`, `skip`, and `block` visible with exact identity, version,
+  digest, scope, reason, authorization, integrity, and CLI control commands.
+- Add hostile tests for unapproved global files, attachment conflicts,
+  corrupted snapshots, nested and simultaneous workspaces, immutable records,
+  pinned runtime execution, Host-root escapes, sterile errors, and private
+  task-file cleanup.
+- Verify the same approved workspace through real Codex `0.144.3` and OpenCode
+  `1.18.4` MCP sessions: both reported the same identity, digest, scope,
+  authorization, integrity, load reason, Capsule type, and out-of-scope skip.
+- Make the Skill installer require exactly one explicitly selected Host; remove
+  Host detection, install-all behavior, and automatic legacy-file deletion.
+- Keep this checkpoint candidate-only. Registry publication remains blocked
+  until the exact CLI and Core dependencies are independently published and
+  the release lock is regenerated from official registry artifacts.
+
 ## 0.4.2 (2026-07-15)
 
 - Bind MCP discovery, authorization planning, verification, matching, and
@@ -42,7 +68,7 @@
 - Align MCP loading with KDNA Core 0.16.0 and the current account/device
   entitlement and Runtime Capsule contract.
 
-## 2026-07 (MCP v0.3.1)
+## 2026-07 (MCP v0.3.1; superseded by 0.5.0 visibility contract)
 
 - Make silent application a hard loader rule after local Codex, Claude Code,
   and OpenCode field validation found that one Agent disclosed the asset even
@@ -56,14 +82,17 @@
   default, and explicit Cluster mode.
 
 ## 2026-06
+
 - kdna-loader skill updated for the packaged KDNA runtime.
 - install script updated to install @aikdna/kdna-cli.
 
 ## 2026-06 (v0.2.4)
+
 - MCP server: add prepublishOnly gate with release-check.
 - Add CODEOWNERS, DCO, CI workflow.
 - Shell script linting fixes.
 
 ## 2026-05 (v0.2.0)
+
 - Initial public release of kdna-loader skill and MCP server.
 - Cross-agent support: Claude Code, Codex, OpenCode, Cursor.
