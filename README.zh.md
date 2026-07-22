@@ -8,12 +8,27 @@ KDNA 工具链的一种方式。
 
 ## 当前安全路径
 
+显式使用单个文件：
+
 ```bash
 npm install -g @aikdna/kdna-cli
 kdna validate ./judgment.kdna
 kdna plan-load ./judgment.kdna --json
 kdna load ./judgment.kdna --profile=compact --as=json
 ```
+
+`0.5.0` MCP 源码候选通过其精确的 `@aikdna/kdna-cli@0.36.0` 源码依赖支持
+用户批准的工作区关系。npm 当前发布的 CLI 仍是 `0.35.1`，不能把以下命令当作
+该已发布版本的能力：
+
+```bash
+kdna attach ./judgment.kdna --cwd ./my-project --role article-writing \
+  --applies-to draft --does-not-apply-to code --yes
+kdna attachments --cwd ./my-project
+```
+
+随后由 Host 调用薄 MCP 的工作区状态、解析和加载工具。MCP 不能创建或修改附加
+关系。
 
 必须先由用户选择文件，或批准一个精确的 Host 附加项。适配器不能扫描全局资产
 库、根据任务关键词自行选择资产、从文件存在推断同意，也不能隐藏是否使用了
@@ -33,15 +48,13 @@ KDNA。
 
 ## 仓库组件
 
-| 组件 | 当前状态 |
-|---|---|
-| `kdna-loader/SKILL.md` | 未评估的适配器候选 |
-| MCP server | 实验性工具适配器；发现类工具不产生授权 |
-| Agent 放置指南 | 未评估的集成说明 |
-| legacy 安装脚本 | 已发布的历史实现；不是推荐路径 |
+| 组件                   | 当前状态                                            |
+| ---------------------- | --------------------------------------------------- |
+| `kdna-loader/SKILL.md` | 未评估的 fallback 适配器候选                        |
+| MCP server             | `0.5.0` 源码候选；Codex 与 OpenCode 已验证          |
+| Codex / OpenCode       | 分别启用 MCP 后的源码候选已验证                     |
+| 其他 Agent 放置指南    | 未评估的集成说明                                    |
+| 安装脚本               | 每次只安装到用户明确指定的一个 Host；不检测、不全装 |
 
-警告：仓库中的 legacy 安装脚本（`install.sh`、`install-cli.sh`）是历史
-发布物，不属于当前推荐路径。当前推荐路径是 file-first：显式获取一个
-`.kdna` 资产，再用 CLI 验证与加载。
-
+npm 当前发布的 MCP 仍是历史版本 `0.4.2`，不是这里的 `0.5.0` 工作区候选。
 Skill 文件存在、`kdna setup` 成功或找到本地文件，都不能证明 Agent 集成正确。

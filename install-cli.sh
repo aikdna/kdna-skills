@@ -3,7 +3,7 @@ set -euo pipefail
 
 # KDNA CLI Installer
 #
-# STATUS (2026-07-21): the hosted one-command endpoint
+# STATUS (verified 2026-07-22): the hosted one-command endpoint
 # https://aikdna.com/install currently returns HTTP 410 and is NOT the
 # install path. Install the CLI directly from npm instead:
 #
@@ -14,8 +14,6 @@ set -euo pipefail
 # Source: https://github.com/aikdna/kdna-skills/blob/main/install-cli.sh
 
 NPM_PKG="@aikdna/kdna-cli"
-KDNA_ROOT="${HOME}/.kdna"
-
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -68,25 +66,22 @@ log "Version: ${INSTALLED_VERSION}"
 
 header "Done"
 
-echo "  CLI:       $(which kdna)"
+echo "  CLI:       $(command -v kdna)"
 echo "  Version:   ${INSTALLED_VERSION}"
-echo "  KDNA root: ${KDNA_ROOT}"
 echo ""
 echo "  Next steps (file-first path):"
 echo "    # Public reference assets live in aikdna/kdna-assets. Download an"
 echo "    # asset and its .sha256 from its release page, verify the checksum,"
-echo "    # then install the local file:"
+echo "    # then validate, plan, and load that explicit local file:"
 echo "    curl -fLO https://github.com/aikdna/kdna-assets/releases/download/0.1.1/laozi-wuwei-0.1.1.kdna"
 echo "    curl -fLO https://github.com/aikdna/kdna-assets/releases/download/0.1.1/laozi-wuwei-0.1.1.kdna.sha256"
 echo "    shasum -a 256 -c laozi-wuwei-0.1.1.kdna.sha256"
-echo "    kdna install ./laozi-wuwei-0.1.1.kdna"
-echo ""
-echo "    kdna list                    # show installed packages (only --json is supported)"
 echo "    kdna validate ./laozi-wuwei-0.1.1.kdna"
-echo "    kdna doctor --agents         # verify agent integration"
+echo "    kdna plan-load ./laozi-wuwei-0.1.1.kdna --json"
+echo "    kdna load ./laozi-wuwei-0.1.1.kdna --profile=compact --as=json"
 echo ""
-echo "  Note: 'kdna install @scope/name' requires a configured registry"
-echo "  (KDNA_REGISTRY_URL); no default registry is set."
+echo "  File presence is not workspace authorization. CLI versions that expose"
+echo "  workspace attachments require an explicit 'kdna attach ... --yes' action."
 echo ""
 echo "  Authoring:"
 echo "    npm install -g @aikdna/kdna-studio-cli"

@@ -1,95 +1,141 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
-const assert = require('node:assert/strict');
-const { spawnSync } = require('node:child_process');
-const fs = require('node:fs');
-const path = require('node:path');
+const assert = require("node:assert/strict");
+const { spawnSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
-const ROOT = path.resolve(__dirname, '..');
-const PACKAGE_ROOT = path.join(ROOT, 'mcp-server');
-const CORE = '@aikdna/kdna-core';
-const REGISTRY = 'https://registry.npmjs.org/';
+const ROOT = path.resolve(__dirname, "..");
+const PACKAGE_ROOT = path.join(ROOT, "mcp-server");
+const CLI = "@aikdna/kdna-cli";
+const CORE = "@aikdna/kdna-core";
+const EVAL = "@aikdna/kdna-eval";
+const REGISTRY = "https://registry.npmjs.org/";
+const REQUIRED = Object.freeze({
+  [CLI]: "0.36.0",
+  [CORE]: "0.21.0",
+  [EVAL]: "0.3.2",
+});
 
-function officialTarball(version) {
-  return `https://registry.npmjs.org/@aikdna/kdna-core/-/kdna-core-${version}.tgz`;
+function officialTarball(packageName, version) {
+  const leaf = packageName.slice(packageName.lastIndexOf("/") + 1);
+  return `${REGISTRY}${packageName}/-/${leaf}-${version}.tgz`;
 }
 
-function validateLocalReleaseDependency({ packageJson, lock }) {
-  const version = packageJson.dependencies?.[CORE];
-  assert.match(version || '', /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/, 'Core release dependency must be one exact SemVer');
-  assert.equal(lock.packages?.['']?.dependencies?.[CORE], version);
-  const locked = lock.packages?.[`node_modules/${CORE}`];
-  assert.equal(locked?.version, version);
-  assert.equal(
-    locked?.resolved,
-    officialTarball(version),
-    'Core release dependency must resolve to the official registry, not a source candidate',
-  );
-  assert.match(locked?.integrity || '', /^sha512-[A-Za-z0-9+/]+={0,2}$/);
-  const copies = Object.keys(lock.packages || {}).filter((entry) =>
-    entry.toLowerCase().endsWith(`node_modules/${CORE}`),
-  );
-  assert.deepEqual(copies, [`node_modules/${CORE}`], 'release lock must contain exactly one Core copy');
-  return { version, integrity: locked.integrity };
+function validateLocalReleaseDependencies({ packageJson, lock }) {
+  assert.deepEqual(packageJson.dependencies, { [CLI]: REQUIRED[CLI] });
+  assert.deepEqual(lock.packages?.[""]?.dependencies, { [CLI]: REQUIRED[CLI] });
+
+  const cli = lock.packages?.[`node_modules/${CLI}`];
+  assert.equal(cli?.version, REQUIRED[CLI]);
+  assert.equal(cli?.dependencies?.[CORE], REQUIRED[CORE]);
+  assert.equal(cli?.dependencies?.[EVAL], REQUIRED[EVAL]);
+
+  const packages = [CLI, CORE, EVAL].map((packageName) => {
+    const locked = lock.packages?.[`node_modules/${packageName}`];
+    const version = REQUIRED[packageName];
+    assert.equal(locked?.version, version);
+    assert.equal(
+      locked?.resolved,
+      officialTarball(packageName, version),
+      `${packageName} must resolve to the official registry`,
+    );
+    assert.match(locked?.integrity || "", /^sha512-[A-Za-z0-9+/]+={0,2}$/u);
+    const copies = Object.keys(lock.packages || {}).filter((entry) =>
+      entry.toLowerCase().endsWith(`node_modules/${packageName}`),
+    );
+    assert.deepEqual(
+      copies,
+      [`node_modules/${packageName}`],
+      `release lock must contain one ${packageName} copy`,
+    );
+    return { package: packageName, version, integrity: locked.integrity };
+  });
+
+  for (const [entry, locked] of Object.entries(lock.packages || {})) {
+    if (entry === "" || !locked?.resolved) continue;
+    assert.ok(
+      locked.resolved.startsWith(REGISTRY),
+      `release lock contains a non-registry resolution: ${entry}`,
+    );
+  }
+  return packages;
 }
 
 function validateRegistryDependency(metadata, local) {
-  assert.equal(metadata?.name, CORE);
+  assert.equal(metadata?.name, local.package);
   assert.equal(metadata?.version, local.version);
-  assert.equal(metadata?.['dist.integrity'], local.integrity);
-  assert.match(metadata?.['dist.shasum'] || '', /^[a-f0-9]{40}$/);
+  assert.equal(metadata?.["dist.integrity"], local.integrity);
+  assert.match(metadata?.["dist.shasum"] || "", /^[a-f0-9]{40}$/u);
   return {
     package: metadata.name,
     version: metadata.version,
-    integrity: metadata['dist.integrity'],
-    shasum: metadata['dist.shasum'],
+    integrity: metadata["dist.integrity"],
+    shasum: metadata["dist.shasum"],
   };
 }
 
-function registryLookup(version, spawn = spawnSync) {
+function registryLookup(packageName, version, spawn = spawnSync) {
   const result = spawn(
-    'npm',
+    "npm",
     [
-      'view',
-      `${CORE}@${version}`,
-      'name',
-      'version',
-      'dist.integrity',
-      'dist.shasum',
-      '--json',
-      '--ignore-scripts',
+      "view",
+      `${packageName}@${version}`,
+      "name",
+      "version",
+      "dist.integrity",
+      "dist.shasum",
+      "--json",
+      "--ignore-scripts",
       `--registry=${REGISTRY}`,
     ],
     {
       cwd: PACKAGE_ROOT,
-      encoding: 'utf8',
+      encoding: "utf8",
       shell: false,
       timeout: 30_000,
       maxBuffer: 1024 * 1024,
     },
   );
   if (result.error || result.status !== 0) {
-    throw new Error('Core release dependency is not available from the official registry');
+    throw new Error(
+      `${packageName}@${version} is not available from the official registry`,
+    );
   }
   try {
     return JSON.parse(result.stdout);
   } catch {
-    throw new Error('Core release dependency registry metadata is invalid');
+    throw new Error(`${packageName}@${version} registry metadata is invalid`);
   }
 }
 
-function guardReleaseDependency({ packageJson, lock, lookup = registryLookup }) {
-  const local = validateLocalReleaseDependency({ packageJson, lock });
-  return validateRegistryDependency(lookup(local.version), local);
+function guardReleaseDependency({
+  packageJson,
+  lock,
+  lookup = registryLookup,
+}) {
+  const local = validateLocalReleaseDependencies({ packageJson, lock });
+  return local.map((candidate) =>
+    validateRegistryDependency(
+      lookup(candidate.package, candidate.version),
+      candidate,
+    ),
+  );
 }
 
 function main() {
-  const packageJson = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, 'package.json'), 'utf8'));
-  const lock = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, 'package-lock.json'), 'utf8'));
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8"),
+  );
+  const lock = JSON.parse(
+    fs.readFileSync(path.join(PACKAGE_ROOT, "package-lock.json"), "utf8"),
+  );
   try {
     const result = guardReleaseDependency({ packageJson, lock });
-    console.log(`Release dependency verified: ${result.package}@${result.version}`);
+    console.log(
+      `Release dependencies verified: ${result.map(({ package: name, version }) => `${name}@${version}`).join(", ")}`,
+    );
   } catch (error) {
     console.error(`Release dependency rejected: ${error.message}`);
     process.exitCode = 1;
@@ -99,11 +145,14 @@ function main() {
 if (require.main === module) main();
 
 module.exports = {
+  CLI,
   CORE,
+  EVAL,
   REGISTRY,
+  REQUIRED,
   guardReleaseDependency,
   officialTarball,
   registryLookup,
-  validateLocalReleaseDependency,
+  validateLocalReleaseDependencies,
   validateRegistryDependency,
 };

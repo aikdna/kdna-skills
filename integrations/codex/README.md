@@ -1,17 +1,38 @@
 # KDNA with Codex
 
-> **Status:** Unassessed adapter placement. Skill-file presence is not evidence
-> of correct integration.
+> **Status:** MCP source candidate verified with Codex CLI `0.144.3`. This is
+> not a claim that the unpublished MCP `0.5.0` candidate is available from npm.
 
-Use an explicit file through the official CLI:
+Configure only the KDNA MCP adapter for the Codex workspace where you intend to
+use it. During source acceptance, point Codex at the local candidate:
 
-```bash
-kdna validate ./judgment.kdna
-kdna plan-load ./judgment.kdna --json
-kdna load ./judgment.kdna --profile=compact --as=json
+```toml
+[mcp_servers.kdna]
+command = "node"
+args = ["/absolute/path/to/kdna-skills/mcp-server/bin/kdna-mcp.mjs"]
+cwd = "."
+enabled_tools = [
+  "kdna.workspace-status",
+  "kdna.workspace-resolve",
+  "kdna.workspace-load",
+]
+default_tools_approval_mode = "approve"
 ```
 
-The candidate Skill path is `~/.codex/skills/kdna-loader/`. Do not install it as
-a broad-trigger discovery Skill. A conforming Codex Host must receive one exact
-user-approved file or attachment and expose active identity, version or digest,
-scope, reason, and disable/switch/rollback controls.
+The approved tool list is read/load-only. It cannot create or mutate workspace
+attachments. Use the CLI for controls:
+
+```bash
+kdna attachments --cwd ./my-project
+kdna disable <attachment-id> --cwd ./my-project
+kdna switch <attachment-id> ./new-judgment.kdna --cwd ./my-project --yes
+kdna rollback <attachment-id> --cwd ./my-project
+```
+
+Real-Host acceptance covered one in-scope `load` and one out-of-scope `skip` on
+the same workspace. The load exposed identity, version, digest, scope, reason,
+authorization, integrity, disable/switch/rollback controls, LoadPlan, and
+Runtime Capsule. The skip produced no LoadPlan or Capsule.
+
+The fallback Skill path is `~/.codex/skills/kdna-loader/`; Skill-file presence
+alone is not MCP configuration or support evidence.

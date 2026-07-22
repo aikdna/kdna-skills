@@ -1,170 +1,91 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# KDNA Skills Installer
-# Installs the single kdna-loader skill for detected AI agents.
-# kdna-loader is the entire skill surface — it teaches the agent how to
-# discover and use installed KDNA assets. KDNA domains themselves are
-# immutable .kdna assets managed by the CLI and are not registered as skills.
-
-KDNA_ASSETS_REPO="https://github.com/aikdna/kdna-assets"
+# Installs the thin kdna-loader fallback for exactly one user-selected Host.
+# It never detects Hosts, installs into multiple Hosts, removes legacy files,
+# or creates KDNA workspace attachments.
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 NC='\033[0m'
 
-log()  { echo -e "${GREEN}[kdna]${NC} $1"; }
-warn() { echo -e "${YELLOW}[kdna]${NC} $1"; }
-err()  { echo -e "${RED}[kdna]${NC} $1"; }
+log() { echo -e "${GREEN}[kdna]${NC} $1"; }
+err() { echo -e "${RED}[kdna]${NC} $1" >&2; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-
-install_skills_for_agent() {
-  local name="$1"
-  local skill_base="$2"
-
-  log "Installing for $name..."
-
-  mkdir -p "$skill_base/kdna-loader"
-
-  if [ -f "$SCRIPT_DIR/kdna-loader/SKILL.md" ]; then
-    cp "$SCRIPT_DIR/kdna-loader/SKILL.md" "$skill_base/kdna-loader/SKILL.md"
-  else
-    curl -fsSL "https://raw.githubusercontent.com/aikdna/kdna-skills/main/kdna-loader/SKILL.md" -o "$skill_base/kdna-loader/SKILL.md"
-  fi
-
-  log "  kdna-loader: $skill_base/kdna-loader/SKILL.md"
-
-  # Clean up any pre-v0.9 kdna-create skill (no longer maintained).
-  if [ -d "$skill_base/kdna-create" ]; then
-    rm -rf "$skill_base/kdna-create"
-    log "  removed legacy kdna-create skill (use KDNA Studio for reviewed asset authoring)"
-  fi
-
-  log "  $name: done"
-}
-
-detect_agents() {
-  local found=""
-  [ -d "$HOME/.codex" ]  && found="$found codex"
-  [ -d "$HOME/.claude" ] && found="$found claude"
-  [ -d "$HOME/.agents" ] && found="$found opencode"
-  [ -d "$HOME/.cursor" ] && found="$found cursor"
-  echo "$found"
-}
+SOURCE_SKILL="$SCRIPT_DIR/kdna-loader/SKILL.md"
 
 print_usage() {
-  cat << EOF
-Usage: install.sh [OPTIONS]
+  cat <<'EOF'
+Usage: install.sh HOST
 
-Options:
-  --codex      Install for Codex (OpenAI)
-  --claude     Install for Claude Code (Anthropic)
-  --opencode   Install for OpenCode
-  --cursor     Install for Cursor
-  --copilot    Install for GitHub Copilot
-  --all        Install for all detected agents
+Install the thin fallback Skill for exactly one explicitly selected Host:
+  --codex      Codex
+  --claude     Claude Code
+  --opencode   OpenCode
+  --cursor     Cursor
+  --copilot    GitHub Copilot-compatible agents
   --help       Show this message
 
-Without options, runs interactive mode.
-
-Installs one skill:
-  kdna-loader  — teaches the agent how to discover and load installed
-                 KDNA .kdna assets through the kdna CLI
-
-For reviewed KDNA authoring workflows, use KDNA Studio or @aikdna/kdna-studio-cli.
+This installer does not detect Hosts, install into every Host, discover KDNA
+assets, or create workspace attachments. MCP is preferred where the selected
+Host supports it.
 EOF
 }
 
-install_codex()  { install_skills_for_agent "Codex"       "$HOME/.codex/skills"; }
-install_claude() { install_skills_for_agent "Claude Code" "$HOME/.claude/skills"; }
-install_opencode(){ install_skills_for_agent "OpenCode"    "$HOME/.agents/skills"; }
-install_cursor() { install_skills_for_agent "Cursor"      "$HOME/.cursor/skills"; }
-install_copilot(){ install_skills_for_agent "GitHub Copilot" "$HOME/.agents/skills"; }
+install_skill() {
+  local host_name="$1"
+  local skill_base="$2"
+  local destination="$skill_base/kdna-loader/SKILL.md"
 
-interactive_mode() {
-  local agents
-  agents=$(detect_agents)
-
-  if [ -z "$agents" ]; then
-    warn "No agents detected. Manual install:"
-    echo ""
-    echo "  Codex:       mkdir -p ~/.codex/skills/kdna-loader"
-    echo "  Claude Code: mkdir -p ~/.claude/skills/kdna-loader"
-    echo "  OpenCode:    mkdir -p ~/.agents/skills/kdna-loader"
-    echo "  Cursor:      mkdir -p ~/.cursor/skills/kdna-loader"
-    echo ""
-    echo "Then copy kdna-loader/SKILL.md into each."
-    exit 0
+  if [ ! -f "$SOURCE_SKILL" ]; then
+    err "Missing source Skill: kdna-loader/SKILL.md"
+    err "Run this installer from a complete kdna-skills checkout."
+    exit 1
   fi
 
-  log "Detected: $agents"
+  if [ -f "$destination" ]; then
+    if cmp -s "$SOURCE_SKILL" "$destination"; then
+      log "$host_name already has this exact kdna-loader Skill."
+      return
+    fi
+    err "$host_name already has a different kdna-loader Skill at $destination"
+    err "Review and remove or back up that file explicitly before installing."
+    exit 1
+  fi
 
-  for agent in $agents; do
-    case "$agent" in
-      codex)
-        read -r -p "Install for Codex? [Y/n] " answer
-        [ "${answer:-Y}" != "n" ] && [ "${answer:-Y}" != "N" ] && install_codex
-        ;;
-      claude)
-        read -r -p "Install for Claude Code? [Y/n] " answer
-        [ "${answer:-Y}" != "n" ] && [ "${answer:-Y}" != "N" ] && install_claude
-        ;;
-      opencode)
-        read -r -p "Install for OpenCode? [Y/n] " answer
-        [ "${answer:-Y}" != "n" ] && [ "${answer:-Y}" != "N" ] && install_opencode
-        ;;
-      cursor)
-        read -r -p "Install for Cursor? [Y/n] " answer
-        [ "${answer:-Y}" != "n" ] && [ "${answer:-Y}" != "N" ] && install_cursor
-        ;;
-    esac
-  done
+  mkdir -p "$skill_base/kdna-loader"
+  cp "$SOURCE_SKILL" "$destination"
+  log "Installed kdna-loader for $host_name: $destination"
 }
 
-# Main
-if [ $# -eq 0 ]; then
-  interactive_mode
-  exit 0
+if [ "$#" -ne 1 ]; then
+  err "Choose exactly one Host."
+  print_usage
+  exit 1
 fi
 
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --codex)   install_codex; shift ;;
-    --claude)  install_claude; shift ;;
-    --opencode) install_opencode; shift ;;
-    --cursor)  install_cursor; shift ;;
-    --copilot) install_copilot; shift ;;
-    --all)
-      detected=$(detect_agents)
-      for agent in $detected; do
-        case "$agent" in
-          codex)   install_codex ;;
-          claude)  install_claude ;;
-          opencode) install_opencode ;;
-          cursor)  install_cursor ;;
-        esac
-      done
-      shift
-      ;;
-    --help) print_usage; exit 0 ;;
-    *) err "Unknown option: $1"; print_usage; exit 1 ;;
-  esac
-done
+case "$1" in
+  --codex) install_skill "Codex" "$HOME/.codex/skills" ;;
+  --claude) install_skill "Claude Code" "$HOME/.claude/skills" ;;
+  --opencode) install_skill "OpenCode" "$HOME/.agents/skills" ;;
+  --cursor) install_skill "Cursor" "$HOME/.cursor/skills" ;;
+  --copilot) install_skill "GitHub Copilot-compatible agents" "$HOME/.agents/skills" ;;
+  --help) print_usage; exit 0 ;;
+  *) err "Unknown Host: $1"; print_usage; exit 1 ;;
+esac
 
-echo ""
-log "Installation complete: kdna-loader installed."
-echo ""
-warn "Restart your agent session to use the updated skill."
-echo ""
-echo "Next steps:"
-echo "  1. Get a KDNA asset (file-first path): download a .kdna asset and its"
-echo "     .sha256 from the reference index at $KDNA_ASSETS_REPO"
-echo "     (e.g. @aikdna/laozi-wuwei or @aikdna/epictetus-control-and-character),"
-echo "     verify the checksum, then run: kdna install ./<asset>.kdna"
-echo "     Note: 'kdna install @scope/name' requires KDNA_REGISTRY_URL;"
-echo "     no default registry is configured."
-echo "  2. Ask your agent a domain-relevant question — the agent will"
-echo "     discover the installed KDNA via kdna-loader and apply it."
-echo "  3. Browse public reference assets: $KDNA_ASSETS_REPO"
+cat <<'EOF'
+
+The Skill adapter is now enabled only for the selected Host.
+
+Workspace attachment commands require the exact @aikdna/kdna-cli@0.36.0 source
+candidate; the current registry CLI does not provide them. During coordinated
+source acceptance, create the relation explicitly:
+  kdna attach ./judgment.kdna --cwd ./my-project --role article-writing \
+    --applies-to draft --does-not-apply-to code --yes
+  kdna attachments --cwd ./my-project
+
+The Host adapter may read and load approved workspace attachments. It cannot
+attach, disable, switch, roll back, or remove them on its own.
+EOF
