@@ -13,8 +13,7 @@ jobs:
     if: >-
       github.event.action == 'published' &&
       github.event.release.draft == false &&
-      github.event.release.prerelease == false &&
-      startsWith(github.event.release.tag_name, 'v')
+      github.event.release.prerelease == false
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
