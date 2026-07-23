@@ -20,7 +20,7 @@ function git(args) {
 }
 
 try {
-  const tag = `v${pkg.version}`;
+  const tag = pkg.version;
   const context = validateReleaseContext({
     pkg,
     changelog,

@@ -141,10 +141,10 @@ function releaseInput(overrides = {}) {
     env: {
       GITHUB_EVENT_NAME: "release",
       RELEASE_EVENT_ACTION: "published",
-      RELEASE_TAG_NAME: `v${version}`,
+      RELEASE_TAG_NAME: version,
       RELEASE_IS_DRAFT: "false",
       RELEASE_IS_PRERELEASE: "false",
-      GITHUB_REF: `refs/tags/v${version}`,
+      GITHUB_REF: `refs/tags/${version}`,
       GITHUB_SHA: HASH,
       ...overrides.env,
     },
@@ -156,7 +156,7 @@ function evidence(overrides = {}) {
   const base = {
     schema: "kdna.mcp.release-evidence",
     version: "1.0",
-    source: { ref: "refs/tags/v1.2.3", commit: HASH },
+    source: { ref: "refs/tags/1.2.3", commit: HASH },
     package: { name: "@aikdna/kdna-mcp-server", version: "1.2.3" },
     artifact: {
       filename: "aikdna-kdna-mcp-server-1.2.3.tgz",
@@ -268,6 +268,10 @@ test("publish workflow is stable release-only and publishes only the verified ta
   assert.match(workflow, /release:\n\s+types: \[published\]/);
   assert.match(workflow, /release\.draft == false/);
   assert.match(workflow, /release\.prerelease == false/);
+  assert.doesNotMatch(
+    workflow,
+    /startsWith\(github\.event\.release\.tag_name,\s*['"]v['"]\)/,
+  );
   assert.match(workflow, new RegExp(`actions/checkout@${CHECKOUT_ACTION_SHA}`));
   assert.match(
     workflow,
@@ -289,6 +293,12 @@ test("release context binds event, stable package, tag, ref, SHA, HEAD, clean tr
     releaseInput({ env: { GITHUB_EVENT_NAME: "workflow_dispatch" } }),
     releaseInput({ env: { RELEASE_IS_DRAFT: "true" } }),
     releaseInput({ env: { RELEASE_IS_PRERELEASE: "true" } }),
+    releaseInput({
+      env: {
+        RELEASE_TAG_NAME: ["v", "1.2.3"].join(""),
+        GITHUB_REF: ["refs/tags/", "v", "1.2.3"].join(""),
+      },
+    }),
     releaseInput({ env: { GITHUB_REF: "refs/heads/main" } }),
     releaseInput({ env: { GITHUB_SHA: "c".repeat(40) } }),
     releaseInput({ git: { status: "?? artifact.tgz" } }),
@@ -310,8 +320,8 @@ test("current package and changelog form one exact finalizable release coordinat
   assert.deepEqual(validateReleaseContext(releaseInput({ pkg, changelog })), {
     name: "@aikdna/kdna-mcp-server",
     version: "0.5.0",
-    tag: "v0.5.0",
-    ref: "refs/tags/v0.5.0",
+    tag: "0.5.0",
+    ref: "refs/tags/0.5.0",
     commit: HASH,
   });
 });
@@ -344,7 +354,7 @@ test("pack evidence independently verifies identity, file list, sizes, SHA-1, an
     reportText: packed.stdout,
     tarball,
     pkg,
-    source: { ref: `refs/tags/v${pkg.version}`, commit: HASH },
+    source: { ref: `refs/tags/${pkg.version}`, commit: HASH },
   });
   assert.equal(
     candidate.artifact.shasum,
@@ -479,7 +489,7 @@ test("npm report and retained evidence must exactly match the parsed tar manifes
         reportText: JSON.stringify(report),
         tarball: bytes,
         pkg: { name: "@aikdna/kdna-mcp-server", version: "1.2.3" },
-        source: { ref: "refs/tags/v1.2.3", commit: HASH },
+        source: { ref: "refs/tags/1.2.3", commit: HASH },
       }),
     /file report/,
   );
@@ -488,7 +498,7 @@ test("npm report and retained evidence must exactly match the parsed tar manifes
     reportText: JSON.stringify(packReport(bytes)),
     tarball: bytes,
     pkg: { name: "@aikdna/kdna-mcp-server", version: "1.2.3" },
-    source: { ref: "refs/tags/v1.2.3", commit: HASH },
+    source: { ref: "refs/tags/1.2.3", commit: HASH },
   });
   const drifted = {
     ...candidate,
@@ -567,10 +577,10 @@ test(
           KDNA_MCP_NESTED_PUBLISH_TEST: "1",
           GITHUB_EVENT_NAME: "release",
           RELEASE_EVENT_ACTION: "published",
-          RELEASE_TAG_NAME: `v${pkg.version}.wrong`,
+          RELEASE_TAG_NAME: `${pkg.version}.wrong`,
           RELEASE_IS_DRAFT: "false",
           RELEASE_IS_PRERELEASE: "false",
-          GITHUB_REF: `refs/tags/v${pkg.version}.wrong`,
+          GITHUB_REF: `refs/tags/${pkg.version}.wrong`,
           GITHUB_SHA: HASH,
         },
         maxBuffer: 32 * 1024 * 1024,
@@ -584,7 +594,7 @@ test(
     assert.match(
       output,
       new RegExp(
-        `v${pkg.version.replaceAll(".", "\\.")}.*(?:tag|commit)|tag.*v${pkg.version.replaceAll(".", "\\.")}`,
+        `${pkg.version.replaceAll(".", "\\.")}.*(?:tag|commit)|tag.*${pkg.version.replaceAll(".", "\\.")}`,
         "is",
       ),
     );
