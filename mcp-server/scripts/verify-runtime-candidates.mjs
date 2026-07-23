@@ -20,20 +20,20 @@ const EXPECTED = Object.freeze({
     version: "0.36.0",
     source: Object.freeze({
       repository: "aikdna/kdna-cli",
-      commit: "478114cda7d1f9e807b0c26b1ebd1b32721150eb",
-      tree: "2c4ddad4f224354add065d4795bc0a705b7f08fc",
+      commit: "5307fbc0d729f3fb3cb5ad6c24afeeb4053da0a6",
+      tree: "df3bac2094f223ae32d95c5f2344ac0fc4f424e4",
       package_root: ".",
-      package_subtree: "2c4ddad4f224354add065d4795bc0a705b7f08fc",
+      package_subtree: "df3bac2094f223ae32d95c5f2344ac0fc4f424e4",
     }),
     artifact: Object.freeze({
       path: "test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
-      size: 244548,
-      unpacked_size: 966653,
-      sha1: "1041b899643ab06f98fee29feda3eba76edcccee",
+      size: 245359,
+      unpacked_size: 968124,
+      sha1: "960a37ce40db3c7f89e6acc16cc712fd46880bc5",
       sha256:
-        "a50f40e9977b57f1601a119bc0c5fb14e024af2f4f6450af5ed13d5730a8568f",
+        "ff7ee10f04d4643c00440105470521c332fdea45234c183e6bd0071822ab5035",
       integrity:
-        "sha512-sjBo0KhPpuP+wiYjA3TCWAKCCayL4dSqVhrMIUBq463mewrCa00rri6LSpnG8N/4ICWpJF1FbPu67sTxLKe8dQ==",
+        "sha512-Yodd1GQM3mN2gOMnY45fXMcrNG/nf5VkY3iQR64IKeiPCzX8km3j+dV/VvbTFKF0DCIhSjbVn3UPAUXJsRu+VQ==",
       entry_count: 120,
       source_pack_equivalence: "strict_install_equivalent",
     }),
