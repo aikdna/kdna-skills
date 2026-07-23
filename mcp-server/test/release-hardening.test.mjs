@@ -235,6 +235,11 @@ test("source Runtime candidate resolves one exact CLI with one transitive Core c
     "0.21.0",
   );
   assert.equal(
+    lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["cbor-x"],
+    "1.6.4",
+  );
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-eval"], undefined);
+  assert.equal(
     lock.packages["node_modules/@aikdna/kdna-core"].version,
     "0.21.0",
   );

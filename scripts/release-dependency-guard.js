@@ -10,12 +10,12 @@ const ROOT = path.resolve(__dirname, "..");
 const PACKAGE_ROOT = path.join(ROOT, "mcp-server");
 const CLI = "@aikdna/kdna-cli";
 const CORE = "@aikdna/kdna-core";
-const EVAL = "@aikdna/kdna-eval";
+const CBOR = "cbor-x";
 const REGISTRY = "https://registry.npmjs.org/";
 const REQUIRED = Object.freeze({
   [CLI]: "0.36.0",
   [CORE]: "0.21.0",
-  [EVAL]: "0.3.2",
+  [CBOR]: "1.6.4",
 });
 
 function officialTarball(packageName, version) {
@@ -29,10 +29,12 @@ function validateLocalReleaseDependencies({ packageJson, lock }) {
 
   const cli = lock.packages?.[`node_modules/${CLI}`];
   assert.equal(cli?.version, REQUIRED[CLI]);
-  assert.equal(cli?.dependencies?.[CORE], REQUIRED[CORE]);
-  assert.equal(cli?.dependencies?.[EVAL], REQUIRED[EVAL]);
+  assert.deepEqual(cli?.dependencies, {
+    [CORE]: REQUIRED[CORE],
+    [CBOR]: REQUIRED[CBOR],
+  });
 
-  const packages = [CLI, CORE, EVAL].map((packageName) => {
+  const packages = [CLI, CORE, CBOR].map((packageName) => {
     const locked = lock.packages?.[`node_modules/${packageName}`];
     const version = REQUIRED[packageName];
     assert.equal(locked?.version, version);
@@ -145,9 +147,9 @@ function main() {
 if (require.main === module) main();
 
 module.exports = {
+  CBOR,
   CLI,
   CORE,
-  EVAL,
   REGISTRY,
   REQUIRED,
   guardReleaseDependency,

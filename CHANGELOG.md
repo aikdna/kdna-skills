@@ -11,6 +11,10 @@
 - Re-pin the retained CLI candidate after one-shot explicit-file loading became
   state-free by default and opt-in audit receipts stopped exposing source
   paths; the MCP tool surface and workspace schema are unchanged.
+- Re-pin the engineering-closure CLI tar to its exact 31-file release surface:
+  no Eval dependency, retired command source, global Store path, or bundled
+  legacy Skill is present. The retained process Host contract is available
+  only through the approved explicit-file `load`/`plan-load` commands.
 - Remove password, password-presence, and caller-supplied entitlement inputs
   from MCP so credentials cannot enter tool arguments or logs and callers
   cannot manufacture authorization.
