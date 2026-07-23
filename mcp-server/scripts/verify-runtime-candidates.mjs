@@ -20,21 +20,21 @@ const EXPECTED = Object.freeze({
     version: "0.36.0",
     source: Object.freeze({
       repository: "aikdna/kdna-cli",
-      commit: "5307fbc0d729f3fb3cb5ad6c24afeeb4053da0a6",
-      tree: "df3bac2094f223ae32d95c5f2344ac0fc4f424e4",
+      commit: "88474fc095b4142e1a272ccbe40edd9ad2953986",
+      tree: "6ce9d7235966d5537f86fd46357b6a4b3d6f27fe",
       package_root: ".",
-      package_subtree: "df3bac2094f223ae32d95c5f2344ac0fc4f424e4",
+      package_subtree: "6ce9d7235966d5537f86fd46357b6a4b3d6f27fe",
     }),
     artifact: Object.freeze({
       path: "test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
-      size: 245359,
-      unpacked_size: 968124,
-      sha1: "960a37ce40db3c7f89e6acc16cc712fd46880bc5",
+      size: 48190,
+      unpacked_size: 179376,
+      sha1: "2ac0a273f85f53a90ce79ae4b2a7268ad855374e",
       sha256:
-        "ff7ee10f04d4643c00440105470521c332fdea45234c183e6bd0071822ab5035",
+        "0d86f575dbf237eb46a74f9c5974c90db1e6762fc97e10606a89757d451f145e",
       integrity:
-        "sha512-Yodd1GQM3mN2gOMnY45fXMcrNG/nf5VkY3iQR64IKeiPCzX8km3j+dV/VvbTFKF0DCIhSjbVn3UPAUXJsRu+VQ==",
-      entry_count: 120,
+        "sha512-id34V2HtfbKCfPCTZPvlUnkaJ2Ha9Av6nKJyzHTRXOFZHvaQhbsHFIFpMMWfzYDjuV2S4wF9uQs++DjsLG+hMQ==",
+      entry_count: 31,
       source_pack_equivalence: "strict_install_equivalent",
     }),
   }),
@@ -208,8 +208,11 @@ export function validateCandidateFacts({
   assert.equal(cliLocked.version, "0.36.0");
   assert.equal(cliLocked.resolved, `file:${EXPECTED[CLI].artifact.path}`);
   assert.equal(cliLocked.integrity, EXPECTED[CLI].artifact.integrity);
-  assert.equal(cliLocked.dependencies[CORE], "0.21.0");
-  assert.equal(cliLocked.dependencies["@aikdna/kdna-eval"], "0.3.2");
+  assert.deepEqual(cliLocked.dependencies, {
+    [CORE]: "0.21.0",
+    "cbor-x": "1.6.4",
+  });
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-eval"], undefined);
 
   const coreLocked = lock.packages[`node_modules/${CORE}`];
   assert.equal(coreLocked.version, "0.21.0");

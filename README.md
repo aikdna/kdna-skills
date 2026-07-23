@@ -35,6 +35,10 @@ The user must select the file, or approve an exact Host attachment first. The
 adapter may not scan a global store, choose assets from task keywords, infer
 consent from file presence, or hide whether KDNA was used.
 
+The checked-in CLI candidate is the exact 31-file closed package surface. It
+has no Eval dependency, retired command modules, global Store implementation,
+or bundled legacy Skill.
+
 ## Adapter contract
 
 - accept one explicit file or exact user-approved attachment;

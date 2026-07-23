@@ -14,6 +14,11 @@ independent Codex and OpenCode MCP configurations. It binds the merged
 releases, so this source checkpoint is not installable from npm and makes no
 publication claim.
 
+The retained CLI tar has one exact 31-file package allowlist and no Eval
+dependency, retired command source, global Store path, or bundled legacy
+Skill. MCP consumes that closed tar without adding another CLI capability
+surface.
+
 The npm registry still serves MCP `0.4.2`; that historical package is not the
 workspace-attachment candidate described here.
 

@@ -26,7 +26,7 @@ const canonical = () => ({
 
 test("runtime candidate binding accepts only the exact merged CLI and Core artifacts", () => {
   assert.deepEqual(validateCandidateFacts(canonical()), {
-    entryCount: 162,
+    entryCount: 73,
     packedFileCount: 5,
   });
 });
@@ -113,6 +113,14 @@ test("runtime candidate binding rejects authority, dependency, and pack drift", 
         facts.lock.packages["node_modules/@aikdna/kdna-cli"].dependencies[
           "@aikdna/kdna-core"
         ] = "0.20.0";
+      },
+    ],
+    [
+      "CLI Eval dependency reintroduced",
+      (facts) => {
+        facts.lock.packages["node_modules/@aikdna/kdna-cli"].dependencies[
+          "@aikdna/kdna-eval"
+        ] = "0.3.2";
       },
     ],
     [

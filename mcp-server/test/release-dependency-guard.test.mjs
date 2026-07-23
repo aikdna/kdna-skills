@@ -6,9 +6,9 @@ import path from "node:path";
 
 const require = createRequire(import.meta.url);
 const {
+  CBOR,
   CLI,
   CORE,
-  EVAL,
   REQUIRED,
   guardReleaseDependency,
   officialTarball,
@@ -22,7 +22,7 @@ const packageRoot = path.resolve(
 const INTEGRITIES = Object.freeze({
   [CLI]: `sha512-${Buffer.alloc(64, 7).toString("base64")}`,
   [CORE]: `sha512-${Buffer.alloc(64, 8).toString("base64")}`,
-  [EVAL]: `sha512-${Buffer.alloc(64, 9).toString("base64")}`,
+  [CBOR]: `sha512-${Buffer.alloc(64, 9).toString("base64")}`,
 });
 const SHASUM = "a".repeat(40);
 
@@ -36,17 +36,17 @@ function formalFacts() {
           version: REQUIRED[CLI],
           resolved: officialTarball(CLI, REQUIRED[CLI]),
           integrity: INTEGRITIES[CLI],
-          dependencies: { [CORE]: REQUIRED[CORE], [EVAL]: REQUIRED[EVAL] },
+          dependencies: { [CORE]: REQUIRED[CORE], [CBOR]: REQUIRED[CBOR] },
         },
         [`node_modules/${CORE}`]: {
           version: REQUIRED[CORE],
           resolved: officialTarball(CORE, REQUIRED[CORE]),
           integrity: INTEGRITIES[CORE],
         },
-        [`node_modules/${EVAL}`]: {
-          version: REQUIRED[EVAL],
-          resolved: officialTarball(EVAL, REQUIRED[EVAL]),
-          integrity: INTEGRITIES[EVAL],
+        [`node_modules/${CBOR}`]: {
+          version: REQUIRED[CBOR],
+          resolved: officialTarball(CBOR, REQUIRED[CBOR]),
+          integrity: INTEGRITIES[CBOR],
         },
       },
     },
@@ -69,7 +69,7 @@ test("release dependency guard accepts only the exact official-registry CLI grap
       ...formalFacts(),
       lookup: (name) => metadata(name),
     }),
-    [CLI, CORE, EVAL].map((name) => ({
+    [CLI, CORE, CBOR].map((name) => ({
       package: name,
       version: REQUIRED[name],
       integrity: INTEGRITIES[name],
@@ -125,6 +125,14 @@ test("release dependency guard rejects source candidates, ranges, shadows, and e
       (facts) => {
         facts.lock.packages[`node_modules/${CLI}`].dependencies[CORE] =
           "0.20.0";
+      },
+    ],
+    [
+      "CLI Eval dependency reintroduced",
+      (facts) => {
+        facts.lock.packages[`node_modules/${CLI}`].dependencies[
+          "@aikdna/kdna-eval"
+        ] = "0.3.2";
       },
     ],
     [
