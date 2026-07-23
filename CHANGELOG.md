@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.0 (2026-07-22) — source candidate
+## 0.5.0 (2026-07-22)
 
 - Replace global discovery and task-ranking tools with a thin workspace
   status/resolver/load adapter that consumes only user-approved attachments.

@@ -297,6 +297,20 @@ test("release context binds event, stable package, tag, ref, SHA, HEAD, clean tr
     );
 });
 
+test("current package and changelog form one exact finalizable release coordinate", () => {
+  const pkg = JSON.parse(
+    fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
+  );
+  const changelog = fs.readFileSync(path.join(root, "CHANGELOG.md"), "utf8");
+  assert.deepEqual(validateReleaseContext(releaseInput({ pkg, changelog })), {
+    name: "@aikdna/kdna-mcp-server",
+    version: "0.5.0",
+    tag: "v0.5.0",
+    ref: "refs/tags/v0.5.0",
+    commit: HASH,
+  });
+});
+
 test("pack evidence independently verifies identity, file list, sizes, SHA-1, and SHA-512", (t) => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "kdna-mcp-pack-test-"));
   t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
