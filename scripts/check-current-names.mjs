@@ -13,7 +13,7 @@ const ALLOWLIST = "scripts/naming-integrity-allowlist.json";
 const CANDIDATES = new Map([
   [
     "mcp-server/test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
-    "a50f40e9977b57f1601a119bc0c5fb14e024af2f4f6450af5ed13d5730a8568f",
+    "ff7ee10f04d4643c00440105470521c332fdea45234c183e6bd0071822ab5035",
   ],
   [
     "mcp-server/test/fixtures/runtime-candidates/aikdna-kdna-core-0.21.0.tgz",

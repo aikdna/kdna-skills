@@ -8,6 +8,9 @@
   `@aikdna/kdna-cli@0.36.0` candidate and its single
   `@aikdna/kdna-core@0.21.0` runtime; the MCP package no longer implements
   parallel Core logic.
+- Re-pin the retained CLI candidate after one-shot explicit-file loading became
+  state-free by default and opt-in audit receipts stopped exposing source
+  paths; the MCP tool surface and workspace schema are unchanged.
 - Remove password, password-presence, and caller-supplied entitlement inputs
   from MCP so credentials cannot enter tool arguments or logs and callers
   cannot manufacture authorization.
