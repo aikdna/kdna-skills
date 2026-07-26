@@ -30,7 +30,7 @@
     "NOTICE"
   ],
   "scripts": {
-    "test": "node scripts/verify-runtime-candidates.mjs && node ../scripts/check-current-names.mjs && node --test test/*.test.mjs && npm run check:orphan-lockfile",
+    "test": "node scripts/verify-runtime-candidates.mjs && node ../scripts/check-current-names.mjs && node --test test/*.test.mjs && npm run check:orphan-lockfile && node --test test/orphan-lockfile.test.mjs",
     "check:runtime-candidates": "node scripts/verify-runtime-candidates.mjs",
     "check:current-names": "node ../scripts/check-current-names.mjs",
     "naming:check": "node ../scripts/check-current-names.mjs",
