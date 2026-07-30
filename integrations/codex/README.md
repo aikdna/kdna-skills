@@ -36,3 +36,17 @@ Runtime Capsule. The skip produced no LoadPlan or Capsule.
 
 The fallback Skill path is `~/.codex/skills/kdna-loader/`; Skill-file presence
 alone is not MCP configuration or support evidence.
+
+## Creation
+
+Creation support is a separate **Unassessed source candidate**. Place
+`kdna-creator/` in the intended Codex skill directory and invoke the Studio CLI
+over one explicit project path:
+
+```bash
+kdna-studio resume ./my-judgment --json
+```
+
+Use the [Creation Agent contract](../../docs/KDNA_CREATION_AGENT_CONTRACT.md).
+Do not add creation writes to the verified read/load MCP tool list. This guide
+does not establish Codex Creation Engine acceptance.

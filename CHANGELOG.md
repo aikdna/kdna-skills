@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+- Add the separate `kdna-creator` source Skill and Creation Agent JSON contract
+  for terminal authoring through the Studio CLI without requiring the Studio
+  App.
+- Keep creation and loading authority separate: the creator writes one
+  explicit recoverable project, while the loader remains read-only over an
+  explicit file or approved workspace attachment.
+- Require untrusted-material handling, semantic-revision-bound confirmation,
+  user-evaluated tests, separate Format Valid, Judgment Accepted and
+  Application Verified gates, exact-asset attempt/observation phases, and
+  `Creation Complete` only when all three bind one semantic/asset coordinate.
+- Clarify that Ed25519 receipts prove key possession rather than real-world
+  identity or process independence, and that initial key enrollment is
+  trust-on-first-use.
+- Clarify that receipts and authority are declared-only private Creation
+  evidence, require exact source-subject/currentness fields and a stable
+  creating Agent ID, treat status JSON as private state, use `status` for
+  read-only inspection, and submit observed creator labels explicitly.
+- Add a static CI gate for the creation Skill and contract. This source
+  candidate remains Unassessed and does not establish Host or Studio Product
+  Acceptance.
+
 ## 0.5.0 (2026-07-22)
 
 - Replace global discovery and task-ranking tools with a thin workspace

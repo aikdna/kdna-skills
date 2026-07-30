@@ -51,6 +51,7 @@ KDNA。
 | 组件                   | 当前状态                                            |
 | ---------------------- | --------------------------------------------------- |
 | `kdna-loader/SKILL.md` | 未评估的 fallback 适配器候选                        |
+| `kdna-creator/SKILL.md` | 终端 Creation Engine 引导源码候选；尚未评估         |
 | MCP server             | `0.5.0` 源码候选；Codex 与 OpenCode 已验证          |
 | Codex / OpenCode       | 分别启用 MCP 后的源码候选已验证                     |
 | 其他 Agent 放置指南    | 未评估的集成说明                                    |
@@ -58,3 +59,13 @@ KDNA。
 
 npm 当前发布的 MCP 仍是历史版本 `0.4.2`，不是这里的 `0.5.0` 工作区候选。
 Skill 文件存在、`kdna setup` 成功或找到本地文件，都不能证明 Agent 集成正确。
+
+## 创作适配器
+
+[`kdna-creator`](kdna-creator/SKILL.md) 引导终端 Agent 调用 Studio CLI 的统一
+Creation Engine，不要求 Studio App。它与只读加载器分离：创作会写入一个显式
+项目工作区，加载则只消费显式 `.kdna` 文件或用户批准的工作区附加项。
+
+[Creation Agent 合同](docs/KDNA_CREATION_AGENT_CONTRACT.md)定义 JSON 交接、
+权限暂停、Prompt Injection 边界、确认诚实性与导出收据。这些源码文档本身不
+建立 Host 支持或 Studio 产品验收结论。

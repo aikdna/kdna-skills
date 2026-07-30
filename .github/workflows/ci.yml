@@ -41,3 +41,4 @@ jobs:
           check-latest: false
       - run: node --version | grep -Fx v22.23.1
       - run: node scripts/validate-agent-support.js
+      - run: node scripts/validate-creation-agent.js
