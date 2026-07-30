@@ -1,0 +1,4 @@
+interface:
+  display_name: "KDNA Creator"
+  short_description: "Guide terminal Agents through honest KDNA creation"
+  default_prompt: "Use $kdna-creator to guide me from source material to a verified .kdna asset."

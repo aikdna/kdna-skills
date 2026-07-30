@@ -57,6 +57,7 @@ See [the loader contract](docs/KDNA_LOADER_CONTRACT.md) and the
 | Component              | Current status                                                      |
 | ---------------------- | ------------------------------------------------------------------- |
 | `kdna-loader/SKILL.md` | Unassessed fallback adapter candidate                               |
+| `kdna-creator/SKILL.md` | Source candidate for terminal Creation Engine guidance; Unassessed |
 | MCP server             | `0.5.0` source candidate; Codex and OpenCode verified               |
 | Codex / OpenCode       | Source candidate verified through independent MCP configurations    |
 | Other placement guides | Unassessed integration notes                                        |
@@ -65,5 +66,18 @@ See [the loader contract](docs/KDNA_LOADER_CONTRACT.md) and the
 The published npm MCP remains `0.4.2`; it is historical and is not the `0.5.0`
 workspace candidate. The presence of a Skill file, a successful `kdna setup`,
 or an enumerated local file does not prove correct Agent integration.
+
+## Creation adapter
+
+[`kdna-creator`](kdna-creator/SKILL.md) guides a terminal Agent through the
+Studio CLI Creation Engine without requiring the Studio App. It is separate
+from the read-only loader adapter: creation writes an explicit project
+workspace, while loading consumes an explicit `.kdna` file or approved
+workspace attachment.
+
+The [Creation Agent contract](docs/KDNA_CREATION_AGENT_CONTRACT.md) defines the
+JSON handoff, authority pauses, prompt-injection boundary, confirmation
+honesty, and export receipt. These source documents do not establish Host
+support or Studio Product Acceptance.
 
 [中文](./README.zh.md)

@@ -40,3 +40,17 @@ no LoadPlan or Runtime Capsule.
 
 The fallback Skill path is `~/.agents/skills/kdna-loader/`; Skill-file presence
 alone is not MCP configuration or support evidence.
+
+## Creation
+
+Creation support is a separate **Unassessed source candidate**. Place
+`kdna-creator/` under the intended OpenCode-compatible skills directory and
+invoke the Studio CLI over one explicit project path:
+
+```bash
+kdna-studio resume ./my-judgment --json
+```
+
+Use the [Creation Agent contract](../../docs/KDNA_CREATION_AGENT_CONTRACT.md).
+Do not grant creation writes through the verified read/load MCP surface. This
+guide does not establish OpenCode Creation Engine acceptance.

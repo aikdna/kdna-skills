@@ -15,3 +15,16 @@ The candidate Skill path is `~/.claude/skills/kdna-loader/`. Do not install it
 as a broad-trigger discovery Skill. A conforming Claude Code Host must receive
 one exact user-approved file or attachment and expose active identity, version
 or digest, scope, reason, and disable/switch/rollback controls.
+
+## Creation
+
+Creation is also Unassessed. The candidate Skill path is
+`~/.claude/skills/kdna-creator/`. It calls the Studio CLI for one explicit
+project:
+
+```bash
+kdna-studio resume ./my-judgment --json
+```
+
+Follow the [Creation Agent contract](../../docs/KDNA_CREATION_AGENT_CONTRACT.md).
+Skill placement alone is not creation support evidence.
