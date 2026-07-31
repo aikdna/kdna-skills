@@ -83,7 +83,9 @@ or bundled legacy Skill.
 - load only when the LoadPlan permits it, or when its sole remaining
   requirement is a password that the real CLI load verifies through stdin;
 - show active identity, version or digest, scope, and reason;
-- provide disable, switch, and rollback controls;
+- show the available controls and direct attachment mutations such as disable,
+  enable, switch, rollback, remove, and cleanup through the official CLI. The
+  MCP adapter itself does not mutate attachments;
 - keep facts, user intent, law, safety, system rules, and Host permissions above
   asset content.
 

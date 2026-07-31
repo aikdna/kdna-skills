@@ -210,6 +210,14 @@ const openCodeGuide = read("integrations/opencode/README.md");
 
 requireText("README.md", rootReadme, "RECHECK_REQUIRED");
 requireText("README.zh.md", zhReadme, "RECHECK_REQUIRED");
+requireText(
+  "README.md",
+  rootReadme,
+  "direct attachment mutations such as disable",
+);
+requireText("README.md", rootReadme, "MCP adapter itself does not mutate");
+requireText("README.zh.md", zhReadme, "写操作指向");
+requireText("README.zh.md", zhReadme, "MCP 适配器本身不修改附加项");
 requireText("SKILL.md", skill, "one explicit KDNA judgment asset");
 requireText(
   "SKILL.md",
@@ -358,6 +366,8 @@ const forbiddenClaims = [
   /user (?:should )?see(?:s)? better judgment/iu,
   /automatically decides per task/iu,
   /discover installed KDNA/iu,
+  /provide disable, switch, and rollback controls/iu,
+  /提供停用、切换和回滚控制/iu,
 ];
 for (const [label, text] of [
   ["README.md", rootReadme],
