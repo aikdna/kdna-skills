@@ -1,5 +1,5 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "loader_skill": "kdna-loader/SKILL.md",
   "mcp_server": "mcp-server/",
   "overall_status": "recheck_required",
@@ -20,9 +20,9 @@
   },
   "evidence_dimensions": {
     "mcp_component_tests": "source_candidate_tested",
-    "public_agent_black_box_consumption": "recheck_required",
+    "public_agent_black_box_consumption": "blocked",
     "host_delivery": "recheck_required",
-    "semantic_adoption": "recheck_required",
+    "semantic_adoption": "blocked",
     "creation_to_consumption_integration": "recheck_required",
     "real_human_acceptance": "not_run"
   },
@@ -39,7 +39,8 @@
     "named_remote": "source_candidate_tested",
     "verified_local_only": "deferred",
     "plain_language_user_approval_required": true,
-    "machine_fields_hidden_by_host": true,
+    "machine_fields_hidden_by_host": false,
+    "human_readable_consent_surface": "blocked",
     "rotatable_without_mcp_restart": true
   },
   "explicit_file_contract": {
@@ -61,11 +62,11 @@
   "completion_contract": {
     "single_host_consumption": {
       "minimum_qualified_hosts": 1,
-      "status": "recheck_required"
+      "status": "blocked"
     },
     "portability_benchmark": {
       "host_ids": ["codex", "opencode"],
-      "status": "recheck_required",
+      "status": "blocked",
       "product_minimum": false
     },
     "studio_product_integration": {

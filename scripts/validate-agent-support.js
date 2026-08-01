@@ -33,7 +33,7 @@ function authorityArgument() {
 }
 
 function readCurrentAuthority(file) {
-  if (file === null) return { supplied: false, ready: false };
+  if (file === null) return { supplied: false, ready: false, status: null };
   try {
     const absolute = path.resolve(file);
     const stat = fs.lstatSync(absolute);
@@ -45,14 +45,19 @@ function readCurrentAuthority(file) {
       throw new Error("authority document shape");
     }
     if (value.current_authority === true) {
-      if (
-        value.status !== matrix.authority_contract.ready_status ||
-        value.ready !== true ||
-        value.consume !== true
-      ) {
-        throw new Error("READY authority fields disagree");
+      if (value.status === matrix.authority_contract.ready_status) {
+        if (value.ready !== true || value.consume !== true) {
+          throw new Error("READY authority fields disagree");
+        }
+        return { supplied: true, ready: true, status: value.status };
       }
-      return { supplied: true, ready: true };
+      if (value.status === "BLOCKED") {
+        if (value.ready !== false || value.consume !== false) {
+          throw new Error("BLOCKED authority fields disagree");
+        }
+        return { supplied: true, ready: false, status: value.status };
+      }
+      throw new Error("current authority status unsupported");
     }
     if (
       value.current_authority !== false ||
@@ -62,19 +67,19 @@ function readCurrentAuthority(file) {
     ) {
       throw new Error("non-authoritative tombstone fields disagree");
     }
-    return { supplied: true, ready: false };
+    return { supplied: true, ready: false, status: value.status };
   } catch {
     failures.push(
       "current authority file is missing, unsafe, malformed, or inconsistent",
     );
-    return { supplied: true, ready: false };
+    return { supplied: true, ready: false, status: null };
   }
 }
 
 const authority = readCurrentAuthority(authorityArgument());
 
-if (matrix.schema_version !== 6) {
-  failures.push("support matrix schema_version must be 6");
+if (matrix.schema_version !== 7) {
+  failures.push("support matrix schema_version must be 7");
 }
 if (matrix.overall_status !== "recheck_required") {
   failures.push("overall adapter status must remain recheck_required");
@@ -109,9 +114,9 @@ if (
   JSON.stringify(matrix.evidence_dimensions) !==
   JSON.stringify({
     mcp_component_tests: "source_candidate_tested",
-    public_agent_black_box_consumption: "recheck_required",
+    public_agent_black_box_consumption: "blocked",
     host_delivery: "recheck_required",
-    semantic_adoption: "recheck_required",
+    semantic_adoption: "blocked",
     creation_to_consumption_integration: "recheck_required",
     real_human_acceptance: "not_run",
   })
@@ -138,7 +143,8 @@ if (
     named_remote: "source_candidate_tested",
     verified_local_only: "deferred",
     plain_language_user_approval_required: true,
-    machine_fields_hidden_by_host: true,
+    machine_fields_hidden_by_host: false,
+    human_readable_consent_surface: "blocked",
     rotatable_without_mcp_restart: true,
   })
 ) {
@@ -175,11 +181,11 @@ if (
   JSON.stringify({
     single_host_consumption: {
       minimum_qualified_hosts: 1,
-      status: "recheck_required",
+      status: "blocked",
     },
     portability_benchmark: {
       host_ids: ["codex", "opencode"],
-      status: "recheck_required",
+      status: "blocked",
       product_minimum: false,
     },
     studio_product_integration: {
@@ -498,5 +504,5 @@ if (failures.length) {
 }
 
 console.log(
-  `agent support validation passed: component-tested source candidate; single-Host product minimum distinct from ${benchmarkHostIds.size}-Host portability benchmark RECHECK_REQUIRED; current authority ${authority.supplied ? "bound non-READY" : "not supplied"}`,
+  `agent support validation passed: component-tested source candidate; single-Host product minimum distinct from ${benchmarkHostIds.size}-Host portability benchmark RECHECK_REQUIRED; current authority ${authority.supplied ? `bound ${authority.status || "non-READY"}` : "not supplied"}`,
 );

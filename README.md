@@ -68,6 +68,15 @@ projection. The adapter binds that approval through a Host-private rotating
 consent file. The user sees names and Allow/Decline; the Host hides attachment
 IDs, digests, schema, scope mode, approval-source and profile mechanics.
 
+The CLI `0.36.0` source candidate now includes a low-level `kdna host-consent`
+broker for interactive approval, atomic rotation, status and revocation. It
+accepts a private draft from a trusted Host launcher; it is not permission for
+the model or user to manufacture that draft. The current terminal prompt still
+shows full digest and role/scope mechanics, and the checked-in Codex/OpenCode
+configuration guides do not provide a native trusted launcher. Consequently
+this closes a component gap but does not upgrade either Host from
+`RECHECK_REQUIRED` or establish the ordinary-user consent experience.
+
 The user must select the file, or approve an exact Host attachment first. The
 adapter may not scan a global store, choose assets from task keywords, infer
 consent from file presence, or hide whether KDNA was used.
@@ -104,11 +113,12 @@ See [the loader contract](docs/KDNA_LOADER_CONTRACT.md) and the
 | installers              | One explicitly selected Host only; no detection or install-all mode |
 
 Component tests do not establish Host delivery, semantic adoption,
-Creation-to-Consumption integration, or real-human acceptance. Those four
-dimensions remain `RECHECK_REQUIRED`, `RECHECK_REQUIRED`,
-`RECHECK_REQUIRED`, and `NOT_RUN` until a machine-readable current authority is
-rebuilt. Codex and OpenCode are benchmark coordinates, not the only supported
-Host brands or a product requirement.
+Creation-to-Consumption integration, or real-human acceptance. A private
+machine-readable current authority exists, but its raw Host reconciliation
+keeps the ordinary-task single-Host loop and the two-Host semantic benchmark
+blocked. Public support therefore remains `RECHECK_REQUIRED`; real-human
+acceptance remains `NOT_RUN`. Codex and OpenCode are benchmark coordinates,
+not the only supported Host brands or a product requirement.
 
 One qualified Host can close one functional consumption loop when it delivers
 a real Runtime Capsule and proves visible, authorized, reversible semantic

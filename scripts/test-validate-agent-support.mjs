@@ -61,7 +61,29 @@ test("canonical non-authoritative tombstone binds and remains non-green", () => 
     });
     const result = run(file);
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /current authority bound non-READY/u);
+    assert.match(
+      result.stdout,
+      /current authority bound WAITING_FOR_TRUSTED_CREATION_HANDOFF/u,
+    );
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
+test("current BLOCKED authority binds and remains fail-closed", () => {
+  const temporary = fs.mkdtempSync(
+    path.join(os.tmpdir(), "kdna-authority-test-"),
+  );
+  try {
+    const file = writeAuthority(temporary, {
+      status: "BLOCKED",
+      current_authority: true,
+      ready: false,
+      consume: false,
+    });
+    const result = run(file);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /current authority bound BLOCKED/u);
   } finally {
     fs.rmSync(temporary, { recursive: true, force: true });
   }
