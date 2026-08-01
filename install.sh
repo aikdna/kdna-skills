@@ -82,8 +82,11 @@ The Skill adapter is now enabled only for the selected Host.
 Workspace attachment commands require the exact @aikdna/kdna-cli@0.36.0 source
 candidate; the current registry CLI does not provide them. During coordinated
 source acceptance, create the relation explicitly:
-  kdna attach ./judgment.kdna --cwd ./my-project --role article-writing \
-    --applies-to draft --does-not-apply-to code --yes
+  secure-host-attachment-json | kdna attach ./judgment.kdna \
+    --cwd ./my-project --attachment-stdin --preview
+  secure-host-attachment-json | kdna attach ./judgment.kdna \
+    --cwd ./my-project --attachment-stdin --yes \
+    --consent-digest sha256:<digest-from-preview>
   kdna attachments --cwd ./my-project
 
 The Host adapter may read and load approved workspace attachments. It cannot

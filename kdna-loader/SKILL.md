@@ -37,26 +37,47 @@ Respect the returned `load`, `ask`, `skip`, or `block` decision. Only `load`
 contains a Runtime Capsule. Do not call CLI attachment mutations through this
 Skill. The user controls the relation explicitly with `kdna attachments`,
 `kdna disable`, `kdna enable`, `kdna switch`, `kdna rollback`, and `kdna remove`.
+If `ask` includes a selection plan, show the current candidates once and pass
+the user's exact choice back through the official one-task selection input.
+Never reuse that choice for a later task.
 
 ## Explicit-file flow
 
-Use only the official toolchain:
+This path uses the official CLI, not generic MCP tools. The current MCP source
+candidate intentionally exposes no arbitrary-path inspect, verify, plan, or
+load tool because an unmodified Host cannot prove a model-supplied path is a
+user file selection.
 
-```bash
-kdna validate <file.kdna>
-kdna plan-load <file.kdna> --json
-```
-
-Do not parse the ZIP, decode the payload, or infer authorization from manifest
-fields. Continue only when Core reports `can_load_now: true`. Treat invalid,
-expired, revoked, incompatible, unauthorized, or integrity-failed results as a
-block.
-
-## Load
+If the original user instruction already binds the exact file, task or
+purpose, current Host, named processing destination, and least projection, it
+is the meaningful use-once approval: do not ask again. If any of those
+substantive dimensions is missing, show the asset name and purpose, current
+Host, named destination, and minimum delivered context in one consolidated
+Allow/Decline confirmation. After that single confirmation, do not ask again
+for internal validation, planning, or loading. Thus an ordinary public file
+needs zero or one supplemental meaningful confirmation, never a fixed second
+prompt. Do not ask the user for a receipt, internal ID, digest, schema, scope
+mode, approval source, or profile. Do not create an attachment or other
+persistent state.
 
 ```bash
 kdna load <file.kdna> --profile=compact --as=json
 ```
+
+`kdna load` performs Core validation and LoadPlan enforcement internally.
+`kdna validate` and `kdna plan-load` are optional diagnostics only; do not
+force three reads or three approvals before an ordinary use-once load. Do not
+parse the ZIP, decode the payload, or infer authorization from manifest fields.
+
+If the single load reports that a password is the sole remaining requirement,
+obtain one additional secret authorization and retry once with
+`--password-stdin`. Preserve leading and trailing spaces; remove only the
+transport newline defined by the CLI. Never put the secret in argv,
+environment, a workspace file, or output. A wrong value blocks without
+echoing it. Ordinary public files never request a secret.
+
+Treat invalid, expired, revoked, incompatible, unauthorized, or
+integrity-failed results as a block.
 
 Use only the toolchain-produced Runtime Capsule projection. For a text-only
 Host, `--as=prompt` is allowed. Never expose credentials, encrypted payloads,
@@ -90,3 +111,8 @@ officially approved, or guaranteed to improve the result.
 | `can_load_now` is not `true`                  | Follow the Core-required action or block. |
 | Asset is outside its declared scope           | Skip it.                                  |
 | User disables or replaces the attachment      | Stop using it immediately.                |
+
+One qualified Host can complete this functional contract. A second Host may be
+used as a portability benchmark, but is not a per-user or per-task product
+minimum. Studio product integration is separate and must reuse the same
+CLI/Core attachment state when implemented.

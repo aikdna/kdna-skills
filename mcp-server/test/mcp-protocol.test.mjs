@@ -439,16 +439,6 @@ if (command === "plan-load") {
   };
 }
 
-function cliSupportsDeferredAuthorization() {
-  const cliPackage = require("@aikdna/kdna-cli/package.json");
-  const cliEntry = require.resolve("@aikdna/kdna-cli/package.json");
-  const src = require("node:fs").readFileSync(
-    require("node:path").join(require("node:path").dirname(cliEntry), "src", "cmds", "workspace-attachments.js"),
-    "utf8",
-  );
-  return src.includes("--defer-password-authorization");
-}
-
 function temporaryRoot(label) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `kdna-mcp-${label}-`));
 }
@@ -1142,7 +1132,7 @@ test("Host identity, destination, asset, scope, and profile drift fail closed", 
   }
 });
 
-test("a private process authorization file enables an exact protected workspace load", { skip: !cliSupportsDeferredAuthorization() && "requires CLI --defer-password-authorization" }, () => {
+test("a private process authorization file enables an exact protected workspace load", () => {
   const root = temporaryRoot("protected-adoption");
   const password = "protected-adoption-test-password";
   try {
@@ -1196,7 +1186,7 @@ test("a private process authorization file enables an exact protected workspace 
   }
 });
 
-test("protected workspace authorization preserves password bytes and rejects invalid or oversized UTF-8", { skip: !cliSupportsDeferredAuthorization() && "requires CLI --defer-password-authorization" }, () => {
+test("protected workspace authorization preserves password bytes and rejects invalid or oversized UTF-8", () => {
   const root = temporaryRoot("authorization-bytes");
   const password = "  leading and trailing spaces  ";
   try {
@@ -1259,7 +1249,7 @@ test("protected workspace authorization preserves password bytes and rejects inv
 
 test(
   "process authorization rejects non-private files, symlinks, and wrong values without a capsule",
-  { skip: process.platform === "win32" || !cliSupportsDeferredAuthorization() },
+  { skip: process.platform === "win32" },
   () => {
     const root = temporaryRoot("authorization-hostile");
     const password = "authorization-hostile-test-password";
@@ -1327,7 +1317,7 @@ test(
   },
 );
 
-test("authorization source replacement after resolve fails closed before runtime load", { skip: !cliSupportsDeferredAuthorization() && "requires CLI --defer-password-authorization" }, () => {
+test("authorization source replacement after resolve fails closed before runtime load", () => {
   const root = temporaryRoot("authorization-replacement");
   const password = "authorization-replacement-test-password";
   try {

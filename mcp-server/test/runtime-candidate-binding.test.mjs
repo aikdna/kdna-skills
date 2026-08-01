@@ -26,7 +26,7 @@ const canonical = () => ({
 
 test("runtime candidate binding accepts only the exact merged CLI and Core artifacts", () => {
   assert.deepEqual(validateCandidateFacts(canonical()), {
-    entryCount: 73,
+    entryCount: 74,
     packedFileCount: 5,
   });
 });
