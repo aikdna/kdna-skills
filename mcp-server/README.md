@@ -1,20 +1,22 @@
 # KDNA MCP Server
 
-`@aikdna/kdna-mcp-server` is a thin stdio MCP adapter for explicit `.kdna`
-files and user-approved workspace attachments. It delegates every inspection,
-integrity, authorization, resolver, plan, and load decision to the pinned KDNA
-CLI/Core runtime.
+`@aikdna/kdna-mcp-server` is a thin stdio MCP adapter for user-approved
+workspace attachments. It delegates integrity, authorization, resolver, plan,
+and load decisions to the pinned KDNA CLI/Core runtime. A user-selected
+explicit file uses the official CLI through the loader Skill, not an
+arbitrary-path MCP tool.
 
 ## Source status
 
-The `0.5.0` source tree is a Development Preview candidate verified through
-independent Codex and OpenCode MCP configurations. It binds the merged
-`@aikdna/kdna-cli@0.36.0` candidate, whose single Core runtime is
-`@aikdna/kdna-core@0.21.0`. Those two dependency versions are not yet registry
-releases, so this source checkpoint is not installable from npm and makes no
-publication claim.
+The `0.5.0` source tree is a Development Preview candidate whose component tests
+bind the exact `@aikdna/kdna-cli@0.36.0` candidate and its single
+`@aikdna/kdna-core@0.21.0` runtime. Current Host delivery, semantic adoption,
+Creation-to-Consumption integration, and real-human acceptance are
+`RECHECK_REQUIRED`, `RECHECK_REQUIRED`, `RECHECK_REQUIRED`, and `NOT_RUN`.
+Those two dependency versions are not yet registry releases, so this source
+checkpoint is not installable from npm and makes no publication claim.
 
-The retained CLI tar has one exact 31-file package allowlist and no Eval
+The retained CLI tar has one exact 32-file package allowlist and no Eval
 dependency, retired command source, global Store path, or bundled legacy
 Skill. MCP consumes that closed tar without adding another CLI capability
 surface.
@@ -26,17 +28,79 @@ workspace-attachment candidate described here.
 
 | Tool                     | Purpose                                                             |
 | ------------------------ | ------------------------------------------------------------------- |
-| `kdna.inspect`           | Inspect one explicitly selected `.kdna` file                        |
-| `kdna.verify`            | Validate one explicitly selected `.kdna` file                       |
-| `kdna.plan-load`         | Return the official LoadPlan for one explicit file                  |
-| `kdna.load`              | Load one explicit file after official authorization checks          |
 | `kdna.workspace-status`  | Show only approved attachments for the supplied workspace           |
 | `kdna.workspace-resolve` | Resolve one task against that approved set                          |
 | `kdna.workspace-load`    | Resolve, plan, authorize, and load only when the decision is `load` |
 
 There is no global discovery, task-to-asset matching, attachment mutation,
-password input, or caller-supplied entitlement state. The adapter cannot
-attach, enable, disable, switch, roll back, or remove a workspace attachment.
+password tool argument, or caller-supplied entitlement state. The adapter
+cannot attach, enable, disable, switch, roll back, or remove a workspace
+attachment.
+
+The candidate does not expose generic explicit-file inspect, verify, plan, or
+load tools. Standard Codex/OpenCode MCP clients do not supply a native,
+model-hidden file-selection broker, so a model-supplied path cannot prove user
+intent. The public loader Skill instead performs one official CLI `kdna load`
+after one meaningful use-once file approval; that call validates and plans
+internally and creates no persistent attachment.
+
+The three workspace tools are the automatic project flow because every result
+remains bound to the immutable root, approved attachment record, policy scope,
+and snapshot. Host configurations must enumerate those three exact tools and
+must not use a server-wide wildcard.
+
+## Host processing consent
+
+Attachment approval makes exact workspace bytes eligible for resolution. It
+does **not** authorize a Host to deliver a decrypted Runtime Capsule to an
+unknown processor. Before the first successful load, the Host must turn one
+plain-language approval into a private machine document. The adapter starts
+with the fixed Host identity and fixed private document path:
+
+- `KDNA_MCP_HOST_ID`, the fixed Host identity;
+- `KDNA_MCP_HOST_PROCESSING_CONSENT_FILE`, a regular mode-`0600` document in a
+  mode-`0700` Host-private directory.
+
+The machine document binds the exact workspace root, asset digest, attachment
+and scope, named remote processor, and least
+Capsule profile. The user sees the asset name, purpose and boundary, Host,
+named destination, and Allow/Decline action. The Host—not the user—handles
+attachment IDs, record/task/plan digests, schema versions, scope modes,
+approval-source values, and profile identifiers.
+
+The consent is reusable only inside those exact declared coordinates. Asset
+bytes, attachment scope, Host, destination, workspace, profile, or user-control
+drift requires a new meaningful approval. A Host can atomically replace the
+document at the same fixed private path, so a long-running MCP process accepts
+the newly approved coordinates without restart. A change during one load
+suppresses that result; the request must be retried against the new consent.
+Tool arguments cannot select or replace this authority. The adapter rejects an
+unknown destination and will not accept a remote Host's self-asserted
+`verified_local_only` label. Verifiable local-model processing is deferred in
+this source candidate; only a named processing destination is implemented.
+Consent files are adapter-private coordinates, not Runtime Capsule fields, and
+the adapter never writes a decrypted Capsule copy to disk.
+
+For an exact password-protected workspace attachment, the Host process may set
+`KDNA_MCP_AUTHORIZATION_FILE` to one absolute, regular, non-symlink file owned
+by the current user and private to that user. The adapter reads the bounded
+value only when the selected LoadPlan requires a password, passes it only to
+the pinned CLI through `load --password-stdin`, removes the coordinate from
+the CLI child environment, and never returns it. The caller owns creation and
+destruction of this process-scoped file on success, cancellation, or Host
+exit; do not place it in the workspace or Host configuration repository.
+Without a provider, a protected workspace load returns
+structured `authorization_required`. A wrong value returns
+`authorization_rejected` without echoing it. Ordinary public assets neither
+require nor consume the provider. `pass` is a development credential source,
+not a user product requirement.
+
+This authorization-file contract is a component integration boundary, not a
+manual user workflow. A user must not create the file, export the coordinate,
+or send a password through model chat. Codex and OpenCode have not yet proven
+a native model-hidden secret provider, so protected workspace loading in those
+Host guides remains deferred. The ordinary unencrypted workspace path is
+independent and does not consume this provider.
 
 `kdna.workspace-load` visibly returns the `load`, `ask`, `skip`, or `block`
 decision, exact identity/version/digest, configured scope, reason, integrity
@@ -70,37 +134,71 @@ entry, then test it before configuring another Host:
   "mcpServers": {
     "kdna": {
       "command": "node",
-      "args": ["/absolute/path/to/kdna-skills/mcp-server/bin/kdna-mcp.mjs"]
+      "args": ["/absolute/path/to/kdna-skills/mcp-server/bin/kdna-mcp.mjs"],
+      "env": {
+        "KDNA_MCP_WORKSPACE_ROOT": "/absolute/path/to/one/project",
+        "KDNA_MCP_HOST_ID": "one-host",
+        "KDNA_MCP_HOST_PROCESSING_CONSENT_FILE": "/absolute/private/host/processing-consent.json"
+      }
     }
   }
 }
 ```
 
 Configuration location, approval policy, and shape remain Host-specific. Do
-not copy this entry into every installed Host automatically. See the verified
+not copy this entry into every installed Host automatically. The
 [Codex](../integrations/codex/README.md) and
-[OpenCode](../integrations/opencode/README.md) candidate guides.
+[OpenCode](../integrations/opencode/README.md) guides are benchmark
+configuration candidates whose end-to-end status is `RECHECK_REQUIRED`.
 
 ## Workspace flow
 
 The user creates the relationship through the CLI, outside MCP:
 
 ```bash
-kdna attach ./judgment.kdna --cwd ./my-project \
-  --role article-writing --applies-to draft --does-not-apply-to code --yes
+secure-host-attachment-json | kdna attach ./judgment.kdna \
+  --cwd ./my-project --attachment-stdin --preview
+secure-host-attachment-json | kdna attach ./judgment.kdna \
+  --cwd ./my-project --attachment-stdin --yes \
+  --consent-digest sha256:<digest-from-preview>
 kdna attachments --cwd ./my-project
 ```
 
-For each task, the Host passes its current workspace and task to
-`kdna.workspace-load`. The adapter uses a private bounded task file to invoke
-the official resolver, removes that file immediately, and never writes the
-task into the attachment record. If the resolver returns `ask`, `skip`, or
-`block`, no plan or capsule is produced.
+The Host's bounded stdin producer supplies identical final policy bytes to
+preview and confirmation. Agent/MCP guidance must not expose private role or
+scope in argv, and an unbound `--yes` is not consent.
 
-The workspace argument must resolve inside the MCP process's Host launch root.
-Configure the server's working directory as the current Host workspace. The
-adapter rejects sibling or parent escapes and does not inherit a record above
-that explicit Host root.
+For each task, the Host passes its current workspace and task to
+`kdna.workspace-load`. The adapter passes bounded strict-UTF-8 task bytes to
+the official resolver over stdin and never places them in argv, environment,
+an incidental task file, or the attachment record. If the resolver returns
+`ask`, `skip`, or `block`, no plan or capsule is produced. An `ask` includes a
+receipt-bound one-task selection plan; after the user chooses, the Host repeats
+the exact task and current root with that selection so the same request can
+load exactly one candidate.
+
+When the process authorization file is configured, the adapter asks the
+official resolver to evaluate only the protected attachment's public scope
+while authorization remains `required`. It then obtains the ordinary
+pre-authorization LoadPlan and invokes the real password-verified load. Only a
+successful decryption upgrades the delivered adoption result to
+`authorization: "satisfied"` and includes a Runtime Capsule.
+
+The workspace argument must resolve inside the MCP process's mandatory
+`KDNA_MCP_WORKSPACE_ROOT`. That absolute root is fixed at process launch,
+cannot be supplied or changed by a tool call, and must not be HOME or a
+filesystem root, or symlink. The adapter passes the same root to every CLI status/resolver lookup,
+rejects sibling or parent escapes and home-level attachment authority, and
+selects only the nearest record inside the boundary. One load remains bound to
+the same exact workspace record, selected attachment, scope, and snapshot
+through result delivery. If any of those facts changes, the adapter returns
+`workspace_binding_changed` without a Runtime Capsule and does not re-resolve
+against another workspace.
+
+One qualified Host can complete one functional consumption loop. The current
+Codex+OpenCode pair is a separate portability benchmark, not a requirement for
+every installation. Studio product integration is deferred and must later
+reuse the CLI/Core state rather than introduce another attachment authority.
 
 ## Host responsibility
 
