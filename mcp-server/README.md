@@ -68,6 +68,14 @@ named destination, and Allow/Decline action. The Host—not the user—handles
 attachment IDs, record/task/plan digests, schema versions, scope modes,
 approval-source values, and profile identifiers.
 
+The CLI `0.36.0` source candidate includes a low-level `kdna host-consent`
+broker for validating a private Host draft, interactive Allow/Decline, atomic
+installation, rotation, status and revocation. A real Host launcher must derive
+that draft from trusted attachment/LoadPlan facts; neither a user nor a model
+should handcraft it. The current broker terminal prompt still displays the
+exact digest and role/scope mechanics, so direct CLI use is an evaluator path,
+not yet the human-only default surface described above.
+
 The consent is reusable only inside those exact declared coordinates. Asset
 bytes, attachment scope, Host, destination, workspace, profile, or user-control
 drift requires a new meaningful approval. A Host can atomically replace the

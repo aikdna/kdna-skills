@@ -57,6 +57,12 @@ CLI 的密码 stdin 传值。这只证明进程边界，不是当前 Codex/OpenC
 Host 私有、可轮换的 consent 文件机械绑定。用户只看名称和允许/拒绝；attachment
 ID、digest、Schema、scope mode、approval source 与 profile 都由 Host 隐藏。
 
+CLI `0.36.0` 源码候选已经包含低层 `kdna host-consent` broker，可交互批准、原子
+轮换、查询和撤销。它只能接收可信 Host launcher 生成的私有 draft，不允许模型或
+用户手工拼装。当前终端提示仍会显示完整 digest 与 role/scope 机械字段，并且公开
+Codex/OpenCode 配置指南还没有提供原生可信 launcher。因此它只关闭组件缺口，不能
+把 Host 从 `RECHECK_REQUIRED` 升级，也不代表普通用户 consent 体验已经完成。
+
 必须先由用户选择文件，或批准一个精确的 Host 附加项。适配器不能扫描全局资产
 库、根据任务关键词自行选择资产、从文件存在推断同意，也不能隐藏是否使用了
 KDNA。
@@ -86,9 +92,9 @@ KDNA。
 | 安装脚本                | 每次只安装到用户明确指定的一个 Host；不检测、不全装 |
 
 组件测试不等于 Host 交付、语义采用、Creation-to-Consumption 联合集成或真人
-验收。这四个维度当前分别为 `RECHECK_REQUIRED`、`RECHECK_REQUIRED`、
-`RECHECK_REQUIRED` 与 `NOT_RUN`，只有机器化 current authority 重建后才能更新。
-Codex 与 OpenCode 只是本轮 benchmark 坐标，不是产品限定的 Host 品牌。
+验收。当前已有私有机器权威，但原始 Host 结果仍使普通任务单 Host 闭环和两 Host
+语义 benchmark 保持阻断，所以公开支持仍为 `RECHECK_REQUIRED`，真人验收仍为
+`NOT_RUN`。Codex 与 OpenCode 只是本轮 benchmark 坐标，不是产品限定的 Host 品牌。
 
 一个合格 Host 在真实交付 Runtime Capsule，并证明授权、可见、可逆的语义采用
 后，就可以闭合一次功能消费。Codex+OpenCode 两者是本轮单独的

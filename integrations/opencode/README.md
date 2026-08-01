@@ -66,11 +66,21 @@ interactive stdin outside model context.
 The processing-consent path is Host-private and mode `0600` under a mode
 `0700` directory. It binds the exact asset, workspace policy, Host, named
 remote processor, and minimum projection after one plain-language user
-approval. OpenCode hides the machine fields. A newly approved asset,
+approval. A finished OpenCode integration must hide the machine fields. A newly approved asset,
 destination, or projection is installed by atomically replacing the same
 private file; the server accepts the new coordinates without a restart and
 rejects an in-flight change. This candidate does not accept an unverifiable
 `local-only` self-claim.
+
+The CLI source candidate provides `kdna host-consent` as the low-level broker
+that validates a trusted private draft, asks Allow/Decline, installs the fixed
+file atomically and supports `--status`/`--revoke`. This guide does not provide
+a native OpenCode launcher that derives that draft from trusted workspace
+facts. The current broker's terminal prompt also displays digest and role/scope
+mechanics. Treat direct broker use as evaluator integration, not proof that the
+ordinary OpenCode UX hides machine fields. Host support remains
+`RECHECK_REQUIRED` until an ordinary task both activates the tool and follows
+the returned judgment without overapplication.
 
 Earlier Host receipts are superseded and are not current authority. A rebuilt
 check must separately prove delivery, non-empty Runtime Capsule coordinates,

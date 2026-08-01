@@ -64,10 +64,19 @@ interactive stdin outside model context.
 The processing-consent file is Host-private mode `0600` under a mode `0700`
 directory. After one plain-language approval it binds the exact asset,
 workspace policy, Codex identity, named remote processor, and minimum
-projection. Codex hides all machine fields. A newly approved coordinate is
+projection. A finished Codex integration must hide all machine fields. A newly approved coordinate is
 installed by atomically replacing the same private file; no MCP restart is
 needed, and an in-flight replacement suppresses the current Capsule. This
 candidate rejects unverifiable `local-only` self-claims.
+
+The CLI source candidate provides `kdna host-consent` as the low-level broker
+that validates a trusted private draft, asks Allow/Decline, installs the fixed
+file atomically and supports `--status`/`--revoke`. This guide does not provide
+a native Codex launcher that derives that draft from trusted workspace facts.
+The current broker's own terminal prompt also displays digest and role/scope
+mechanics. Treat direct broker use as evaluator integration, not proof that the
+ordinary Codex UX hides machine fields or that an ordinary task activates and
+follows KDNA without an explicit MCP instruction.
 
 Earlier Host receipts are superseded and are not current authority. A rebuilt
 check must separately prove delivery, non-empty Runtime Capsule coordinates,
