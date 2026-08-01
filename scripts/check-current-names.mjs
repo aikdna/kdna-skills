@@ -13,11 +13,11 @@ const ALLOWLIST = "scripts/naming-integrity-allowlist.json";
 const CANDIDATES = new Map([
   [
     "mcp-server/test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
-    "aa3dd9a913b8dfc296c499a8e1267bbc6263c01396a961509593b323eabaff9a",
+    "74b670eb29bfe1bb8c2a9cc31e91524bd830a6afa1da529d7f3a6cad8f749055",
   ],
   [
     "mcp-server/test/fixtures/runtime-candidates/aikdna-kdna-core-0.21.0.tgz",
-    "b1de7d37b647e91371fdafbfa76d645b4d2f51cd9b77020f2a0b26087bfd03d8",
+    "fa3270a33806c73da0b5b461515ad3117af8ad3fa418e0969c5321f0bc72a61e",
   ],
 ]);
 const EXACT_OLD_NAMES = Object.freeze([
