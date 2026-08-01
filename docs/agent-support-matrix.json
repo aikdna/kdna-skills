@@ -8,9 +8,9 @@
     "cli": "0.36.0",
     "core": "0.21.0",
     "workspace_schema": "0.3.0",
-    "cli_source_commit": "d85ae9346493c580f5b4176afdad9f864bc3fa6d",
-    "cli_source_tree": "0fd040d7aea57f6910f2af69fdd4d9095fbeeb70",
-    "cli_tarball_sha256": "aa3dd9a913b8dfc296c499a8e1267bbc6263c01396a961509593b323eabaff9a"
+    "cli_source_commit": "b60d90af2f04ce50ab2443228ba270ea0f3303c7",
+    "cli_source_tree": "a63065a5cf385494da0939de3d4da42c59feb4fb",
+    "cli_tarball_sha256": "63eb28ac98cafacc88580f69df655ea46397fc39f6a52681595d9094b3db0758"
   },
   "authority_contract": {
     "current_authority_required_for_host_claims": true,
@@ -64,7 +64,10 @@
       "status": "recheck_required"
     },
     "portability_benchmark": {
-      "host_ids": ["codex", "opencode"],
+      "host_ids": [
+        "codex",
+        "opencode"
+      ],
       "status": "recheck_required",
       "product_minimum": false
     },
