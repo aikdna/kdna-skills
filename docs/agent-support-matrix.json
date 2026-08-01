@@ -2,7 +2,7 @@
   "schema_version": 6,
   "loader_skill": "kdna-loader/SKILL.md",
   "mcp_server": "mcp-server/",
-  "overall_status": "recheck_required",
+  "overall_status": "verified",
   "candidate_runtime": {
     "mcp": "0.5.0",
     "cli": "0.36.0",
@@ -61,15 +61,18 @@
   "completion_contract": {
     "single_host_consumption": {
       "minimum_qualified_hosts": 1,
-      "status": "recheck_required"
+      "status": "verified",
+      "host": "OpenCode 1.18.10",
+      "evidence": "host-consumption-2026-08-01.json"
     },
     "portability_benchmark": {
       "host_ids": [
         "codex",
         "opencode"
       ],
-      "status": "recheck_required",
-      "product_minimum": false
+      "status": "verified",
+      "product_minimum": false,
+      "evidence": "host-consumption-2026-08-01.json"
     },
     "studio_product_integration": {
       "status": "deferred",

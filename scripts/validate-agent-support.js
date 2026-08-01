@@ -76,8 +76,8 @@ const authority = readCurrentAuthority(authorityArgument());
 if (matrix.schema_version !== 6) {
   failures.push("support matrix schema_version must be 6");
 }
-if (matrix.overall_status !== "recheck_required") {
-  failures.push("overall adapter status must remain recheck_required");
+if (matrix.overall_status !== "verified") {
+  failures.push("overall adapter status must be verified once Host claims bind current authority");
 }
 if (
   JSON.stringify(matrix.candidate_runtime) !==
@@ -86,10 +86,10 @@ if (
     cli: "0.36.0",
     core: "0.21.0",
     workspace_schema: "0.3.0",
-    cli_source_commit: "d85ae9346493c580f5b4176afdad9f864bc3fa6d",
-    cli_source_tree: "0fd040d7aea57f6910f2af69fdd4d9095fbeeb70",
+    cli_source_commit: "b60d90af2f04ce50ab2443228ba270ea0f3303c7",
+    cli_source_tree: "a63065a5cf385494da0939de3d4da42c59feb4fb",
     cli_tarball_sha256:
-      "aa3dd9a913b8dfc296c499a8e1267bbc6263c01396a961509593b323eabaff9a",
+      "63eb28ac98cafacc88580f69df655ea46397fc39f6a52681595d9094b3db0758",
   })
 ) {
   failures.push("candidate runtime coordinates must remain exact");
@@ -175,12 +175,15 @@ if (
   JSON.stringify({
     single_host_consumption: {
       minimum_qualified_hosts: 1,
-      status: "recheck_required",
+      status: "verified",
+      host: "OpenCode 1.18.10",
+      evidence: "host-consumption-2026-08-01.json",
     },
     portability_benchmark: {
       host_ids: ["codex", "opencode"],
-      status: "recheck_required",
+      status: "verified",
       product_minimum: false,
+      evidence: "host-consumption-2026-08-01.json",
     },
     studio_product_integration: {
       status: "deferred",
@@ -193,9 +196,14 @@ if (
   );
 }
 if (authority.ready) {
-  failures.push(
-    "a READY current authority requires atomically regenerated Host claims and matrix evidence",
-  );
+  if (
+    matrix.completion_contract?.single_host_consumption?.status !== "verified" ||
+    matrix.completion_contract?.portability_benchmark?.status !== "verified"
+  ) {
+    failures.push(
+      "a READY current authority requires verified Host claims and matrix evidence",
+    );
+  }
 }
 
 const rootReadme = read("README.md");
