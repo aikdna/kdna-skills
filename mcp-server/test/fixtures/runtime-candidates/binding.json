@@ -7,19 +7,19 @@
       "version": "0.36.0",
       "source": {
         "repository": "aikdna/kdna-cli",
-        "commit": "88474fc095b4142e1a272ccbe40edd9ad2953986",
-        "tree": "6ce9d7235966d5537f86fd46357b6a4b3d6f27fe",
+        "commit": "6f4ccba9240234bb662f6a6df92e36425d2d2481",
+        "tree": "3bccd9832cb7ebf4b8e601e84ac0690d95373d9c",
         "package_root": ".",
-        "package_subtree": "6ce9d7235966d5537f86fd46357b6a4b3d6f27fe"
+        "package_subtree": "3bccd9832cb7ebf4b8e601e84ac0690d95373d9c"
       },
       "artifact": {
         "path": "test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
-        "size": 48190,
-        "unpacked_size": 179376,
-        "sha1": "2ac0a273f85f53a90ce79ae4b2a7268ad855374e",
-        "sha256": "0d86f575dbf237eb46a74f9c5974c90db1e6762fc97e10606a89757d451f145e",
-        "integrity": "sha512-id34V2HtfbKCfPCTZPvlUnkaJ2Ha9Av6nKJyzHTRXOFZHvaQhbsHFIFpMMWfzYDjuV2S4wF9uQs++DjsLG+hMQ==",
-        "entry_count": 31,
+        "size": 69272,
+        "unpacked_size": 273774,
+        "sha1": "5d1efdc4c07d4132e0ce7dfbc652acbb877e6d60",
+        "sha256": "74b670eb29bfe1bb8c2a9cc31e91524bd830a6afa1da529d7f3a6cad8f749055",
+        "integrity": "sha512-a8sAK+xZsdxhju/SpTTFkpJ2dbfmVnZJPr23ot7hvK6yidZw3jzzYE6ibiyIOKtR9OdaHXhYqG/Uo81+LSITCg==",
+        "entry_count": 33,
         "source_pack_equivalence": "strict_install_equivalent"
       },
       "registry_boundary": {
@@ -32,18 +32,18 @@
       "version": "0.21.0",
       "source": {
         "repository": "aikdna/kdna",
-        "commit": "76bbc587ce05f7e575c2373832cc5c9eee9df98a",
-        "tree": "26be6c29458d74ce74dc63a11751b2f07583e5f5",
+        "commit": "a0baca6fe61cdc16e73435445df8660fddeb7c46",
+        "tree": "70f6ba18934ba4aed879319d825b3359f57db4ea",
         "package_root": "packages/kdna-core",
-        "package_subtree": "bfb2b6353db137a07eb829e1b6e0cf54135d9ea0"
+        "package_subtree": "70f6ba18934ba4aed879319d825b3359f57db4ea"
       },
       "artifact": {
         "path": "test/fixtures/runtime-candidates/aikdna-kdna-core-0.21.0.tgz",
-        "size": 116710,
-        "unpacked_size": 531891,
-        "sha1": "8181f937dc6f999b51110ebdf03262e76ac3922b",
-        "sha256": "b1de7d37b647e91371fdafbfa76d645b4d2f51cd9b77020f2a0b26087bfd03d8",
-        "integrity": "sha512-lT9+pKaQ8RV+0gZI4GAZke85SjA39ef6ppU29w/dEn8D4Byzbtsqn9MuxxShOBKDUPf4f8U4YCF24qKzMVWdxw==",
+        "size": 117718,
+        "unpacked_size": 536551,
+        "sha1": "2b4f08b48fdc2fc34c97b2c054fb26b78fc52e11",
+        "sha256": "fa3270a33806c73da0b5b461515ad3117af8ad3fa418e0969c5321f0bc72a61e",
+        "integrity": "sha512-bg4Uf7GimrBDL6I72HWU492TxzffKmHYrJRFGHiaUxIC+4Qq9Djf0l+Tjt5CbCfU5S8QhFp/5FCoV+VAU1egcw==",
         "entry_count": 42,
         "source_pack_equivalence": "strict_install_equivalent"
       },
