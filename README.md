@@ -76,8 +76,12 @@ workspace, while loading consumes an explicit `.kdna` file or approved
 workspace attachment.
 
 The [Creation Agent contract](docs/KDNA_CREATION_AGENT_CONTRACT.md) defines the
-JSON handoff, authority pauses, prompt-injection boundary, confirmation
-honesty, and export receipt. These source documents do not establish Host
-support or Studio Product Acceptance.
+natural-language Host boundary, content-free material inventory, private
+material delivery, honest authority pauses, managed test candidate, three
+separate gates, and final exact-byte delivery. Internal IDs, signing material,
+and application evidence are Host orchestration details rather than user
+inputs. These source documents do not establish Host support or Studio Product
+Acceptance; `kdna-creator` remains Unassessed until a clean-install,
+fresh-context Host completes the public flow.
 
 [中文](./README.zh.md)

@@ -1,7 +1,7 @@
 {
   "name": "@aikdna/kdna-mcp-server",
   "version": "0.5.0",
-  "description": "Thin MCP adapter for explicit KDNA files and approved workspace attachments.",
+  "description": "Thin MCP adapter for user-approved KDNA workspace attachments.",
   "type": "module",
   "homepage": "https://aikdna.com",
   "repository": {
@@ -47,7 +47,7 @@
   "kdna_runtime": {
     "cli": "0.36.0",
     "core": "0.21.0",
-    "workspace_schema": "0.1.0"
+    "workspace_schema": "0.3.0"
   },
   "engines": {
     "node": ">=18"
