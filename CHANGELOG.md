@@ -2,26 +2,22 @@
 
 ## Unreleased
 
-- Add the separate `kdna-creator` source Skill and Creation Agent JSON contract
-  for terminal authoring through the Studio CLI without requiring the Studio
-  App.
-- Keep creation and loading authority separate: the creator writes one
-  explicit recoverable project, while the loader remains read-only over an
-  explicit file or approved workspace attachment.
-- Require untrusted-material handling, semantic-revision-bound confirmation,
-  user-evaluated tests, separate Format Valid, Judgment Accepted and
-  Application Verified gates, exact-asset attempt/observation phases, and
-  `Creation Complete` only when all three bind one semantic/asset coordinate.
-- Clarify that Ed25519 receipts prove key possession rather than real-world
-  identity or process independence, and that initial key enrollment is
-  trust-on-first-use.
-- Clarify that receipts and authority are declared-only private Creation
-  evidence, require exact source-subject/currentness fields and a stable
-  creating Agent ID, treat status JSON as private state, use `status` for
-  read-only inspection, and submit observed creator labels explicitly.
-- Add a static CI gate for the creation Skill and contract. This source
-  candidate remains Unassessed and does not establish Host or Studio Product
-  Acceptance.
+- Keep Host attestation selection inside trusted Host policy instead of asking
+  ordinary users to choose a receipt or digest mechanism.
+- Add the unreleased `kdna-creator` Skill as a natural-language adapter over
+  the official Studio creation and KDNA Runtime contracts.
+- Keep technical IDs, mode enums, digests, keys, receipts, and benchmark
+  coordinates inside Host automation. The Skill asks only for meaningful
+  scope, representation, material-processing, and file-protection decisions.
+- Require content-free inventory and exact approved private material delivery;
+  a Host-declared capability digest is not verified-local evidence.
+- Keep format validity, judgment acceptance, and application verification
+  distinct. Exact loading and independently evaluated semantic use are
+  required for completion; a comparison lane is diagnostic rather than a
+  universal per-asset gate.
+- Keep required Consumer/evaluator isolation and signing inside official Host
+  orchestration rather than teaching users to assemble it.
+- Keep the source candidate unreleased and make no publication, human-acceptance, or compatibility promise.
 
 ## 0.5.0 (2026-07-22)
 

@@ -66,6 +66,9 @@ Skill 文件存在、`kdna setup` 成功或找到本地文件，都不能证明 
 Creation Engine，不要求 Studio App。它与只读加载器分离：创作会写入一个显式
 项目工作区，加载则只消费显式 `.kdna` 文件或用户批准的工作区附加项。
 
-[Creation Agent 合同](docs/KDNA_CREATION_AGENT_CONTRACT.md)定义 JSON 交接、
-权限暂停、Prompt Injection 边界、确认诚实性与导出收据。这些源码文档本身不
-建立 Host 支持或 Studio 产品验收结论。
+[Creation Agent 合同](docs/KDNA_CREATION_AGENT_CONTRACT.md)定义自然语言
+Host 边界、无正文 inventory、私有材料交付、诚实的权限暂停、工作区内受管
+测试候选、相互独立的三道门与最终同字节交付。内部 ID、签名材料和应用证据
+属于 Host 编排，不是用户输入。这些源码文档本身不建立 Host 支持或 Studio
+产品验收结论；只有 clean install 的全新 Host 走通公开路径后，creator Skill
+才能从“尚未评估”升级。
