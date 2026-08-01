@@ -200,7 +200,7 @@ export function validateCandidateFacts({
   assert.deepEqual(packageJson.kdna_runtime, {
     cli: "0.36.0",
     core: "0.21.0",
-    workspace_schema: "0.1.0",
+    workspace_schema: "0.3.0",
   });
   assert.deepEqual(lock.packages[""].dependencies, { [CLI]: "0.36.0" });
 
