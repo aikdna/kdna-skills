@@ -110,8 +110,17 @@ notice:
 - why it was loaded;
 - the CLI controls to view, disable, switch, or roll back.
 
-Do not hide whether KDNA was used. Do not claim that the asset is true, expert,
-officially approved, or guaranteed to improve the result.
+Disclosure is unconditional: it is not gated on the user asking about KDNA,
+mentioning attachments, or requesting an explanation. Whether or not the user
+inquires, when a loaded projection influences your answer you must state that
+KDNA was used, which asset, and the controls to disable it. Do not hide whether KDNA was used, and do not treat silence about KDNA as acceptable because the user did not ask. Do not claim that the asset is true, expert, officially
+approved, or guaranteed to improve the result.
+
+The disclosure must be explicit and visible in the response (or the tool
+event for tool-calling hosts), not implied by tone or buried in a footnote
+the user must request. A response that applies the loaded judgment without
+any mention of KDNA is a disclosure failure even when the answer itself is
+correct.
 
 ## Failure handling
 
