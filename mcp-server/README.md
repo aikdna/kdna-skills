@@ -229,6 +229,11 @@ projection influences an answer, regardless of whether the user asked about
 KDNA. Silence about KDNA is a disclosure failure even when the answer is
 correct.
 
+Present the adoption in human terms first (role, scope, why loaded,
+controls); keep digest/snapshot/policy details for auditability without
+crowding the summary, and mark empty fields plainly (for example
+"worldview: none declared") instead of exposing raw empty structures.
+
 The MCP transport protocol coordinate `2024-11-05` is independent of KDNA's
 runtime contracts. Returning a Runtime Capsule does not claim Host execution,
 fabricate a receipt, or create a Judgment Trace.
