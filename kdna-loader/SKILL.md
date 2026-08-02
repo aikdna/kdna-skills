@@ -110,6 +110,14 @@ notice:
 - why it was loaded;
 - the CLI controls to view, disable, switch, or roll back.
 
+Present the notice in human terms first: the asset's role and purpose, what
+scope it applies to, why it was loaded for this task, and the controls to
+disable/switch/roll back. The digest, snapshot path, and policy enums are
+machine-verification details: include them for auditability but do not let
+them crowd out the human-facing summary. An empty or unavailable field is
+not a problem; say so plainly (for example "worldview: none declared")
+instead of listing an empty structure the user must interpret.
+
 Disclosure is unconditional: it is not gated on the user asking about KDNA,
 mentioning attachments, or requesting an explanation. Whether or not the user
 inquires, when a loaded projection influences your answer you must state that
