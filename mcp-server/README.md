@@ -223,6 +223,12 @@ intent, law, safety policy, system instructions, and Host permissions above
 asset content. It must not treat output quality as authorization or use an
 unattached file merely because it exists.
 
+Adoption visibility is unconditional: the Host must surface that KDNA was
+used, which asset, and the disable/switch/rollback controls whenever a loaded
+projection influences an answer, regardless of whether the user asked about
+KDNA. Silence about KDNA is a disclosure failure even when the answer is
+correct.
+
 The MCP transport protocol coordinate `2024-11-05` is independent of KDNA's
 runtime contracts. Returning a Runtime Capsule does not claim Host execution,
 fabricate a receipt, or create a Judgment Trace.
