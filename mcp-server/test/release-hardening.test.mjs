@@ -226,7 +226,7 @@ test("source Runtime candidate resolves one exact CLI with one transitive Core c
   );
   assert.equal(
     lock.packages["node_modules/@aikdna/kdna-cli"].resolved,
-    "file:test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
+    "https://registry.npmjs.org/@aikdna/kdna-cli/-/kdna-cli-0.36.0.tgz",
   );
   assert.equal(
     lock.packages["node_modules/@aikdna/kdna-cli"].dependencies[
@@ -245,7 +245,7 @@ test("source Runtime candidate resolves one exact CLI with one transitive Core c
   );
   assert.equal(
     lock.packages["node_modules/@aikdna/kdna-core"].resolved,
-    "file:test/fixtures/runtime-candidates/aikdna-kdna-core-0.21.0.tgz",
+    "https://registry.npmjs.org/@aikdna/kdna-core/-/kdna-core-0.21.0.tgz",
   );
   assert.equal(installedCli.version, "0.36.0");
   assert.equal(installedCore.version, "0.21.0");

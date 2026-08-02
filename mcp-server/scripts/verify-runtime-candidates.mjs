@@ -20,20 +20,20 @@ const EXPECTED = Object.freeze({
     version: "0.36.0",
     source: Object.freeze({
       repository: "aikdna/kdna-cli",
-      commit: "6f4ccba9240234bb662f6a6df92e36425d2d2481",
-      tree: "3bccd9832cb7ebf4b8e601e84ac0690d95373d9c",
+      commit: "f7b9cd0bcc6ac4ff4c09879a96d844f95729fad1",
+      tree: "605cd4cfec00f9e57a79d26164ef13f473037de7",
       package_root: ".",
-      package_subtree: "3bccd9832cb7ebf4b8e601e84ac0690d95373d9c",
+      package_subtree: "605cd4cfec00f9e57a79d26164ef13f473037de7",
     }),
     artifact: Object.freeze({
       path: "test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
-      size: 69272,
-      unpacked_size: 273774,
-      sha1: "5d1efdc4c07d4132e0ce7dfbc652acbb877e6d60",
+      size: 70711,
+      unpacked_size: 278946,
+      sha1: "166c96f2933c139c4f6d61e78c13dc6bd182a0dc",
       sha256:
-        "74b670eb29bfe1bb8c2a9cc31e91524bd830a6afa1da529d7f3a6cad8f749055",
+        "df8eeee0e905ca2713d8a8e450471ccacab2a1eb8e2c2e928b4d53fb58290cfb",
       integrity:
-        "sha512-a8sAK+xZsdxhju/SpTTFkpJ2dbfmVnZJPr23ot7hvK6yidZw3jzzYE6ibiyIOKtR9OdaHXhYqG/Uo81+LSITCg==",
+        "sha512-Uz7tIpGpNE5O3X2oFQTHKHKSI23TlquBcr0O9ybwfoaAcCmdtrPCQMbDj6fOdC7VMNWNx8Fty9LugvaIZKd4rQ==",
       entry_count: 33,
       source_pack_equivalence: "strict_install_equivalent",
     }),
@@ -42,20 +42,20 @@ const EXPECTED = Object.freeze({
     version: "0.21.0",
     source: Object.freeze({
       repository: "aikdna/kdna",
-      commit: "a0baca6fe61cdc16e73435445df8660fddeb7c46",
-      tree: "70f6ba18934ba4aed879319d825b3359f57db4ea",
+      commit: "32aa3ff8e633291d4bb9e01de5a70181c8415d93",
+      tree: "b36460ec0545c44036fd122e3e9b090abfde98d7",
       package_root: "packages/kdna-core",
-      package_subtree: "70f6ba18934ba4aed879319d825b3359f57db4ea",
+      package_subtree: "b36460ec0545c44036fd122e3e9b090abfde98d7",
     }),
     artifact: Object.freeze({
       path: "test/fixtures/runtime-candidates/aikdna-kdna-core-0.21.0.tgz",
-      size: 117718,
+      size: 118029,
       unpacked_size: 536551,
-      sha1: "2b4f08b48fdc2fc34c97b2c054fb26b78fc52e11",
+      sha1: "dde98685bb22cf5d3b49897092cb7e2fc052c5d4",
       sha256:
-        "fa3270a33806c73da0b5b461515ad3117af8ad3fa418e0969c5321f0bc72a61e",
+        "51561e712fcf4af389e61377b478ad67287c1d7c4483321117922cdb0478e83e",
       integrity:
-        "sha512-bg4Uf7GimrBDL6I72HWU492TxzffKmHYrJRFGHiaUxIC+4Qq9Djf0l+Tjt5CbCfU5S8QhFp/5FCoV+VAU1egcw==",
+        "sha512-y4AC4LlNvKsKxvIO/y14Bl62eRb0BupzvLGbXATXHX4ZUCmYhdlh6U1OL7WF+i0lCAyVJcIE7SKwhQR3uL5uxg==",
       entry_count: 42,
       source_pack_equivalence: "strict_install_equivalent",
     }),
@@ -132,8 +132,8 @@ function verifyArtifact(root, candidate) {
   );
   assert.deepEqual(candidate.artifact, expected.artifact);
   assert.deepEqual(candidate.registry_boundary, {
-    published: false,
-    release_required: true,
+    published: true,
+    release_required: false,
   });
 
   const bytes = fs.readFileSync(path.join(root, candidate.artifact.path));
@@ -206,7 +206,10 @@ export function validateCandidateFacts({
 
   const cliLocked = lock.packages[`node_modules/${CLI}`];
   assert.equal(cliLocked.version, "0.36.0");
-  assert.equal(cliLocked.resolved, `file:${EXPECTED[CLI].artifact.path}`);
+  assert.equal(
+    cliLocked.resolved,
+    `https://registry.npmjs.org/@aikdna/kdna-cli/-/kdna-cli-${EXPECTED[CLI].version}.tgz`,
+  );
   assert.equal(cliLocked.integrity, EXPECTED[CLI].artifact.integrity);
   assert.deepEqual(cliLocked.dependencies, {
     [CORE]: "0.21.0",
@@ -216,7 +219,10 @@ export function validateCandidateFacts({
 
   const coreLocked = lock.packages[`node_modules/${CORE}`];
   assert.equal(coreLocked.version, "0.21.0");
-  assert.equal(coreLocked.resolved, `file:${EXPECTED[CORE].artifact.path}`);
+  assert.equal(
+    coreLocked.resolved,
+    `https://registry.npmjs.org/@aikdna/kdna-core/-/kdna-core-${EXPECTED[CORE].version}.tgz`,
+  );
   assert.equal(coreLocked.integrity, EXPECTED[CORE].artifact.integrity);
   assert.equal(installedCli.name, CLI);
   assert.equal(installedCli.version, "0.36.0");
