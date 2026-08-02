@@ -89,6 +89,18 @@ Use the selected judgment only inside its declared boundaries. Current facts,
 explicit user intent, law, safety rules, system and developer instructions, and
 Host permissions take precedence.
 
+When the Runtime Capsule or its adoption result carries judgment rules (axioms
+with `applies_when`, `does_not_apply_when`, and `failure_risk`), treat those
+rules as the binding decision criteria for the loaded task. Do not reduce the
+projection to a surface direction such as a task role or intent label: the
+rules, their applicability, and their failure risk are the operative content.
+When a candidate change is a preference-only change that the rules do not mark
+as blocking, it must not be reported as a blocker. When rules describe a
+demonstrated correctness, safety, or reproducibility defect as blocking, that
+defect is blocking. When in doubt between a demonstrated defect and a
+preference, the rules and their `does_not_apply_when` decide, not the Host's
+default review habits.
+
 Before using a loaded projection, expose in the tool event or a short adoption
 notice:
 

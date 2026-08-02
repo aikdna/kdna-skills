@@ -1235,6 +1235,30 @@ function adoptionControls(selected) {
   };
 }
 
+function judgmentDecisionSummary(runtimeCapsule) {
+  const context = runtimeCapsule && runtimeCapsule.context;
+  const axioms = context && Array.isArray(context.axioms) ? context.axioms : [];
+  const decisionRules = [];
+  for (const axiom of axioms) {
+    if (!axiom || typeof axiom !== "object" || Array.isArray(axiom)) continue;
+    const statement = axiom.statement || axiom.one_sentence || null;
+    if (typeof statement !== "string" || statement.length === 0) continue;
+    decisionRules.push({
+      rule: statement,
+      applies_when: Array.isArray(axiom.applies_when) ? axiom.applies_when : [],
+      does_not_apply_when: Array.isArray(axiom.does_not_apply_when)
+        ? axiom.does_not_apply_when
+        : [],
+      failure_risk: typeof axiom.failure_risk === "string" ? axiom.failure_risk : null,
+    });
+  }
+  if (decisionRules.length === 0) return null;
+  return {
+    source: "runtime-capsule/context/axioms",
+    rules: decisionRules,
+  };
+}
+
 function workspaceAdoption(resolution, scope = null, additions = {}) {
   return {
     document_type: "kdna.mcp.workspace-adoption",
@@ -1248,6 +1272,9 @@ function workspaceAdoption(resolution, scope = null, additions = {}) {
     host_processing: additions.hostProcessing || null,
     load_plan: additions.loadPlan || null,
     runtime_capsule: additions.runtimeCapsule || null,
+    judgment_decision: additions.runtimeCapsule
+      ? judgmentDecisionSummary(additions.runtimeCapsule)
+      : null,
   };
 }
 
