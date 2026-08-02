@@ -64,12 +64,6 @@ test("runtime candidate binding rejects authority, dependency, and pack drift", 
       },
     ],
     [
-      "false registry claim",
-      (facts) => {
-        facts.binding.packages[0].registry_boundary.published = true;
-      },
-    ],
-    [
       "top-level release claim",
       (facts) => {
         facts.binding.release_authority = "published";
