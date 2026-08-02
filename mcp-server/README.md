@@ -113,7 +113,11 @@ independent and does not consume this provider.
 `kdna.workspace-load` visibly returns the `load`, `ask`, `skip`, or `block`
 decision, exact identity/version/digest, configured scope, reason, integrity
 and authorization conclusions, CLI control commands, LoadPlan, and—only after
-a permitted load—the Runtime Capsule.
+a permitted load—the Runtime Capsule. When the loaded Capsule carries judgment
+axioms, the adoption result also includes `judgment_decision` at the top level:
+the rules with their `applies_when`, `does_not_apply_when`, and `failure_risk`
+are surfaced there so a Host can bind them as decision criteria instead of
+treating the projection as a mere task-direction hint.
 
 ## Candidate development
 

@@ -770,6 +770,16 @@ test("approved workspace load shows identity, digest, scope, reason, checks, con
     assert.equal(adopted.resolution.authorization, "satisfied");
     assert.equal(adopted.resolution.integrity, "verified");
     assert.equal(
+      adopted.judgment_decision.source,
+      "runtime-capsule/context/axioms",
+    );
+    assert.deepEqual(adopted.judgment_decision.rules[0], {
+      rule: "Use the editorial decision boundary.",
+      applies_when: [],
+      does_not_apply_when: [],
+      failure_risk: null,
+    });
+    assert.equal(
       adopted.resolution.selected.attachment_id,
       attached.attachment.attachment_id,
     );
