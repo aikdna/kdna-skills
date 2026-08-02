@@ -68,14 +68,12 @@ projection. The adapter binds that approval through a Host-private rotating
 consent file. The user sees names and Allow/Decline; the Host hides attachment
 IDs, digests, schema, scope mode, approval-source and profile mechanics.
 
-The CLI `0.36.0` source candidate now includes a low-level `kdna host-consent`
-broker for interactive approval, atomic rotation, status and revocation. It
-accepts a private draft from a trusted Host launcher; it is not permission for
-the model or user to manufacture that draft. The current terminal prompt still
-shows full digest and role/scope mechanics, and the checked-in Codex/OpenCode
-configuration guides do not provide a native trusted launcher. Consequently
-this closes a component gap but does not upgrade either Host from
-`RECHECK_REQUIRED` or establish the ordinary-user consent experience.
+The CLI `0.36.0` source candidate includes a human-readable `kdna
+host-consent --from-workspace` surface: it derives the Host processing consent
+draft from the user-approved workspace attachment record and its terminal
+prompt hides digests, attachment IDs, and scope coordinates. The machine draft
+path (`--input-file`/stdin) remains a low-level broker for trusted launchers;
+it is not permission for the model or user to manufacture that draft.
 
 The user must select the file, or approve an exact Host attachment first. The
 adapter may not scan a global store, choose assets from task keywords, infer
@@ -108,17 +106,19 @@ See [the loader contract](docs/KDNA_LOADER_CONTRACT.md) and the
 | `kdna-loader/SKILL.md`  | Unassessed fallback adapter candidate                               |
 | `kdna-creator/SKILL.md` | Source candidate for terminal Creation Engine guidance; Unassessed  |
 | MCP server              | `0.5.0` three-tool workspace candidate; component tests pass         |
-| Codex / OpenCode        | `RECHECK_REQUIRED` at the two current benchmark coordinates         |
+| Codex / OpenCode        | OpenCode `VERIFIED_SINGLE_HOST_ORDINARY_TASK` at `1.18.11`; Codex `RECHECK_REQUIRED` at `0.144.3` (ordinary-task rerun pending account usage limit) |
 | Other placement guides  | Unassessed integration notes                                        |
 | installers              | One explicitly selected Host only; no detection or install-all mode |
 
 Component tests do not establish Host delivery, semantic adoption,
 Creation-to-Consumption integration, or real-human acceptance. A private
-machine-readable current authority exists, but its raw Host reconciliation
-keeps the ordinary-task single-Host loop and the two-Host semantic benchmark
-blocked. Public support therefore remains `RECHECK_REQUIRED`; real-human
-acceptance remains `NOT_RUN`. Codex and OpenCode are benchmark coordinates,
-not the only supported Host brands or a product requirement.
+machine-readable current authority exists and its raw Host reconciliation now
+passes the ordinary-task single-Host loop on OpenCode `1.18.11`
+(`VERIFIED_SINGLE_HOST_ORDINARY_TASK`); the Codex+OpenCode semantic benchmark
+passes on the preference-rename criterion with the Codex ordinary-task rerun
+pending account recovery. Real-human acceptance remains `NOT_RUN`. Codex and
+OpenCode are benchmark coordinates, not the only supported Host brands or a
+product requirement.
 
 One qualified Host can close one functional consumption loop when it delivers
 a real Runtime Capsule and proves visible, authorized, reversible semantic

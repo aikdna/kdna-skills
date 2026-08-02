@@ -2,10 +2,11 @@
 
 > **Status:** Non-normative adapter contract. The protocol source of truth is
 > `aikdna/kdna`. The current Skill implementation remains Unassessed; the MCP
-> workspace adapter has source-candidate component tests, while Host delivery,
-> semantic adoption, Creation-to-Consumption integration, and real-human
-> acceptance remain `RECHECK_REQUIRED`, `RECHECK_REQUIRED`,
-> `RECHECK_REQUIRED`, and `NOT_RUN`.
+> workspace adapter has source-candidate component tests. Host delivery and
+> semantic adoption pass on the OpenCode `1.18.11` ordinary-task single-Host
+> loop (`VERIFIED_SINGLE_HOST_ORDINARY_TASK`); the Codex ordinary-task rerun
+> remains `RECHECK_REQUIRED` pending account recovery, Creation-to-Consumption
+> integration is `RECHECK_REQUIRED`, and real-human acceptance is `NOT_RUN`.
 
 An adapter may consume only a file explicitly selected by the user or an exact
 Host attachment already approved by the user. It must not make arbitrary local

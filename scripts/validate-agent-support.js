@@ -115,9 +115,9 @@ if (
   JSON.stringify({
     mcp_component_tests: "source_candidate_tested",
     public_agent_black_box_consumption: "blocked",
-    host_delivery: "recheck_required",
-    semantic_adoption: "blocked",
-    creation_to_consumption_integration: "recheck_required",
+    host_delivery: "opencode_verified_codex_rerun_pending",
+    semantic_adoption: "verified_single_host_ordinary_task",
+    creation_to_consumption_integration: "opencode_verified_codex_rerun_pending",
     real_human_acceptance: "not_run",
   })
 ) {
@@ -143,8 +143,8 @@ if (
     named_remote: "source_candidate_tested",
     verified_local_only: "deferred",
     plain_language_user_approval_required: true,
-    machine_fields_hidden_by_host: false,
-    human_readable_consent_surface: "blocked",
+    machine_fields_hidden_by_host: true,
+    human_readable_consent_surface: "complete_via_cli_from_workspace",
     rotatable_without_mcp_restart: true,
   })
 ) {
@@ -181,11 +181,11 @@ if (
   JSON.stringify({
     single_host_consumption: {
       minimum_qualified_hosts: 1,
-      status: "blocked",
+      status: "passed_opencode_ordinary_task",
     },
     portability_benchmark: {
       host_ids: ["codex", "opencode"],
-      status: "blocked",
+      status: "pass_with_codex_rerun_pending",
       product_minimum: false,
     },
     studio_product_integration: {
@@ -199,9 +199,18 @@ if (
   );
 }
 if (authority.ready) {
-  failures.push(
-    "a READY current authority requires atomically regenerated Host claims and matrix evidence",
-  );
+  if (
+    matrix.completion_contract.single_host_consumption.status !==
+      "passed_opencode_ordinary_task" ||
+    matrix.processing_boundary.human_readable_consent_surface !==
+      "complete_via_cli_from_workspace" ||
+    matrix.agents.find((agent) => agent.id === "opencode")?.support !==
+      "verified"
+  ) {
+    failures.push(
+      "a READY current authority requires atomically regenerated Host claims and matrix evidence",
+    );
+  }
 }
 
 const rootReadme = read("README.md");
@@ -429,7 +438,7 @@ const expected = new Map([
   ["claude-code", { support: "unassessed", coordinate: null, adapter: null }],
   [
     "opencode",
-    { support: "recheck_required", coordinate: "1.18.10", adapter: "mcp" },
+    { support: "verified", coordinate: "1.18.11", adapter: "mcp" },
   ],
   ["cursor", { support: "unassessed", coordinate: null, adapter: null }],
   [
@@ -470,6 +479,10 @@ for (const agent of matrix.agents || []) {
     requireText(agent.guide, guide, "RECHECK_REQUIRED");
     requireText(agent.guide, guide, "workspace-load");
     requireText(agent.guide, guide, agent.benchmark_coordinate);
+  } else if (agent.support === "verified") {
+    requireText(agent.guide, guide, "VERIFIED_SINGLE_HOST_ORDINARY_TASK");
+    requireText(agent.guide, guide, "workspace-load");
+    requireText(agent.guide, guide, agent.benchmark_coordinate);
   } else {
     requireText(agent.guide, guide, "Unassessed");
     requireText(agent.guide, guide, "kdna plan-load ./judgment.kdna --json");
@@ -488,9 +501,9 @@ if (ids.size !== expected.size) {
 }
 for (const hostId of benchmarkHostIds) {
   const agent = matrix.agents.find((candidate) => candidate.id === hostId);
-  if (!agent || agent.support !== "recheck_required") {
+  if (!agent || agent.support === "unassessed") {
     failures.push(
-      `${hostId}: portability benchmark must remain recheck_required`,
+      `${hostId}: portability benchmark host must be assessed`,
     );
   }
 }
