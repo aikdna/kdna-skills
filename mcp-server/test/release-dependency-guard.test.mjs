@@ -20,9 +20,9 @@ const packageRoot = path.resolve(
   "..",
 );
 const INTEGRITIES = Object.freeze({
-  [CLI]: `sha512-${Buffer.alloc(64, 7).toString("base64")}`,
-  [CORE]: `sha512-${Buffer.alloc(64, 8).toString("base64")}`,
-  [CBOR]: `sha512-${Buffer.alloc(64, 9).toString("base64")}`,
+  [CLI]: "sha512-Uz7tIpGpNE5O3X2oFQTHKHKSI23TlquBcr0O9ybwfoaAcCmdtrPCQMbDj6fOdC7VMNWNx8Fty9LugvaIZKd4rQ==",
+  [CORE]: "sha512-y4AC4LlNvKsKxvIO/y14Bl62eRb0BupzvLGbXATXHX4ZUCmYhdlh6U1OL7WF+i0lCAyVJcIE7SKwhQR3uL5uxg==",
+  [CBOR]: "sha512-UGKHjp6RHC6QuZ2yy5LCKm7MojM4716DwoSaqwQpaH4DvZvbBTGcoDNTiG9Y2lByXZYFEs9WRkS5tLl96IrF1Q==",
 });
 const SHASUM = "a".repeat(40);
 
@@ -78,17 +78,15 @@ test("release dependency guard accepts only the exact official-registry CLI grap
   );
 });
 
-test("candidate lock is intentionally rejected until upstream registry releases exist", () => {
+test("published registry lock passes the release dependency guard", () => {
   const packageJson = require(path.join(packageRoot, "package.json"));
   const lock = require(path.join(packageRoot, "package-lock.json"));
-  assert.throws(
-    () =>
-      guardReleaseDependency({
-        packageJson,
-        lock,
-        lookup: (name) => metadata(name),
-      }),
-    /official registry|non-registry resolution/u,
+  assert.doesNotThrow(() =>
+    guardReleaseDependency({
+      packageJson,
+      lock,
+      lookup: (name) => metadata(name),
+    }),
   );
 });
 
