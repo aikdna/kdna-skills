@@ -1,8 +1,11 @@
 # KDNA with OpenCode
 
-> **Status:** `RECHECK_REQUIRED`. OpenCode `1.18.10` is the current benchmark
-> coordinate, not a current Host-delivery or semantic-adoption claim. The
-> unpublished MCP `0.5.0` candidate is not available from npm.
+> **Status:** `VERIFIED_SINGLE_HOST_ORDINARY_TASK`. OpenCode `1.18.11` is the
+> verified single-Host ordinary-task benchmark coordinate: a 2026-08-02
+> ordinary-task run activated `kdna.workspace-load`, received the Runtime
+> Capsule with the top-level `judgment_decision` rules, and classified
+> preference-only internal renames as non-blocking. The unpublished MCP
+> `0.5.0` candidate is not available from npm.
 
 Configure only the KDNA MCP adapter in the intended OpenCode workspace:
 
@@ -72,15 +75,18 @@ private file; the server accepts the new coordinates without a restart and
 rejects an in-flight change. This candidate does not accept an unverifiable
 `local-only` self-claim.
 
-The CLI source candidate provides `kdna host-consent` as the low-level broker
-that validates a trusted private draft, asks Allow/Decline, installs the fixed
-file atomically and supports `--status`/`--revoke`. This guide does not provide
-a native OpenCode launcher that derives that draft from trusted workspace
-facts. The current broker's terminal prompt also displays digest and role/scope
-mechanics. Treat direct broker use as evaluator integration, not proof that the
-ordinary OpenCode UX hides machine fields. Host support remains
-`RECHECK_REQUIRED` until an ordinary task both activates the tool and follows
-the returned judgment without overapplication.
+The CLI source candidate provides `kdna host-consent --from-workspace` as the
+human-readable consent surface: it derives the draft from the user-approved
+workspace attachment record and its terminal prompt hides digests, attachment
+IDs, and scope coordinates. The 2026-08-02 ordinary-task rerun on OpenCode
+`1.18.11` both activated `kdna.workspace-load` and followed the returned
+judgment without overapplication: the flaky test was blocking, error handling
+required verification, and the two preference-only internal renames were
+non-blocking. This is the `VERIFIED_SINGLE_HOST_ORDINARY_TASK` coordinate.
+Residual nuance: OpenCode phrases error-handling changes as
+blocking-until-verified; Codex phrases them as non-automatic blockers. This is
+outside the preference-rename criterion and is recorded as a known phrasing
+difference.
 
 Earlier Host receipts are superseded and are not current authority. A rebuilt
 check must separately prove delivery, non-empty Runtime Capsule coordinates,

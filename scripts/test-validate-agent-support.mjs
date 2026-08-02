@@ -89,22 +89,54 @@ test("current BLOCKED authority binds and remains fail-closed", () => {
   }
 });
 
-test("READY authority cannot leave public Host claims at stale recheck state", () => {
+test("READY authority requires atomically regenerated Host claims", () => {
   const temporary = fs.mkdtempSync(
     path.join(os.tmpdir(), "kdna-authority-test-"),
   );
   try {
+    const copy = copyPublicSource(temporary);
+    const matrixPath = path.join(copy, "docs", "agent-support-matrix.json");
+    const matrix = JSON.parse(fs.readFileSync(matrixPath, "utf8"));
+    matrix.completion_contract.single_host_consumption.status = "blocked";
+    matrix.processing_boundary.human_readable_consent_surface = "blocked";
+    const opencode = matrix.agents.find((agent) => agent.id === "opencode");
+    opencode.support = "recheck_required";
+    opencode.benchmark_coordinate = "1.18.10";
+    fs.writeFileSync(matrixPath, `${JSON.stringify(matrix, null, 2)}\n`);
     const file = writeAuthority(temporary, {
       status: "READY",
       current_authority: true,
       ready: true,
       consume: true,
     });
-    const result = run(file);
+    const result = run(file, copy);
     assert.equal(result.status, 1);
     assert.match(
       result.stderr,
       /READY current authority requires atomically regenerated Host claims/u,
+    );
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
+test("READY authority passes after atomic matrix regeneration", () => {
+  const temporary = fs.mkdtempSync(
+    path.join(os.tmpdir(), "kdna-authority-test-"),
+  );
+  try {
+    const copy = copyPublicSource(temporary);
+    const file = writeAuthority(temporary, {
+      status: "READY",
+      current_authority: true,
+      ready: true,
+      consume: true,
+    });
+    const result = run(file, copy);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(
+      result.stdout,
+      /current authority bound READY/u,
     );
   } finally {
     fs.rmSync(temporary, { recursive: true, force: true });

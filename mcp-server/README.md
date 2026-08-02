@@ -10,9 +10,11 @@ arbitrary-path MCP tool.
 
 The `0.5.0` source tree is a Development Preview candidate whose component tests
 bind the exact `@aikdna/kdna-cli@0.36.0` candidate and its single
-`@aikdna/kdna-core@0.21.0` runtime. Current Host delivery, semantic adoption,
-Creation-to-Consumption integration, and real-human acceptance are
-`RECHECK_REQUIRED`, `RECHECK_REQUIRED`, `RECHECK_REQUIRED`, and `NOT_RUN`.
+`@aikdna/kdna-core@0.21.0` runtime. Host delivery and semantic adoption pass on
+the OpenCode `1.18.11` ordinary-task single-Host loop
+(`VERIFIED_SINGLE_HOST_ORDINARY_TASK`); the Codex ordinary-task rerun remains
+`RECHECK_REQUIRED` pending account recovery, Creation-to-Consumption
+integration is `RECHECK_REQUIRED`, and real-human acceptance is `NOT_RUN`.
 Those two dependency versions are not yet registry releases, so this source
 checkpoint is not installable from npm and makes no publication claim.
 
@@ -161,7 +163,9 @@ Configuration location, approval policy, and shape remain Host-specific. Do
 not copy this entry into every installed Host automatically. The
 [Codex](../integrations/codex/README.md) and
 [OpenCode](../integrations/opencode/README.md) guides are benchmark
-configuration candidates whose end-to-end status is `RECHECK_REQUIRED`.
+configuration candidates; OpenCode is verified at `1.18.11` for the
+ordinary-task single-Host loop and Codex remains `RECHECK_REQUIRED` pending
+account recovery.
 
 ## Workspace flow
 
