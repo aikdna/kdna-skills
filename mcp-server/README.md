@@ -6,25 +6,22 @@ and load decisions to the pinned KDNA CLI/Core runtime. A user-selected
 explicit file uses the official CLI through the loader Skill, not an
 arbitrary-path MCP tool.
 
-## Source status
+## Status
 
-The `0.5.0` source tree is a Development Preview candidate whose component tests
-bind the exact `@aikdna/kdna-cli@0.36.0` candidate and its single
-`@aikdna/kdna-core@0.21.0` runtime. Host delivery and semantic adoption pass on
-the OpenCode `1.18.11` ordinary-task single-Host loop
+The published `0.5.0` MCP server has component tests that bind the exact
+`@aikdna/kdna-cli@0.36.0` and its single `@aikdna/kdna-core@0.21.0` runtime.
+Host delivery and semantic
+adoption pass on the OpenCode `1.18.11` ordinary-task single-Host loop
 (`VERIFIED_SINGLE_HOST_ORDINARY_TASK`); the Codex ordinary-task rerun remains
 `RECHECK_REQUIRED` pending account recovery, Creation-to-Consumption
 integration is `RECHECK_REQUIRED`, and real-human acceptance is `NOT_RUN`.
-Those two dependency versions are not yet registry releases, so this source
-checkpoint is not installable from npm and makes no publication claim.
 
 The retained CLI tar has one exact 32-file package allowlist and no Eval
 dependency, retired command source, global Store path, or bundled legacy
 Skill. MCP consumes that closed tar without adding another CLI capability
 surface.
 
-The npm registry still serves MCP `0.4.2`; that historical package is not the
-workspace-attachment candidate described here.
+The npm registry serves MCP `0.5.0`; the earlier `0.4.2` is historical.
 
 ## Tool boundary
 
@@ -70,7 +67,7 @@ named destination, and Allow/Decline action. The Host—not the user—handles
 attachment IDs, record/task/plan digests, schema versions, scope modes,
 approval-source values, and profile identifiers.
 
-The CLI `0.36.0` source candidate includes a low-level `kdna host-consent`
+The published CLI `0.36.0` includes a low-level `kdna host-consent`
 broker for validating a private Host draft, interactive Allow/Decline, atomic
 installation, rotation, status and revocation. A real Host launcher must derive
 that draft from trusted attachment/LoadPlan facts; neither a user nor a model
@@ -87,7 +84,7 @@ suppresses that result; the request must be retried against the new consent.
 Tool arguments cannot select or replace this authority. The adapter rejects an
 unknown destination and will not accept a remote Host's self-asserted
 `verified_local_only` label. Verifiable local-model processing is deferred in
-this source candidate; only a named processing destination is implemented.
+this version; only a named processing destination is implemented.
 Consent files are adapter-private coordinates, not Runtime Capsule fields, and
 the adapter never writes a decrypted Capsule copy to disk.
 

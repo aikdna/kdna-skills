@@ -1,8 +1,8 @@
 # KDNA Loader Contract
 
 > **Status:** Non-normative adapter contract. The protocol source of truth is
-> `aikdna/kdna`. The current Skill implementation remains Unassessed; the MCP
-> workspace adapter has source-candidate component tests. Host delivery and
+> `aikdna/kdna`. The current Skill implementation remains Unassessed; the
+> published MCP workspace adapter (`0.5.0`) has component tests. Host delivery and
 > semantic adoption pass on the OpenCode `1.18.11` ordinary-task single-Host
 > loop (`VERIFIED_SINGLE_HOST_ORDINARY_TASK`); the Codex ordinary-task rerun
 > remains `RECHECK_REQUIRED` pending account recovery, Creation-to-Consumption
@@ -22,7 +22,7 @@ confirmation and uses one `kdna load`
 call, which validates and plans internally, and creates no persistent state.
 Optional `validate` or `plan-load` diagnostics must not cause repeated user
 approval. A protected file may add one secret authorization through bounded
-stdin. The MCP candidate exposes no generic arbitrary-path file tools because
+stdin. The MCP server exposes no generic arbitrary-path file tools because
 a model-supplied path is not a user file-selection receipt.
 
 For an approved workspace relation, the adapter must pass the current Host

@@ -79,9 +79,8 @@ cat <<'EOF'
 
 The Skill adapter is now enabled only for the selected Host.
 
-Workspace attachment commands require the exact @aikdna/kdna-cli@0.36.0 source
-candidate; the current registry CLI does not provide them. During coordinated
-source acceptance, create the relation explicitly:
+Workspace attachment commands are provided by the published
+@aikdna/kdna-cli (0.36.0 or later). Create the relation explicitly:
   secure-host-attachment-json | kdna attach ./judgment.kdna \
     --cwd ./my-project --attachment-stdin --preview
   secure-host-attachment-json | kdna attach ./judgment.kdna \

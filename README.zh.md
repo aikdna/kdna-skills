@@ -15,7 +15,7 @@ npm install -g @aikdna/kdna-cli
 kdna load ./judgment.kdna --profile=compact --as=json
 ```
 
-npm 已发布的 CLI `0.35.1` 会在这一条 `load` 内完成校验和计划。若原始指令已经
+npm 已发布的 CLI `0.36.0` 会在这一条 `load` 内完成校验和计划。若原始指令已经
 绑定精确文件、任务/用途、当前 Host、具名处理者和最小投影，就不再追加确认；
 若缺少任一实质维度，Host 只补一次合并确认。随后 Agent 不得把
 validate/plan/load 拆成三次重复审批。单次路径不创建 attachment 或持久工作区
@@ -23,9 +23,8 @@ validate/plan/load 拆成三次重复审批。单次路径不创建 attachment �
 最多追加一次必要的密码授权，并且只能走有界 stdin，密码不得进入 argv、环境、
 任务文件或输出。
 
-`0.5.0` MCP 源码候选通过其精确的 `@aikdna/kdna-cli@0.36.0` 源码依赖支持
-用户批准的工作区关系。npm 当前发布的 CLI 仍是 `0.35.1`，不能把以下命令当作
-该已发布版本的能力：
+已发布的 `0.5.0` MCP server 也通过其精确的 `@aikdna/kdna-cli@0.36.0` 源码依赖
+支持用户批准的工作区关系。这些命令在该已发布版本中可用：
 
 ```bash
 secure-host-attachment-json | kdna attach ./judgment.kdna \
@@ -103,7 +102,7 @@ benchmark 在 preference-rename 判据上通过，Codex 普通任务重测待账
 两个 Host。Studio 应用接入属于后续产品集成，并且必须复用 CLI/Core 的同一附件
 Schema，不能另建状态权威。
 
-npm 当前发布的 MCP 仍是历史版本 `0.4.2`，不是这里的 `0.5.0` 工作区候选。
+npm 当前发布的 MCP 是 `0.5.0`；更早的 `0.4.2` 是历史版本。
 Skill 文件存在、`kdna setup` 成功或找到本地文件，都不能证明 Agent 集成正确。
 
 ## 创作适配器
