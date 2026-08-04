@@ -16,7 +16,7 @@ npm install -g @aikdna/kdna-cli
 kdna load ./judgment.kdna --profile=compact --as=json
 ```
 
-The published CLI `0.35.1` performs validation and planning inside that single
+The published CLI `0.36.0` performs validation and planning inside that single
 `load` invocation. If the original instruction already binds the exact file,
 task/purpose, current Host, named processor and least projection, no additional
 confirmation is needed. Otherwise the Host asks one consolidated confirmation
@@ -27,9 +27,9 @@ diagnostics, not mandatory pre-load calls. A protected file may require one
 additional password authorization through bounded stdin; the password never
 belongs in argv, environment, a task file, or output.
 
-The `0.5.0` MCP source candidate also supports an approved workspace relation
-through its exact `@aikdna/kdna-cli@0.36.0` source dependency. The registry CLI
-is still `0.35.1`; do not expect these commands from that published version:
+The published `0.5.0` MCP server also supports an approved workspace relation
+through its exact `@aikdna/kdna-cli@0.36.0` source dependency. These commands
+are available from that published version:
 
 ```bash
 secure-host-attachment-json | kdna attach ./judgment.kdna \
@@ -68,7 +68,7 @@ projection. The adapter binds that approval through a Host-private rotating
 consent file. The user sees names and Allow/Decline; the Host hides attachment
 IDs, digests, schema, scope mode, approval-source and profile mechanics.
 
-The CLI `0.36.0` source candidate includes a human-readable `kdna
+The published CLI `0.36.0` includes a human-readable `kdna
 host-consent --from-workspace` surface: it derives the Host processing consent
 draft from the user-approved workspace attachment record and its terminal
 prompt hides digests, attachment IDs, and scope coordinates. The machine draft
@@ -105,7 +105,7 @@ See [the loader contract](docs/KDNA_LOADER_CONTRACT.md) and the
 | ----------------------- | ------------------------------------------------------------------- |
 | `kdna-loader/SKILL.md`  | Unassessed fallback adapter candidate                               |
 | `kdna-creator/SKILL.md` | Source candidate for terminal Creation Engine guidance; Unassessed  |
-| MCP server              | `0.5.0` three-tool workspace candidate; component tests pass         |
+| MCP server              | `0.5.0` three-tool workspace server; component tests pass         |
 | Codex / OpenCode        | OpenCode `VERIFIED_SINGLE_HOST_ORDINARY_TASK` at `1.18.11`; Codex `RECHECK_REQUIRED` at `0.144.3` (ordinary-task rerun pending account usage limit) |
 | Other placement guides  | Unassessed integration notes                                        |
 | installers              | One explicitly selected Host only; no detection or install-all mode |
@@ -128,8 +128,8 @@ third-party Host to run two Hosts. Studio application integration is deferred
 and must later reuse the same CLI/Core attachment schema rather than becoming a
 second state authority.
 
-The published npm MCP remains `0.4.2`; it is historical and is not the `0.5.0`
-workspace candidate. The presence of a Skill file, a successful `kdna setup`,
+The published npm MCP is `0.5.0`; the earlier `0.4.2` is historical. The
+presence of a Skill file, a successful `kdna setup`,
 or an enumerated local file does not prove correct Agent integration.
 
 ## Creation adapter
