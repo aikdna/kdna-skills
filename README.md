@@ -16,7 +16,7 @@ npm install -g @aikdna/kdna-cli
 kdna load ./judgment.kdna --profile=compact --as=json
 ```
 
-The published CLI `0.36.0` performs validation and planning inside that single
+The published CLI `0.36.1` performs validation and planning inside that single
 `load` invocation. If the original instruction already binds the exact file,
 task/purpose, current Host, named processor and least projection, no additional
 confirmation is needed. Otherwise the Host asks one consolidated confirmation
@@ -68,7 +68,7 @@ projection. The adapter binds that approval through a Host-private rotating
 consent file. The user sees names and Allow/Decline; the Host hides attachment
 IDs, digests, schema, scope mode, approval-source and profile mechanics.
 
-The published CLI `0.36.0` includes a human-readable `kdna
+The published CLI `0.36.1` includes a human-readable `kdna
 host-consent --from-workspace` surface: it derives the Host processing consent
 draft from the user-approved workspace attachment record and its terminal
 prompt hides digests, attachment IDs, and scope coordinates. The machine draft
