@@ -119,6 +119,9 @@ See [the loader contract](docs/KDNA_LOADER_CONTRACT.md), the
 
 ## Status
 
+The current `kdna-loader` Skill is **Unassessed** while the user-authorization
+and Host-visibility contract is being recertified.
+
 | Component               | Status                                                             |
 | ----------------------- | ------------------------------------------------------------------ |
 | MCP server              | Published `0.5.0` on npm; component tests pass                      |
