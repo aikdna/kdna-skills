@@ -107,9 +107,9 @@ workspace attachment.
 - Attachment approval does not authorize delivery of a decrypted Capsule to a
   model without that separate approval.
 - The adapter shows active identity, version or digest, scope, and reason, and
-  offers the official controls (disable, enable, switch, rollback, remove)
-  through the CLI. The MCP adapter itself does not mutate attachments and never
-  reads `.kdna/attachments.json`.
+  offers the official controls — direct attachment mutations such as disable,
+  enable, switch, rollback, remove, and cleanup — through the CLI. The MCP adapter itself does not mutate
+  attachments and never reads `.kdna/attachments.json`.
 
 See [the loader contract](docs/KDNA_LOADER_CONTRACT.md), the
 [Creation Agent contract](docs/KDNA_CREATION_AGENT_CONTRACT.md), and the
