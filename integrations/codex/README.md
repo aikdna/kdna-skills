@@ -2,7 +2,7 @@
 
 > **Status:** `RECHECK_REQUIRED`. Codex CLI `0.144.3` is the current benchmark
 > coordinate, not a current Host-delivery or semantic-adoption claim. The
-> unpublished MCP `0.5.0` candidate is not available from npm.
+> MCP `0.5.0` package is published and available from npm.
 
 Configure only the KDNA MCP adapter for the Codex workspace where you intend to
 use it. During source acceptance, point Codex at the local candidate:
