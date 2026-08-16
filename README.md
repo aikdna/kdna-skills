@@ -117,6 +117,14 @@ See [the loader contract](docs/KDNA_LOADER_CONTRACT.md), the
 
 ---
 
+
+## Official packages
+
+Official KDNA packages are published under the `@aikdna` npm scope and the
+`aikdna` name on PyPI. The unscoped npm package `kdna` is not affiliated with
+the KDNA project. Install only from the official coordinates shown in this
+README.
+
 ## Status
 
 The current `kdna-loader` Skill is **Unassessed** while the user-authorization
