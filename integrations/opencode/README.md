@@ -4,8 +4,8 @@
 > verified single-Host ordinary-task benchmark coordinate: a 2026-08-02
 > ordinary-task run activated `kdna.workspace-load`, received the Runtime
 > Capsule with the top-level `judgment_decision` rules, and classified
-> preference-only internal renames as non-blocking. The unpublished MCP
-> `0.5.0` candidate is not available from npm.
+> preference-only internal renames as non-blocking. The MCP `0.5.0` package is
+> published and available from npm.
 
 Configure only the KDNA MCP adapter in the intended OpenCode workspace:
 
