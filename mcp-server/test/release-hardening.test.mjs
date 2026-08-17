@@ -35,7 +35,7 @@ const {
 } = require("../../scripts/registry-duplicate-policy");
 
 const HASH = "a".repeat(40);
-const CHECKOUT_ACTION_SHA = "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0";
+const CHECKOUT_ACTION_SHA = "3d3c42e5aac5ba805825da76410c181273ba90b1";
 const SETUP_NODE_ACTION_SHA = "249970729cb0ef3589644e2896645e5dc5ba9c38";
 
 function writeTarString(header, offset, length, value) {
