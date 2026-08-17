@@ -42,7 +42,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aikdna/kdna-cli": "0.36.0"
+    "@aikdna/kdna-cli": "0.36.1"
   },
   "kdna_runtime": {
     "cli": "0.36.0",
