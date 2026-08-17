@@ -12,8 +12,8 @@ const PACKAGE_ROOT = path.join(ROOT, "mcp-server");
 const ALLOWLIST = "scripts/naming-integrity-allowlist.json";
 const CANDIDATES = new Map([
   [
-    "mcp-server/test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
-    "df8eeee0e905ca2713d8a8e450471ccacab2a1eb8e2c2e928b4d53fb58290cfb",
+    "mcp-server/test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.1.tgz",
+    "611ae81c8f46e01f15c938746320c2243f1fcaf407db6e6b575c4fb859ec3219",
   ],
   [
     "mcp-server/test/fixtures/runtime-candidates/aikdna-kdna-core-0.21.0.tgz",

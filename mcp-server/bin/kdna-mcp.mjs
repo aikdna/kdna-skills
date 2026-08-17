@@ -71,7 +71,7 @@ const HOST_ROOT_BINDING = bindHostWorkspaceRoot();
 const HOST_WORKSPACE_ROOT = HOST_ROOT_BINDING.path;
 
 if (
-  CLI_VERSION !== "0.36.0" ||
+  CLI_VERSION !== "0.36.1" ||
   CORE_VERSION !== "0.21.0" ||
   packageInfo.kdna_runtime?.workspace_schema !== ADAPTER_SCHEMA ||
   cliPackageInfo.name !== "@aikdna/kdna-cli" ||
