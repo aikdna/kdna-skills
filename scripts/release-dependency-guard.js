@@ -13,7 +13,7 @@ const CORE = "@aikdna/kdna-core";
 const CBOR = "cbor-x";
 const REGISTRY = "https://registry.npmjs.org/";
 const REQUIRED = Object.freeze({
-  [CLI]: "0.36.0",
+  [CLI]: "0.36.1",
   [CORE]: "0.21.0",
   [CBOR]: "1.6.4",
 });

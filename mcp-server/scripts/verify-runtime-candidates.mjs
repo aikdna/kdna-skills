@@ -17,23 +17,23 @@ const CORE = "@aikdna/kdna-core";
 
 const EXPECTED = Object.freeze({
   [CLI]: Object.freeze({
-    version: "0.36.0",
+    version: "0.36.1",
     source: Object.freeze({
       repository: "aikdna/kdna-cli",
-      commit: "f7b9cd0bcc6ac4ff4c09879a96d844f95729fad1",
-      tree: "605cd4cfec00f9e57a79d26164ef13f473037de7",
+      commit: "6841900df1df876f2b6e300b1416b4a9186c0aba",
+      tree: "29e2b34a39e368ca302318976a592789b3d77f41",
       package_root: ".",
-      package_subtree: "605cd4cfec00f9e57a79d26164ef13f473037de7",
+      package_subtree: "29e2b34a39e368ca302318976a592789b3d77f41",
     }),
     artifact: Object.freeze({
-      path: "test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.0.tgz",
-      size: 70711,
-      unpacked_size: 278946,
-      sha1: "166c96f2933c139c4f6d61e78c13dc6bd182a0dc",
+      path: "test/fixtures/runtime-candidates/aikdna-kdna-cli-0.36.1.tgz",
+      size: 71448,
+      unpacked_size: 280787,
+      sha1: "e1d3642d2f37bc632f1a4b270cc12903c6ef3ea8",
       sha256:
-        "df8eeee0e905ca2713d8a8e450471ccacab2a1eb8e2c2e928b4d53fb58290cfb",
+        "611ae81c8f46e01f15c938746320c2243f1fcaf407db6e6b575c4fb859ec3219",
       integrity:
-        "sha512-Uz7tIpGpNE5O3X2oFQTHKHKSI23TlquBcr0O9ybwfoaAcCmdtrPCQMbDj6fOdC7VMNWNx8Fty9LugvaIZKd4rQ==",
+        "sha512-NuvkDxnDvN6ttm3+kh9PRKkCcjyQahGUH3ZTi8qYoduJXXLE8RUxR2rid/tEG3ZiX41bM3DABEqWSiC5fVuseg==",
       entry_count: 33,
       source_pack_equivalence: "strict_install_equivalent",
     }),
@@ -192,20 +192,20 @@ export function validateCandidateFacts({
   );
   assert.deepEqual(binding.release_boundary, {
     status: "candidate_only",
-    mcp_registry_dependency: `${CLI}@0.36.0`,
-    registry_install_requires: [`${CLI}@0.36.0`, `${CORE}@0.21.0`],
+    mcp_registry_dependency: `${CLI}@0.36.1`,
+    registry_install_requires: [`${CLI}@0.36.1`, `${CORE}@0.21.0`],
   });
 
-  assert.deepEqual(packageJson.dependencies, { [CLI]: "0.36.0" });
+  assert.deepEqual(packageJson.dependencies, { [CLI]: "0.36.1" });
   assert.deepEqual(packageJson.kdna_runtime, {
-    cli: "0.36.0",
+    cli: "0.36.1",
     core: "0.21.0",
     workspace_schema: "0.3.0",
   });
-  assert.deepEqual(lock.packages[""].dependencies, { [CLI]: "0.36.0" });
+  assert.deepEqual(lock.packages[""].dependencies, { [CLI]: "0.36.1" });
 
   const cliLocked = lock.packages[`node_modules/${CLI}`];
-  assert.equal(cliLocked.version, "0.36.0");
+  assert.equal(cliLocked.version, "0.36.1");
   assert.equal(
     cliLocked.resolved,
     `https://registry.npmjs.org/@aikdna/kdna-cli/-/kdna-cli-${EXPECTED[CLI].version}.tgz`,
@@ -225,7 +225,7 @@ export function validateCandidateFacts({
   );
   assert.equal(coreLocked.integrity, EXPECTED[CORE].artifact.integrity);
   assert.equal(installedCli.name, CLI);
-  assert.equal(installedCli.version, "0.36.0");
+  assert.equal(installedCli.version, "0.36.1");
   assert.equal(installedCore.name, CORE);
   assert.equal(installedCore.version, "0.21.0");
 
@@ -305,6 +305,6 @@ if (
 ) {
   const result = verifyRuntimeCandidates();
   console.log(
-    `Runtime candidates verified: ${CLI}@0.36.0 + ${CORE}@0.21.0 (${result.entryCount} candidate entries; ${result.packedFileCount} MCP pack files)`,
+    `Runtime candidates verified: ${CLI}@0.36.1 + ${CORE}@0.21.0 (${result.entryCount} candidate entries; ${result.packedFileCount} MCP pack files)`,
   );
 }

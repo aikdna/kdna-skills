@@ -761,7 +761,7 @@ test("approved workspace load shows identity, digest, scope, reason, checks, con
     );
     assert.equal(adopted.document_type, "kdna.mcp.workspace-adoption");
     assert.equal(adopted.adoption, "load");
-    assert.equal(adopted.adapter.cli, "@aikdna/kdna-cli@0.36.0");
+    assert.equal(adopted.adapter.cli, "@aikdna/kdna-cli@0.36.1");
     assert.equal(adopted.adapter.core, "@aikdna/kdna-core@0.21.0");
     assert.equal(
       adopted.resolution.reason_code,
