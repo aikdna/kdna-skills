@@ -57,10 +57,9 @@ INSTALLED_VERSION=$(kdna version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]
 log "Version: ${INSTALLED_VERSION}"
 
 # ─── Setup ──────────────────────────────────────────────────────────────
-# `kdna setup` still exists in the CLI, but it is a historical interactive
-# wizard and is not the recommended path. The current recommended path is
-# file-first: obtain a .kdna asset explicitly, then validate/load it.
-# Skipping the wizard here.
+# `kdna setup` was retired from the CLI command surface. The current
+# recommended path is file-first: obtain a .kdna asset explicitly, then
+# validate/load it.
 
 # ─── Done ─────────────────────────────────────────────────────────────────
 
