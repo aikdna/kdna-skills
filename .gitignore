@@ -7,3 +7,6 @@ node_modules/
 
 dist/
 build/
+
+# Local working records: kept in the working tree, never published.
+docs/audits/
