@@ -15,18 +15,28 @@ installer script (install.sh) for KDNA.
 
 1. Edit `install.sh`
 2. Test with `bash -n install.sh` (syntax check) and a live install
-3. Verify both piped (`curl | bash`) and cloned usage work
-4. Open a PR
+3. Run the installer from a complete `kdna-skills` checkout. It resolves
+   `kdna-loader/SKILL.md` next to the script and fails closed when that file is
+   missing, so a piped `curl | bash` invocation is not a supported path.
+4. Verify that the installer writes to exactly the one Host named on the
+   command line, and that it never overwrites an existing different Skill at
+   the destination.
+5. Open a PR
 
 ### Adding Agent Support
 
 To add support for a new AI agent:
 
-1. Add an `install_<agent>()` function in `install.sh`
-2. Add the agent to `detect_agents()`
-3. Add a `--<agent>` CLI flag
-4. Test the full install flow
-5. Update README
+1. Add the Host destination to the explicit `case "$1"` selection in
+   `install.sh`
+2. Add a `--<agent>` usage line to the `print_usage` text
+3. Test the full install flow for that one Host
+4. Update README
+
+The installer never detects Hosts, never installs into multiple Hosts, and
+never creates workspace attachments. Host detection belongs to the operator,
+not to this script. Copying a Skill file is an install step only: it does not
+mean the Host has enabled, validated or consumed the Skill.
 
 ## Quality Requirements
 
