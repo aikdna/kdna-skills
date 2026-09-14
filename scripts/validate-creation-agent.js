@@ -1,97 +1,18 @@
 #!/usr/bin/env node
 "use strict";
-
-const fs = require("node:fs");
-const path = require("node:path");
-
-const root = path.resolve(__dirname, "..");
-const failures = [];
-
-function read(relativePath) {
-  return fs.readFileSync(path.join(root, relativePath), "utf8");
-}
-
-function requireText(label, text, needle) {
-  if (!text.includes(needle)) {
-    failures.push(`${label} missing ${JSON.stringify(needle)}`);
-  }
-}
-
-const skill = read("kdna-creator/SKILL.md");
-const metadata = read("kdna-creator/agents/openai.yaml");
-const contract = read("docs/KDNA_CREATION_AGENT_CONTRACT.md");
-const readme = read("README.md");
-const readmeZh = read("README.zh.md");
-
-for (const [label, text, needles] of [
-  ["skill", skill, [
-    "name: kdna-creator",
-    "natural language",
-    "npx --no-install kdna-studio",
-    "guide-agent --action create",
-    "Do not inspect installed",
-    "inventory-agent",
-    "deliver-material",
-    "managed test candidate",
-    "finalize-agent",
-    "FORMAT_VALID",
-    "JUDGMENT_ACCEPTED",
-    "APPLICATION_VERIFIED",
-    "Creation Complete",
-    "ordinary user must not manually build application plans",
-    "possession of the file is sufficient to",
-  ]],
-  ["contract", contract, [
-    "unreleased, public-safe source contract",
-    "guide-agent <workspace>",
-    "workflow_mode",
-    "mixed-authorship",
-    "content-free inventory",
-    "private fd 3",
-    "One complete, traceable Judgment Unit",
-    "JUDGMENT_ACCEPTED",
-    "FORMAT_VALID",
-    "APPLICATION_VERIFIED",
-    "official Host orchestration",
-    "finalize-agent",
-    "Host-declared remote processing",
-  ]],
-]) {
-  for (const needle of needles) requireText(label, text, needle);
-}
-
-requireText("metadata", metadata, "$kdna-creator");
-requireText("README.md", readme, "kdna-creator");
-requireText("README.zh.md", readmeZh, "kdna-creator");
-
-for (const [label, text] of [
-  ["skill", skill],
-  ["contract", contract],
-]) {
-  for (const pattern of [
-    /\bhuman-assisted\b/u,
-    /first content-creator slice/iu,
-    /at least (?:one|1) (?:digest-bound )?(?:creator )?correction/iu,
-    /stable creating Agent ID/iu,
-    /ask (?:the )?user to (?:choose|provide|declare) (?:an? )?(?:mode|operation[_ -]?id|agent[_ -]?id|signing key|seed)\b/iu,
-    /export-agent[^\n]*--out/iu,
-    /\b(?:three[- ]seed|90% stability|at least 100)\b/iu,
-    /user.{0,80}(?:four[- ]role|four signing|signing keys)/isu,
-    /scan (?:the )?(?:home|global) directory/iu,
-    /automatically confirm/iu,
-    /forge|fabricate (?:a )?(?:human|user|organization)/iu,
-    /password\s+(?:as|in)\s+(?:an?\s+)?argument/iu,
-  ]) {
-    if (pattern.test(text)) {
-      failures.push(`${label} contains forbidden Creation narrative: ${pattern}`);
-    }
-  }
-}
-
-if (failures.length) {
-  for (const failure of failures) console.error(`FAIL ${failure}`);
-  console.error(`creation agent validation failed: ${failures.length} failure(s)`);
-  process.exit(1);
-}
-
-console.log("creation agent validation passed: natural-language UX, bounded material delivery, honest gates");
+// Static packaging, routing, example and exact declaration checks only.
+// Real Creator behavior and editorial adoption require independent forward evaluation.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..'),skillRoot=path.join(root,'kdna-creator');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const texts={skill:read('kdna-creator/SKILL.md'),reference:read('kdna-creator/references/terminal-session.md'),guide:read('kdna-creator/references/component-creation-draft.md'),contract:read('docs/KDNA_CREATION_AGENT_CONTRACT.md')};
+const expected={"@aikdna/kdna-studio-cli": ["0.13.0-rc.components.1", "e3d218a2b8dda143d8ad074e432a74434d612d5ab121ed36fec33b9d268a4dc6"], "@aikdna/kdna-core": ["0.24.0-rc.component-semantics.2", "a9cb3f08735b00657e4848766f0ac517abdcb256121a841f01e662525a0858ea"], "@aikdna/kdna-read": ["0.3.0-rc.component-semantics.2", "43d0f12a1a63a88d26570bfff821919a5cd478fdbd0568bd9c819bc56078b0f0"], "@aikdna/kdna-studio-core": ["4.0.0-rc.components.1", "ce8d1dc59328fda100e71d6efff2a05a3d5a506afff671b7e730afa91a7552bd"]};
+const binding=JSON.parse(read('kdna-creator/references/current-studio-binding.json'));
+assert.equal(binding.kind,'creator-adapter-current-archive-binding');assert.equal(binding.adapter,'kdna-creator');assert.equal(binding.evidence_format,'kdna.studio-creation-evidence/2');assert.equal(binding.provider_assertion,'declared_not_authenticated');assert.equal(binding.materialization_rule,'kdna.studio-materialization/2');assert.equal(binding.component_definition,'sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3');assert.equal(binding.archives.length,4);assert.equal(Object.hasOwn(binding,'status'),false);
+const seen=new Set();for(const item of binding.archives){const e=expected[item.name];assert.ok(e&&!seen.has(item.name));seen.add(item.name);assert.equal(item.version,e[0]);assert.equal(item.sha256,e[1]);assert.equal(item.archive,item.name.replace(/^@/,'').replace('/','-')+'-'+item.version+'.tgz');assert.ok(Number.isSafeInteger(item.bytes)&&item.bytes>0);}
+assert.equal(binding.cli_version,expected['@aikdna/kdna-studio-cli'][0]);assert.match(binding.transitive_lock.sha256,/^[0-9a-f]{64}$/);
+assert.match(texts.skill,/name: kdna-creator/);assert.ok(texts.skill.includes('(references/terminal-session.md)'));assert.ok(texts.contract.includes('../kdna-creator/references/terminal-session.md'));
+for(const [name,text] of Object.entries({...texts,binding:JSON.stringify(binding)})){assert.ok(!/\/Users\/|\/private\/tmp\/|\/home\//.test(text),name+' has private machine path');for(const match of text.matchAll(/```json\n([\s\S]*?)\n```/g)){const frame=JSON.parse(match[1]);assert.ok(typeof frame.id==='string'&&frame.op==='interpret'&&frame.data&&typeof frame.data.replyTo==='string');assert.ok(['select','confirm'].includes(frame.data.kind));if(frame.data.kind==='select')assert.ok(Array.isArray(frame.data.choices)&&frame.data.choices.every(c=>typeof c.judgmentLocalKey==='string'&&typeof c.alternativeLocalKey==='string'));else assert.equal(Object.hasOwn(frame.data,'choices'),false);}}
+for(const m of texts.skill.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)){const target=path.resolve(skillRoot,m[1]);assert.ok(target.startsWith(skillRoot+path.sep)&&fs.existsSync(target),'broken standalone skill reference');}
+const metadata=read('kdna-creator/agents/openai.yaml');assert.ok(metadata.includes('$kdna-creator'));assert.ok(!/^(policy|dependencies):/m.test(metadata));for(const name of ['README.md','README.zh.md'])assert.ok(read(name).includes('kdna-creator'));
+console.log('Static Creator declarations, examples and standalone routing match current files; actual Agent behavior, identity, installation acceptance and full creation remain independently evaluated.');

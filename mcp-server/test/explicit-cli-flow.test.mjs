@@ -1,152 +1,78 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
+import {spawn,spawnSync} from "node:child_process";
+import {randomUUID} from "node:crypto";
 import test from "node:test";
-
-const require = createRequire(import.meta.url);
-const cliInfo = require("@aikdna/kdna-cli/package.json");
-const cli = path.resolve(
-  path.dirname(require.resolve("@aikdna/kdna-cli/package.json")),
-  cliInfo.bin.kdna,
-);
-
-function runCli(args, options = {}) {
-  const result = spawnSync(process.execPath, [cli, ...args], {
-    cwd: options.cwd,
-    env: { ...process.env, ...(options.env || {}) },
-    input: options.input,
-    encoding: "utf8",
-    stdio: [options.input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
-  });
-  assert.equal(
-    result.status,
-    options.status ?? 0,
-    result.stderr || result.stdout,
-  );
-  return result;
+const root=path.resolve(".");
+const cli=path.join(root,"node_modules/@aikdna/kdna-cli/src/cli.js");
+const binding=JSON.parse(fs.readFileSync(path.join(path.dirname(cli),"../public-contract-binding.json"),"utf8"));
+const fixture=path.join(process.env.KDNA_PUBLIC_FIXTURES || path.join(root,"test/fixtures/public-read-current"),"graph-cross.kdna");
+const recordRoot=process.env.KDNA_MCP_TEST_RECORD_ROOT?path.join(process.env.KDNA_MCP_TEST_RECORD_ROOT,"stdio","direct-cli"):null;
+if(recordRoot)fs.mkdirSync(recordRoot,{recursive:true,mode:0o700});
+function record(value,input,stdout,stderr){
+ if(!recordRoot)return;
+ const prefix=path.join(recordRoot,randomUUID());
+ for(const [suffix,data] of Object.entries({stdin:input,stdout,stderr,json:JSON.stringify(value,null,2)+"\n"}))fs.writeFileSync(prefix+"."+suffix,data);
 }
-
-function makeAsset(root, name, password) {
-  const source = path.join(root, `${name}-source`);
-  const asset = path.join(root, `${name}.kdna`);
-  const demoArgs = ["demo", "minimal", source];
-  if (password !== undefined) demoArgs.push("--password-stdin");
-  runCli(demoArgs, {
-    cwd: root,
-    input: password === undefined ? undefined : `${password}\n`,
-  });
-  runCli(["pack", source, asset], { cwd: root });
-  return asset;
+function run(args){
+ const argv=[cli,...args],started=new Date().toISOString();
+ const result=spawnSync(process.execPath,argv,{cwd:root,env:process.env,encoding:"utf8",timeout:30000});
+ record({started,completed:new Date().toISOString(),pid:result.pid,argv:[process.execPath,...argv],cwd:root,node:process.version,status:result.status,signal:result.signal},"",result.stdout??"",result.stderr??"");
+ assert.equal(result.error,undefined); return {...result,value:JSON.parse(result.stdout)};
 }
-
-function commandAuditHook(root) {
-  const audit = path.join(root, "explicit-cli-commands.jsonl");
-  const hook = path.join(root, "explicit-cli-command-audit.cjs");
-  fs.writeFileSync(
-    hook,
-    `
-const fs = require("node:fs");
-if (
-  process.argv[1] === ${JSON.stringify(cli)} &&
-  ["validate", "plan-load", "load"].includes(process.argv[2])
-) {
-  fs.appendFileSync(
-    ${JSON.stringify(audit)},
-    JSON.stringify({
-      command: process.argv[2],
-      argv: process.argv.slice(2),
-      hasPasswordEnvironment: Object.keys(process.env).some((key) =>
-        /password|secret/iu.test(key)
-      ),
-    }) + "\\n"
-  );
-}
-`,
-    { mode: 0o600 },
-  );
-  const inherited = process.env.NODE_OPTIONS
-    ? `${process.env.NODE_OPTIONS} `
-    : "";
-  return {
-    audit,
-    env: { NODE_OPTIONS: `${inherited}--require=${hook}` },
-  };
-}
-
-function auditedCommands(audit) {
-  return fs
-    .readFileSync(audit, "utf8")
-    .trim()
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => JSON.parse(line));
-}
-
-test("one ordinary explicit-file approval maps to one CLI load and no persistent workspace state", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "kdna-explicit-cli-"));
-  try {
-    const workspace = path.join(root, "project");
-    fs.mkdirSync(workspace);
-    const asset = makeAsset(root, "ordinary");
-    const audit = commandAuditHook(root);
-    const result = runCli(
-      ["load", asset, "--profile=compact", "--as=json"],
-      { cwd: workspace, env: audit.env },
-    );
-    const capsule = JSON.parse(result.stdout);
-
-    assert.equal(capsule.type, "kdna.runtime-capsule");
-    assert.ok(capsule.asset.asset_id);
-    assert.ok(capsule.digests.asset.value);
-    assert.equal(fs.existsSync(path.join(workspace, ".kdna")), false);
-    assert.deepEqual(auditedCommands(audit.audit), [
-      {
-        command: "load",
-        argv: ["load", asset, "--profile=compact", "--as=json"],
-        hasPasswordEnvironment: false,
-      },
-    ]);
-  } finally {
-    fs.rmSync(root, { recursive: true, force: true });
-  }
+test("Loader direct inspect is technical and unapproved read discloses no body",()=>{
+ const inspected=run(["inspect",fixture]); assert.equal(inspected.status,0);
+ assert.equal(inspected.value.status,"accepted");
+ for(const state of ["writer","confirmation","read_permission","action_authorization"]) assert.equal(inspected.value.states[state],"not_evaluated");
+ const refused=run(["read",fixture,"--mode","catalog","--budget","1000000"]);
+ assert.notEqual(refused.status,0); assert.notEqual(refused.value.envelope?.status,"ready");
+ assert.equal(refused.value.envelope?.content??null,null);
 });
-
-test("one protected explicit-file load adds only the bounded stdin secret authorization", () => {
-  const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), "kdna-explicit-cli-protected-"),
-  );
-  const password = " protected explicit file password ";
-  try {
-    const workspace = path.join(root, "project");
-    fs.mkdirSync(workspace);
-    const asset = makeAsset(root, "protected", password);
-    const audit = commandAuditHook(root);
-    const result = runCli(
-      ["load", asset, "--profile=compact", "--as=json", "--password-stdin"],
-      { cwd: workspace, env: audit.env, input: `${password}\n` },
-    );
-    const capsule = JSON.parse(result.stdout);
-
-    assert.equal(capsule.type, "kdna.runtime-capsule");
-    assert.doesNotMatch(result.stdout + result.stderr, new RegExp(password, "u"));
-    assert.equal(fs.existsSync(path.join(workspace, ".kdna")), false);
-    assert.deepEqual(auditedCommands(audit.audit), [
-      {
-        command: "load",
-        argv: [
-          "load",
-          asset,
-          "--profile=compact",
-          "--as=json",
-          "--password-stdin",
-        ],
-        hasPasswordEnvironment: false,
-      },
-    ]);
-  } finally {
-    fs.rmSync(root, { recursive: true, force: true });
+test("Loader one-shot examples select actual catalog identifiers and preserve original catalog",()=>{
+ const catalog=run(["read",fixture,"--mode","catalog","--budget","1000000","--allow-read"]);
+ assert.equal(catalog.status,0);
+ const e=catalog.value.envelope; assert.equal(e.status,"ready");
+ const ids=e.content.catalog.map(x=>x.judgment_id);
+ for(const id of ids){
+   const exact=run(["read",fixture,"--mode","exact_selection","--asset-id",e.asset.asset_id,"--asset-version",e.asset.asset_version,"--judgment-id",id,"--budget","1000000","--allow-read"]);
+   assert.equal(exact.status,0);assert.equal(exact.value.envelope.status,"ready");
+   assert.equal(exact.value.envelope.content.selected.judgment_id,id);
+ }
+ assert.deepEqual(e.content.catalog.map(x=>x.judgment_id),ids);
+});
+test("Loader progressive public requests keep one real CLI process through catalog selection expand and EOF",async t=>{
+ const argv=[cli,"read",fixture,"--session","--allow-read"],started=new Date().toISOString();
+ const child=spawn(process.execPath,argv,{cwd:root,env:process.env,stdio:["pipe","pipe","pipe"]});
+ let input="",stdout="",stderr="",buffer="",pending=null,exit=null;
+ const closed=new Promise(resolve=>child.once("close",(code,signal)=>{exit={code,signal,at:new Date().toISOString()};if(pending){pending.reject(new Error("CLI closed"));pending=null;}resolve(exit);}));
+ child.stdin.on("error",()=>undefined);
+ child.stdout.setEncoding("utf8");child.stderr.setEncoding("utf8");
+ child.stdout.on("data",chunk=>{
+  stdout+=chunk;buffer+=chunk;let end;
+  while((end=buffer.indexOf("\n"))>=0){
+   const line=buffer.slice(0,end);buffer=buffer.slice(end+1);
+   assert.ok(pending,"unrequested CLI output");const p=pending;pending=null;clearTimeout(p.timer);p.resolve(JSON.parse(line));
   }
+ });
+ child.stderr.on("data",chunk=>stderr+=chunk);
+ t.after(async()=>{
+  if(!exit)child.stdin.end();const timer=setTimeout(()=>child.kill("SIGKILL"),3000);
+  await closed;clearTimeout(timer);
+  record({started,completed:exit,pid:child.pid,argv:[process.execPath,...argv],cwd:root,node:process.version},input,stdout,stderr);
+ });
+ function request(mode,selection=null,handle=null){
+  assert.equal(pending,null);
+  const line=JSON.stringify({request_id:"loader:"+randomUUID(),tuple:binding.tuple,mode,budget_bytes:1000000,selection,handle})+"\n";
+  return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{pending=null;child.kill("SIGTERM");reject(new Error("CLI session timeout"));},8000);pending={resolve,reject,timer};input+=line;child.stdin.write(line);});
+ }
+ const c=(await request("catalog")).envelope;assert.equal(c.status,"ready");
+ const selection={asset_id:c.asset.asset_id,asset_version:c.asset.asset_version,judgment_id:c.content.catalog[0].judgment_id};
+ const e=(await request("exact_selection",selection)).envelope;assert.equal(e.status,"ready");assert.equal(e.snapshot_id,c.snapshot_id);
+ const handle=e.content.expansion_handles[0];assert.ok(handle);
+ const x=(await request("expand",handle.selection,handle)).envelope;assert.equal(x.status,"ready");assert.equal(x.snapshot_id,c.snapshot_id);
+ const again=(await request("catalog")).envelope;assert.deepEqual(again.content.catalog,c.content.catalog);
+ assert.equal(c.receipt.host_epoch,"process:"+child.pid);
+ child.stdin.end();const result=await closed;assert.equal(result.code,0);
+ assert.throws(()=>process.kill(child.pid,0),error=>error.code==="ESRCH");
 });

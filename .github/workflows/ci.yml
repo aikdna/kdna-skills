@@ -20,7 +20,7 @@ jobs:
           cache: npm
           cache-dependency-path: mcp-server/package-lock.json
       - run: node --version | grep -Fx "v${{ matrix.node }}"
-      - run: npm ci --ignore-scripts
+      - run: npm ci --offline --ignore-scripts --omit=optional --no-audit --no-fund
       - run: npm test
   lint-scripts:
     runs-on: ubuntu-latest

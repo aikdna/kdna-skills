@@ -1,87 +1,38 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# KDNA CLI Installer
-#
-# STATUS (verified 2026-07-22): the hosted one-command endpoint
-# https://aikdna.com/install currently returns HTTP 410 and is NOT the
-# install path. Install the CLI directly from npm instead:
-#
-#   npm install -g @aikdna/kdna-cli
-#
-# This script is a convenience wrapper around that npm install. It is open
-# source and auditable.
-# Source: https://github.com/aikdna/kdna-skills/blob/main/install-cli.sh
-
-NPM_PKG="@aikdna/kdna-cli"
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BOLD='\033[1m'
-NC='\033[0m'
-
-log()    { echo -e "${GREEN}[kdna]${NC} $1"; }
-warn()   { echo -e "${YELLOW}[kdna]${NC} $1"; }
-err()    { echo -e "${RED}[kdna]${NC} $1"; exit 1; }
-header() { echo -e "\n${BOLD}${GREEN}══ $1 ══${NC}\n"; }
-
-# ─── Pre-flight ─────────────────────────────────────────────────────────
-
-header "KDNA CLI Installer"
-
-# Check for npm
-if ! command -v npm &>/dev/null; then
-  err "npm is required but not found. Install Node.js first: https://nodejs.org"
+# Install the current fixed local CLI graph from this complete source checkout.
+# Registry/latest and global installations do not supply this RC's exact bytes.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+if [ "$#" -eq 1 ] && [ "$1" = "--help" ]; then
+  echo "Usage: install-cli.sh"
+  echo "Install the checkout's exact CLI dependencies locally, offline, without hooks."
+  exit 0
 fi
-
-NODE_VERSION=$(node -v 2>/dev/null | sed 's/v//' | cut -d. -f1)
-if [ "${NODE_VERSION:-0}" -lt 18 ]; then
-  err "Node.js 18+ required. Current: $(node -v 2>/dev/null || echo 'none')"
+if [ "$#" -ne 0 ]; then
+  echo "Usage: install-cli.sh (no registry or global installation options)" >&2
+  exit 2
 fi
-
-# ─── Install CLI ─────────────────────────────────────────────────────────
-
-log "Installing ${NPM_PKG}..."
-if npm install -g "${NPM_PKG}" 2>/dev/null; then
-  log "kdna CLI installed successfully"
-else
-  err "Global install failed. Check npm permissions: npm config get prefix. See https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally"
+if ! command -v node >/dev/null || ! command -v npm >/dev/null; then
+  echo "Node.js 22 or newer and its bundled npm are required." >&2
+  exit 1
 fi
+node -e 'if (Number(process.versions.node.split(".")[0]) < 22) process.exit(1)' || {
+  echo "Node.js 22 or newer is required." >&2
+  exit 1
+}
+PACKAGE_ROOT="$SCRIPT_DIR/mcp-server"
+node "$PACKAGE_ROOT/scripts/verify-runtime-candidates.mjs" --source-only
+npm --prefix "$PACKAGE_ROOT" ci --dry-run=false --offline --ignore-scripts --omit=optional --no-audit --no-fund
+node "$PACKAGE_ROOT/scripts/verify-runtime-candidates.mjs"
+cat <<EOF
+Installed the fixed CLI graph locally. No global binary was installed.
 
-# Verify
-if ! command -v kdna &>/dev/null; then
-  err "kdna command not found after install. Check your npm global bin path."
-fi
+Inspect technical facts:
+  node "$PACKAGE_ROOT/node_modules/@aikdna/kdna-cli/src/cli.js" inspect /absolute/selected.kdna
+Read the selected file after operator permission:
+  node "$PACKAGE_ROOT/node_modules/@aikdna/kdna-cli/src/cli.js" read /absolute/selected.kdna --mode catalog --budget 1000000 --allow-read
 
-INSTALLED_VERSION=$(kdna version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "?")
-log "Version: ${INSTALLED_VERSION}"
-
-# ─── Setup ──────────────────────────────────────────────────────────────
-# `kdna setup` was retired from the CLI command surface. The current
-# recommended path is file-first: obtain a .kdna asset explicitly, then
-# validate/load it.
-
-# ─── Done ─────────────────────────────────────────────────────────────────
-
-header "Done"
-
-echo "  CLI:       $(command -v kdna)"
-echo "  Version:   ${INSTALLED_VERSION}"
-echo ""
-echo "  Next steps (file-first path):"
-echo "    # Public reference assets live in aikdna/kdna-assets. Download an"
-echo "    # asset and its .sha256 from its release page, verify the checksum,"
-echo "    # then validate, plan, and load that explicit local file:"
-echo "    curl -fLO https://github.com/aikdna/kdna-assets/releases/download/0.1.1/laozi-wuwei-0.1.1.kdna"
-echo "    curl -fLO https://github.com/aikdna/kdna-assets/releases/download/0.1.1/laozi-wuwei-0.1.1.kdna.sha256"
-echo "    shasum -a 256 -c laozi-wuwei-0.1.1.kdna.sha256"
-echo "    kdna validate ./laozi-wuwei-0.1.1.kdna"
-echo "    kdna plan-load ./laozi-wuwei-0.1.1.kdna --json"
-echo "    kdna load ./laozi-wuwei-0.1.1.kdna --profile=compact --as=json"
-echo ""
-echo "  File presence is not workspace authorization. CLI versions that expose"
-echo "  workspace attachments require an explicit 'kdna attach ... --yes' action."
-echo ""
-echo "  Authoring:"
-echo "    npm install -g @aikdna/kdna-studio-cli"
-echo "    kdna-studio create my_domain # create a Studio project"
+See mcp-server/README.md for operator-bound MCP startup and packed installation.
+Creation uses the separate kdna-creator Skill and its current Studio CLI binding.
+EOF

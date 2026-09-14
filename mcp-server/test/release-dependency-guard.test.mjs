@@ -78,16 +78,12 @@ test("release dependency guard accepts only the exact official-registry CLI grap
   );
 });
 
-test("published registry lock passes the release dependency guard", () => {
-  const packageJson = require(path.join(packageRoot, "package.json"));
-  const lock = require(path.join(packageRoot, "package-lock.json"));
-  assert.doesNotThrow(() =>
-    guardReleaseDependency({
-      packageJson,
-      lock,
-      lookup: (name) => metadata(name),
-    }),
-  );
+test("current private file candidate is rejected before any registry lookup", () => {
+  const packageJson = require(path.join(packageRoot,"package.json"));
+  const lock = require(path.join(packageRoot,"package-lock.json"));
+  let calls=0;
+  assert.throws(()=>guardReleaseDependency({packageJson,lock,lookup: name=>{calls++;return metadata(name);}}));
+  assert.equal(calls,0);
 });
 
 test("release dependency guard rejects source candidates, ranges, shadows, and edge drift", async (t) => {

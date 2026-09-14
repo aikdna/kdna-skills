@@ -1,41 +1,20 @@
 # Changelog
 
-## Unreleased
+## 0.7.0-rc.component-semantics.1 (local release candidate)
 
-- Add a process-scoped, mode-`0600` authorization-file path for exact
-  password-protected loads. The seven-tool MCP surface remains read/load-only;
-  the password never enters tool arguments or CLI child environments, and
-  only a real `load --password-stdin` decryption may report authorization as
-  satisfied.
-- Let the pinned CLI resolver evaluate an approved protected attachment's
-  public workspace scope while password authorization remains required, so an
-  out-of-scope task does not consume a secret and an in-scope load stays bound
-  to the same workspace, record, attachment, scope, and snapshot.
-- Bind each MCP workspace load to one exact Host-bounded workspace record,
-  selected attachment, scope, and snapshot from resolution through result
-  delivery. Any mid-flight change now returns a structured
-  `workspace_binding_changed` refusal without a Runtime Capsule, and a removed
-  inner record cannot fall through to a parent record outside the Host root.
-- Add the separate `kdna-creator` source Skill and Creation Agent JSON contract
-  for terminal authoring through the Studio CLI without requiring the Studio
-  App.
-- Keep creation and loading authority separate: the creator writes one
-  explicit recoverable project, while the loader remains read-only over an
-  explicit file or approved workspace attachment.
-- Require untrusted-material handling, semantic-revision-bound confirmation,
-  user-evaluated tests, separate Format Valid, Judgment Accepted and
-  Application Verified gates, exact-asset attempt/observation phases, and
-  `Creation Complete` only when all three bind one semantic/asset coordinate.
-- Clarify that Ed25519 receipts prove key possession rather than real-world
-  identity or process independence, and that initial key enrollment is
-  trust-on-first-use.
-- Clarify that receipts and authority are declared-only private Creation
-  evidence, require exact source-subject/currentness fields and a stable
-  creating Agent ID, treat status JSON as private state, use `status` for
-  read-only inspection, and submit observed creator labels explicitly.
-- Add a static CI gate for the creation Skill and contract. This source
-  candidate remains Unassessed and does not establish Host or Studio Product
-  Acceptance.
+- Replace the workspace flow with one operator-bound local file and the exact
+  CLI 0.38.0-rc.component-semantics.1, Core 0.24.0-rc.component-semantics.2 and
+  Read 0.3.0-rc.component-semantics.2 graph. Preserve canonical selections,
+  mandatory closure, same-session expansion, full responses and cancellation.
+- Include all twelve required dependency archives and an offline packed-consumer
+  generator. Test the installed process with an empty cache and reject drift in
+  the source manifest, lock and archives.
+- Update Creator guidance for the Studio CLI 0.13.0-rc.components.1 live session,
+  current component inputs and separate adoption channel. Remove obsolete
+  persistent-resume instructions from Host guides.
+- Make the CLI installer use the same fixed local offline graph and show
+  current inspect/read commands. Skill copying does not imply Host activation.
+- Keep named Host support unassessed and npm publication disabled for this RC.
 
 ## 0.5.0 (2026-07-22)
 

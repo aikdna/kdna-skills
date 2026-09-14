@@ -1,0 +1,1 @@
+These seven synthetic public CLI regression fixtures retain the exact bytes accepted with the current public graph. They exercise retained read/expansion/hostile-container behavior; they are not formal official asset creations, live authority, or actual Agent task evidence. Existing runtime-candidates fixtures remain separate and unchanged.

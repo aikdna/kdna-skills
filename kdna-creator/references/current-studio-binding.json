@@ -1,0 +1,45 @@
+{
+  "kind": "creator-adapter-current-archive-binding",
+  "adapter": "kdna-creator",
+  "cli_version": "0.13.0-rc.components.1",
+  "evidence_format": "kdna.studio-creation-evidence/2",
+  "provider_assertion": "declared_not_authenticated",
+  "component_definition": "sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3",
+  "materialization_rule": "kdna.studio-materialization/2",
+  "legacy_pin_policy": "Historical evidence stays with its original accepted graph and UNKNOWN missing pins; never infer from version or relabel it current. Current CLI rejects old format and completion markers.",
+  "archives": [
+    {
+      "name": "@aikdna/kdna-studio-cli",
+      "version": "0.13.0-rc.components.1",
+      "archive": "aikdna-kdna-studio-cli-0.13.0-rc.components.1.tgz",
+      "bytes": 66540,
+      "sha256": "e3d218a2b8dda143d8ad074e432a74434d612d5ab121ed36fec33b9d268a4dc6"
+    },
+    {
+      "name": "@aikdna/kdna-core",
+      "version": "0.24.0-rc.component-semantics.2",
+      "archive": "aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz",
+      "bytes": 235986,
+      "sha256": "a9cb3f08735b00657e4848766f0ac517abdcb256121a841f01e662525a0858ea"
+    },
+    {
+      "name": "@aikdna/kdna-read",
+      "version": "0.3.0-rc.component-semantics.2",
+      "archive": "aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz",
+      "bytes": 100934,
+      "sha256": "43d0f12a1a63a88d26570bfff821919a5cd478fdbd0568bd9c819bc56078b0f0"
+    },
+    {
+      "name": "@aikdna/kdna-studio-core",
+      "version": "4.0.0-rc.components.1",
+      "archive": "aikdna-kdna-studio-core-4.0.0-rc.components.1.tgz",
+      "bytes": 72302,
+      "sha256": "ce8d1dc59328fda100e71d6efff2a05a3d5a506afff671b7e730afa91a7552bd"
+    }
+  ],
+  "transitive_lock": {
+    "repository_file": "package-lock.json in the exact CLI repository candidate",
+    "sha256": "f6018a2986348a90448e33d3732a8e359038261fc742c92098290ffd011f20fc",
+    "install": "npm ci --offline --ignore-scripts --omit=optional; embedding must independently enforce any required network denial"
+  }
+}

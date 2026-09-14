@@ -1,155 +1,70 @@
 # KDNA Agent Adapters
 
-**Agent, Skill, and MCP integrations that let a Host call the official KDNA
-toolchain to inspect, validate, and load `.kdna` judgment assets.**
+Agent, Skill and local stdio integrations for the official KDNA toolchain.
+A .kdna asset is task material; an adapter is not a protocol authority.
 
-KDNA is not a Skill. A `.kdna` file is a portable judgment asset; an adapter is
-only one way for a Host to call the official KDNA toolchain. This repository
-provides:
+- **`kdna-loader`** — current explicit local catalog/selection/Read guidance.
+- **`kdna-creator`** — a Skill adapting the fixed Studio CLI live
+  session for bounded text judgment creation and natural-language human review.
+- **MCP server** — local candidate 0.7.0-rc.component-semantics.1 for one operator-bound input, using
+  fixed CLI 0.38.0-rc.component-semantics.1/Core 0.24.0-rc.component-semantics.2/Read 0.3.0-rc.component-semantics.2. No model-selected paths or discovery.
 
-- **`kdna-loader`** — a Skill that guides an Agent through loading one explicit
-  `.kdna` file or an approved workspace attachment via the official CLI.
-- **`kdna-creator`** — a Skill that guides a terminal Agent through the Studio
-  CLI Creation Engine to author a `.kdna` project workspace.
-- **MCP server** (`@aikdna/kdna-mcp-server`) — a thin stdio adapter for
-  user-approved workspace attachments, delegating integrity, authorization,
-  resolver, plan, and load decisions to the pinned KDNA CLI/Core runtime.
+## Current local Read workflow
 
-All adapters defer parsing, integrity, authorization, decryption, and projection
-to the official KDNA Core. The MCP server does not teach a Host a parallel KDNA
-format and does not expose arbitrary-path file tools.
+Install from this checkout using its lock and bundled dependency archives.
+The local RC uses exact file dependencies and disables npm publication. Do not
+substitute a global or registry CLI by version alone.
+See [local reproduction and package boundaries](mcp-server/README.md).
+`bash install-cli.sh` installs this same fixed CLI graph into the checkout.
+It requires the complete checkout and does not install a global binary.
+Older versions of this script installed the registry CLI globally; callers
+should now use the local path printed by the script. Existing global installs
+are neither selected nor modified.
 
-> New to KDNA? → [KDNA Core](https://github.com/aikdna/kdna)
->
-> Need the CLI? → [@aikdna/kdna-cli](https://github.com/aikdna/kdna-cli)
-
----
-
-## Install
-
-### CLI (for the loader Skill)
-
-```bash
-npm install -g @aikdna/kdna-cli
+```sh
+node /absolute/installed/mcp-server/bin/kdna-mcp.mjs --asset /absolute/selected.kdna --allow-read
 ```
 
-### MCP server (npm)
+The operator/trusted launcher supplies OS argv outside MCP stdin. initialize
+and tools never establish or enlarge permission. Read the catalog, use an exact
+canonical selection with its mandatory closure, and expand only in that same
+official CLI process. A ready Read result does not establish authorship,
+confirmation, action permission or Creation acceptance. Cancel closes the
+binding; a new file requires a new operator-controlled launch.
 
-```bash
-npm install -g @aikdna/kdna-mcp-server
-```
-
-The MCP server pins the exact `@aikdna/kdna-cli@0.36.0` source dependency and
-resolves one `@aikdna/kdna-core@0.21.0` runtime.
-
----
-
-## Quick start
-
-### Load one explicit file
-
-```bash
-kdna load ./judgment.kdna --profile=compact --as=json
-```
-
-The published CLI performs validation and planning inside that single `load`
-invocation. If the original instruction already binds the exact file,
-task/purpose, current Host, named processor, and least projection, no additional
-confirmation is needed. Otherwise the Host asks one consolidated confirmation
-covering the missing dimensions. `validate` and `plan-load` remain optional
-diagnostics, not mandatory pre-load calls.
-
-### Workspace attachments
-
-A protected asset may require one password authorization through bounded stdin
-(the password never belongs in argv, environment, a task file, or output). The
-published CLI also exposes a human-readable `kdna host-consent --from-workspace`
-surface that derives the Host processing consent draft from a user-approved
-workspace attachment record; its terminal prompt hides digests, attachment IDs,
-and scope coordinates.
-
-The MCP server supports an approved workspace relation through its exact
-`@aikdna/kdna-cli@0.36.0` source dependency:
-
-```bash
-secure-host-attachment-json | kdna attach ./judgment.kdna \
-  --cwd ./my-project --attachment-stdin --preview
-secure-host-attachment-json | kdna attach ./judgment.kdna \
-  --cwd ./my-project --attachment-stdin --yes \
-  --consent-digest sha256:<digest-from-preview>
-kdna attachments --cwd ./my-project
-```
-
-`secure-host-attachment-json` represents the Host's bounded strict-UTF-8 stdin
-producer. The two invocations use identical bytes containing the final role,
-positive scope, optional negative scope, and approval source. Agent and MCP
-integrations must not put those potentially private fields in argv or replace
-the preview receipt with an unbound `--yes`.
+Use [kdna-loader](kdna-loader/SKILL.md) for the complete direct CLI and MCP
+workflow. No global store scanning, automatic matching, workspace attachment
+mutation, raw-payload parser or legacy load/plan-load fallback is provided.
+KDNA adoption must be visible, and asset text cannot override Host instructions.
 
 ### Create an asset
 
-Follow the [`kdna-creator`](kdna-creator/SKILL.md) Skill to guide a terminal
-Agent through the Studio CLI Creation Engine. Creation writes an explicit
-project workspace; loading consumes an explicit `.kdna` file or approved
-workspace attachment.
-
----
-
-## Safety contract
-
-- The user must select the file, or approve an exact Host attachment first.
-- The adapter may not scan a global store, choose assets from task keywords,
-  infer consent from file presence, or hide whether KDNA was used.
-- Before workspace load, the Host must obtain one plain-language approval for
-  the exact asset, Host identity, named processing destination, and minimal
-  projection. The user sees names and Allow/Decline; the Host hides attachment
-  IDs, digests, schema, scope mode, approval-source, and profile mechanics.
-- Attachment approval does not authorize delivery of a decrypted Capsule to a
-  model without that separate approval.
-- The adapter shows active identity, version or digest, scope, and reason, and
-  offers the official controls — direct attachment mutations such as disable,
-  enable, switch, rollback, remove, and cleanup — through the CLI. The MCP adapter itself does not mutate
-  attachments and never reads `.kdna/attachments.json`.
-
-See [the loader contract](docs/KDNA_LOADER_CONTRACT.md), the
-[Creation Agent contract](docs/KDNA_CREATION_AGENT_CONTRACT.md), and the
-[support matrix](docs/agent-support-matrix.json).
-
----
+Follow [`kdna-creator`](kdna-creator/SKILL.md) and its self-contained
+[terminal session adapter](kdna-creator/references/terminal-session.md). An Agent
+uses the approved exact local Studio CLI with explicitly authorized ordinary
+text or interview material and a separate human channel. A live session can
+produce a new private technical export bundle; it does not support persistent
+resume or establish Creation Complete, real identity or editorial fitness.
+This Creator candidate does not change Loader/MCP support or publication status.
 
 
-## Official packages
+## Validation scope
 
-Official KDNA packages are published under the `@aikdna` npm scope and the
-`aikdna` name on PyPI. The unscoped npm package `kdna` is not affiliated with
-the KDNA project. Install only from the official coordinates shown in this
-README.
+| Component | Reproducible checks |
+| --- | --- |
+| Loader/MCP | Direct CLI, source stdio and fresh offline packed-consumer tests |
+| `kdna-creator/SKILL.md` | Current archive declarations, examples and standalone links |
+| Five Host guides | Operator command vectors; named Host delivery and semantic adoption NOT_RUN |
 
-## Status
+Run the commands in the [MCP README](mcp-server/README.md). The
+[support matrix](docs/agent-support-matrix.json) describes this version only.
+Its validator checks the actual runtime manifest, complete lock and archive
+bytes. Process tests check the real tool surface. These checks do not establish
+Host activation, editorial quality, human review or publication.
+[Loader contract](docs/KDNA_LOADER_CONTRACT.md) describes only this adapter.
+Earlier released versions remain documented in [CHANGELOG](CHANGELOG.md).
 
-The current `kdna-loader` Skill is **Unassessed** while the user-authorization
-and Host-visibility contract is being recertified.
-
-| Component               | Status                                                             |
-| ----------------------- | ------------------------------------------------------------------ |
-| MCP server              | Published `0.5.0` on npm; component tests pass                      |
-| `kdna-loader/SKILL.md`  | Unassessed fallback adapter candidate                               |
-| `kdna-creator/SKILL.md` | Source candidate for terminal Creation Engine guidance; Unassessed  |
-| Codex / OpenCode        | OpenCode `VERIFIED_SINGLE_HOST_ORDINARY_TASK` at `1.18.11`; Codex `RECHECK_REQUIRED` at `0.144.3` (ordinary-task rerun pending) |
-| Other placement guides  | Unassessed integration notes                                       |
-
-Component tests do not establish Host delivery, semantic adoption,
-Creation-to-Consumption integration, or real-human acceptance. Real-human
-acceptance remains `NOT_RUN`. Codex and OpenCode are benchmark coordinates, not
-the only supported Host brands or a product requirement. One qualified Host can
-close one functional consumption loop; running two Hosts is not a requirement
-for every user or third-party Host. Studio application integration is deferred
-and must reuse the same CLI/Core attachment schema rather than becoming a second
-state authority.
-
-The presence of a Skill file, a successful `kdna setup`, or an enumerated local
-file does not prove correct Agent integration.
-
----
+Official KDNA npm packages use the @aikdna scope; the unscoped kdna npm package
+is not affiliated. The source workflow requires no global installation.
 
 [中文](./README.zh.md)
