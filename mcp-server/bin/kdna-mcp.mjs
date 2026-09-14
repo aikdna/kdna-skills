@@ -90,13 +90,20 @@ if (binding) {
   }
   async function dispatch(message) {
     if (!object(message) || message.jsonrpc !== "2.0" || typeof message.method !== "string" || (Object.hasOwn(message, "id") && !(typeof message.id === "string" || Number.isSafeInteger(message.id)))) return error(null, -32600, "Invalid Request");
-    const { id, method } = message, params = message.params === undefined ? {} : message.params;
+    const { id, method } = message;
+    let params = message.params === undefined ? {} : message.params;
     if (id === undefined) {
       if (method === "notifications/initialized" && initialized && keys(params, [])) ready = true;
       if (method === "notifications/cancelled" && object(params) && active && params.requestId === active.id) await revoke();
       return;
     }
     if (!object(params)) return error(id, -32602, "Invalid params");
+    if (Object.hasOwn(params, "_meta")) {
+      const metadata = params._meta;
+      if (!object(metadata) || (Object.hasOwn(metadata, "progressToken") && typeof metadata.progressToken !== "string" && !Number.isFinite(metadata.progressToken))) return error(id, -32602, "Invalid request metadata");
+      // Request metadata is not a tool argument, operator binding or public Read input.
+      params = { ...params }; delete params._meta;
+    }
     if (method === "initialize") {
       if (initialized) return error(id, -32600, "Already initialized");
       if (typeof params.protocolVersion !== "string" || params.protocolVersion.length === 0 || !object(params.capabilities) || !object(params.clientInfo) || typeof params.clientInfo.name !== "string" || typeof params.clientInfo.version !== "string") return error(id, -32602, "Invalid initialize params");
