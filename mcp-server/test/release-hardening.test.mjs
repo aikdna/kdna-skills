@@ -196,67 +196,24 @@ function registryMetadata(candidate = evidence(), overrides = {}) {
   });
 }
 
-test("source Runtime candidate resolves one exact CLI with one transitive Core copy", () => {
-  const pkg = JSON.parse(
-    fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
-  );
-  const lock = JSON.parse(
-    fs.readFileSync(path.join(packageRoot, "package-lock.json"), "utf8"),
-  );
-  const installedCli = JSON.parse(
-    fs.readFileSync(
-      path.join(packageRoot, "node_modules/@aikdna/kdna-cli/package.json"),
-      "utf8",
-    ),
-  );
-  const installedCore = JSON.parse(
-    fs.readFileSync(
-      path.join(packageRoot, "node_modules/@aikdna/kdna-core/package.json"),
-      "utf8",
-    ),
-  );
-  assert.equal(pkg.version, "0.5.0");
-  assert.deepEqual(pkg.dependencies, { "@aikdna/kdna-cli": "0.36.1" });
-  assert.deepEqual(lock.packages[""].dependencies, {
-    "@aikdna/kdna-cli": "0.36.1",
-  });
-  assert.equal(
-    lock.packages["node_modules/@aikdna/kdna-cli"].version,
-    "0.36.1",
-  );
-  assert.equal(
-    lock.packages["node_modules/@aikdna/kdna-cli"].resolved,
-    "https://registry.npmjs.org/@aikdna/kdna-cli/-/kdna-cli-0.36.1.tgz",
-  );
-  assert.equal(
-    lock.packages["node_modules/@aikdna/kdna-cli"].dependencies[
-      "@aikdna/kdna-core"
-    ],
-    "0.21.0",
-  );
-  assert.equal(
-    lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["cbor-x"],
-    "1.6.4",
-  );
-  assert.equal(lock.packages["node_modules/@aikdna/kdna-eval"], undefined);
-  assert.equal(
-    lock.packages["node_modules/@aikdna/kdna-core"].version,
-    "0.21.0",
-  );
-  assert.equal(
-    lock.packages["node_modules/@aikdna/kdna-core"].resolved,
-    "https://registry.npmjs.org/@aikdna/kdna-core/-/kdna-core-0.21.0.tgz",
-  );
-  assert.equal(installedCli.version, "0.36.1");
-  assert.equal(installedCore.version, "0.21.0");
-  const cliEntries = Object.keys(lock.packages).filter((entry) =>
-    entry.endsWith("node_modules/@aikdna/kdna-cli"),
-  );
-  const coreEntries = Object.keys(lock.packages).filter((entry) =>
-    entry.endsWith("node_modules/@aikdna/kdna-core"),
-  );
-  assert.deepEqual(cliEntries, ["node_modules/@aikdna/kdna-cli"]);
-  assert.deepEqual(coreEntries, ["node_modules/@aikdna/kdna-core"]);
+test("source Runtime candidate binds private local CLI Core and Read", () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"));
+  const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, "package-lock.json"), "utf8"));
+  assert.equal(pkg.version, "0.7.0-rc.component-semantics.1"); assert.equal(pkg.private, true);
+  const versions = {cli:"0.38.0-rc.component-semantics.1",core:"0.24.0-rc.component-semantics.2",read:"0.3.0-rc.component-semantics.2"};
+  const expected = Object.fromEntries(Object.entries(versions).map(([name,version]) => ["@aikdna/kdna-"+name, "file:vendor/aikdna-kdna-"+name+"-"+version+".tgz"]));
+  for (const [name,spec] of Object.entries(expected)) assert.equal(pkg.dependencies[name],spec); assert.equal(Object.keys(pkg.dependencies).length,12); assert.deepEqual(lock.packages[""].dependencies,pkg.dependencies);
+  for (const [name,version] of Object.entries(versions)) {
+    const key = "node_modules/@aikdna/kdna-"+name;
+    assert.equal(lock.packages[key].version, version);
+    assert.equal(lock.packages[key].resolved, expected["@aikdna/kdna-"+name]);
+    const installed = JSON.parse(fs.readFileSync(path.join(packageRoot,key,"package.json"),"utf8"));
+    assert.equal(installed.version,version);
+    assert.deepEqual(Object.keys(lock.packages).filter(k=>k.endsWith(key)),[key]);
+  }
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-core"],"0.24.0-rc.component-semantics.2");
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"],"0.3.0-rc.component-semantics.2");
+  assert.equal(lock.packages["node_modules/fast-uri"].version,"3.1.7");
 });
 
 test("publish workflow is stable release-only and publishes only the verified tarball", () => {
@@ -312,18 +269,11 @@ test("release context binds event, stable package, tag, ref, SHA, HEAD, clean tr
     );
 });
 
-test("current package and changelog form one exact finalizable release coordinate", () => {
-  const pkg = JSON.parse(
-    fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
-  );
-  const changelog = fs.readFileSync(path.join(root, "CHANGELOG.md"), "utf8");
-  assert.deepEqual(validateReleaseContext(releaseInput({ pkg, changelog })), {
-    name: "@aikdna/kdna-mcp-server",
-    version: "0.5.0",
-    tag: "0.5.0",
-    ref: "refs/tags/0.5.0",
-    commit: HASH,
-  });
+test("current private candidate is not a finalizable release coordinate", () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot,"package.json"),"utf8"));
+  const changelog = fs.readFileSync(path.join(root,"CHANGELOG.md"),"utf8");
+  assert.equal(pkg.private,true); assert.equal(pkg.version,"0.7.0-rc.component-semantics.1");
+  assert.throws(()=>validateReleaseContext(releaseInput({pkg,changelog})),/CHANGELOG|version|stable|release/i);
 });
 
 test("pack evidence independently verifies identity, file list, sizes, SHA-1, and SHA-512", (t) => {
@@ -350,6 +300,13 @@ test("pack evidence independently verifies identity, file list, sizes, SHA-1, an
   const pkg = JSON.parse(
     fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
   );
+  if (pkg.version.includes("-")) {
+    assert.throws(() => validatePackReport({reportText: packed.stdout,tarball,pkg,source: {ref: `refs/tags/${pkg.version}`,commit: HASH}}), /stable canonical SemVer/);
+    assert.deepEqual(parseTarFiles(tarball).map(x => ({path:x.path,size:x.size})).sort((a,b)=>a.path.localeCompare(b.path)), report.files.map(x=>({path:x.path,size:x.size})).sort((a,b)=>a.path.localeCompare(b.path)));
+    assert.equal(report.shasum,crypto.createHash("sha1").update(tarball).digest("hex"));
+    assert.equal(report.integrity,"sha512-"+crypto.createHash("sha512").update(tarball).digest("base64"));
+    return; // A private prerelease archive cannot be promoted to stable release evidence.
+  }
   const candidate = validatePackReport({
     reportText: packed.stdout,
     tarball,

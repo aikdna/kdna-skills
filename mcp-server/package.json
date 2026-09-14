@@ -1,7 +1,7 @@
 {
   "name": "@aikdna/kdna-mcp-server",
-  "version": "0.5.0",
-  "description": "Thin MCP adapter for user-approved KDNA workspace attachments.",
+  "version": "0.7.0-rc.component-semantics.1",
+  "description": "Local stdio Read adapter for one operator-bound KDNA asset.",
   "type": "module",
   "homepage": "https://aikdna.com",
   "repository": {
@@ -15,10 +15,8 @@
   "keywords": [
     "kdna",
     "mcp",
-    "ai-agent",
-    "judgment",
-    "loadplan",
-    "workspace"
+    "read",
+    "judgment"
   ],
   "bin": {
     "kdna-mcp": "bin/kdna-mcp.mjs"
@@ -27,7 +25,19 @@
     "bin/",
     "README.md",
     "LICENSE",
-    "NOTICE"
+    "NOTICE",
+    "vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz",
+    "vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz",
+    "vendor/ajv-8.20.0.tgz",
+    "vendor/ajv-formats-3.0.1.tgz",
+    "vendor/cbor-x-1.6.5.tgz",
+    "vendor/fast-deep-equal-3.1.3.tgz",
+    "vendor/fast-uri-3.1.7.tgz",
+    "vendor/json-schema-traverse-1.0.0.tgz",
+    "vendor/noble-hashes-1.8.0.tgz",
+    "vendor/pako-2.1.0.tgz",
+    "vendor/require-from-string-2.0.2.tgz",
+    "vendor/aikdna-kdna-cli-0.38.0-rc.component-semantics.1.tgz"
   ],
   "scripts": {
     "test": "node scripts/verify-runtime-candidates.mjs && node ../scripts/check-current-names.mjs && node --test test/*.test.mjs && npm run check:orphan-lockfile",
@@ -42,17 +52,30 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aikdna/kdna-cli": "0.36.1"
+    "@aikdna/kdna-core": "file:vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz",
+    "@aikdna/kdna-read": "file:vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz",
+    "ajv": "file:vendor/ajv-8.20.0.tgz",
+    "ajv-formats": "file:vendor/ajv-formats-3.0.1.tgz",
+    "cbor-x": "file:vendor/cbor-x-1.6.5.tgz",
+    "fast-deep-equal": "file:vendor/fast-deep-equal-3.1.3.tgz",
+    "fast-uri": "file:vendor/fast-uri-3.1.7.tgz",
+    "json-schema-traverse": "file:vendor/json-schema-traverse-1.0.0.tgz",
+    "@noble/hashes": "file:vendor/noble-hashes-1.8.0.tgz",
+    "pako": "file:vendor/pako-2.1.0.tgz",
+    "require-from-string": "file:vendor/require-from-string-2.0.2.tgz",
+    "@aikdna/kdna-cli": "file:vendor/aikdna-kdna-cli-0.38.0-rc.component-semantics.1.tgz"
   },
   "kdna_runtime": {
-    "cli": "0.36.1",
-    "core": "0.21.0",
-    "workspace_schema": "0.3.0"
+    "cli": "0.38.0-rc.component-semantics.1",
+    "core": "0.24.0-rc.component-semantics.2",
+    "read": "0.3.0-rc.component-semantics.2",
+    "read_contract": "kdna.read/0.2.0"
   },
   "engines": {
     "node": ">=22"
   },
   "overrides": {
-    "fast-uri": "3.1.7"
-  }
+    "fast-uri": "$fast-uri"
+  },
+  "private": true
 }

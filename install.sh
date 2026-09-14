@@ -77,17 +77,11 @@ esac
 
 cat <<'EOF'
 
-The Skill adapter is now enabled only for the selected Host.
+The Skill file is now installed for the selected Host. Skill placement does not
+activate the Host or grant permission to read an asset.
 
-Workspace attachment commands are provided by the published
-@aikdna/kdna-cli (0.36.0 or later). Create the relation explicitly:
-  secure-host-attachment-json | kdna attach ./judgment.kdna \
-    --cwd ./my-project --attachment-stdin --preview
-  secure-host-attachment-json | kdna attach ./judgment.kdna \
-    --cwd ./my-project --attachment-stdin --yes \
-    --consent-digest sha256:<digest-from-preview>
-  kdna attachments --cwd ./my-project
-
-The Host adapter may read and load approved workspace attachments. It cannot
-attach, disable, switch, roll back, or remove them on its own.
+Use the current local installation documented in mcp-server/README.md. The
+operator selects one .kdna file and grants read permission at process startup.
+Read the complete catalog before making an exact selection; cancel closes the
+binding. The adapter does not discover or modify workspace attachments.
 EOF

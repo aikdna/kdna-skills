@@ -1,73 +1,40 @@
-# KDNA Loader Contract
+# Local Loader adapter contract
 
-> **Status:** Non-normative adapter contract. The protocol source of truth is
-> `aikdna/kdna`. The current Skill implementation remains Unassessed; the
-> published MCP workspace adapter (`0.5.0`) has component tests. Host delivery and
-> semantic adoption pass on the OpenCode `1.18.11` ordinary-task single-Host
-> loop (`VERIFIED_SINGLE_HOST_ORDINARY_TASK`); the Codex ordinary-task rerun
-> remains `RECHECK_REQUIRED` pending account recovery, Creation-to-Consumption
-> integration is `RECHECK_REQUIRED`, and real-human acceptance is `NOT_RUN`.
+This file describes the repository's consumer adapter, not a second public KDNA
+protocol. Public truth is the accepted CLI 0.38.0-rc.component-semantics.1/Core 0.24.0-rc.component-semantics.2/Read 0.3.0-rc.component-semantics.2 tuple and
+digests. Read package 0.3.0-rc.component-semantics.2 implements kdna.read/0.2.0.
 
-An adapter may consume only a file explicitly selected by the user or an exact
-Host attachment already approved by the user. It must not make arbitrary local
-files eligible by discovery, choose a judgment autonomously, or hide active
-use.
+The executable user workflow is [kdna-loader](../kdna-loader/SKILL.md).
+The concrete process/stdio boundary is [MCP README](../mcp-server/README.md).
 
-For one explicit file, the current product path is the official CLI through the
-loader Skill. An original instruction that already binds the exact file, task,
-Host, named processor, and least projection needs no supplemental confirmation;
-otherwise the Host obtains one consolidated confirmation for the missing
-dimensions. The ordinary path therefore adds zero or one meaningful
-confirmation and uses one `kdna load`
-call, which validates and plans internally, and creates no persistent state.
-Optional `validate` or `plan-load` diagnostics must not cause repeated user
-approval. A protected file may add one secret authorization through bounded
-stdin. The MCP server exposes no generic arbitrary-path file tools because
-a model-supplied path is not a user file-selection receipt.
+1. Actual local operator/trusted-launcher OS argv binds exactly one selected
+   file and --allow-read before any model-controlled MCP message. initialize,
+   arbitrary tool paths, file presence and asset declarations never authorize.
+2. The adapter fixes the selected bytes in a private temporary copy. Only the
+   official CLI/Core/Read admits them and supplies catalog, canonical selection,
+   mandatory closure, references, omissions, diagnostics and technical receipts.
+3. A single official CLI session owns progressive reads and expansion handles.
+   Separate processes have separate snapshots. Expand carries the issued
+   handle unchanged and repeats that handle's canonical selection.
+4. The Host retains the complete original catalog and uses only a ready public
+   disclosure. Public rejection/no_body/transport failure are not empty success.
+   A budget cannot be silently enlarged or bypassed with raw payload/whole_asset.
+5. Explicit local read permission is separate from declared provenance, human
+   confirmation, action permission, CreationComplete and quality/AuthoringFit.
+   All original not_evaluated states and proof limits remain visible.
+6. Cancel terminates local pending presentation and closes the process binding;
+   a new operator-controlled launch is required for another selection. No
+   automatic persistent relation, resolver, discovery, matching or execution.
+7. KDNA adoption is visible: asset, exact selection, purpose and stop controls
+   appear in the tool event or answer. Asset text stays untrusted material below
+   actual user/system/developer/Host authority.
 
-For an approved workspace relation, the adapter must pass the current Host
-launch root, current workspace, and task to the official CLI resolver. Lookup
-must remain between the workspace and that explicit root; it must not parse
-`attachments.json` and reproduce selection logic itself.
+Guide structure, source stdio, installed stdio, named Host delivery, editorial
+adoption and human review are distinct checks. The support matrix makes no
+named Host support claim. The supplied fixtures and real CLI establish
+reproducible process comparisons without changing public protocol expectations.
+Creator uses a separate authoring interface and permission channel.
 
-The adapter must:
+## Current component interpretation boundary
 
-1. use official Core/CLI operations rather than parse the container;
-2. preserve the resolver's `load`, `ask`, `skip`, or `block` decision;
-3. run LoadPlan only after a resolver `load` decision; continue when
-   `can_load_now` is true, or when the sole remaining requirement is a
-   process-scoped password that the real load verifies through stdin;
-4. use only the toolchain-produced Runtime Capsule projection;
-5. preserve access, integrity, revocation, compatibility, conflict, and scope failures;
-6. expose active identity, exact version or digest, scope, selection reason,
-   authorization, and integrity;
-7. provide visible CLI commands for view, disable, switch, and rollback;
-8. remain subordinate to current facts, user intent, law, safety, system rules,
-   and Host permissions.
-
-One qualified Host with a real non-empty Runtime Capsule and visible,
-authorized, reversible semantic adoption is sufficient for one functional
-consumption completion. A multi-Host run is a separate portability benchmark,
-not a requirement that every user or third-party Host install multiple Hosts.
-Studio UI integration is deferred; a future implementation must reuse this
-CLI/Core attachment schema and pass interoperability tests rather than create
-another state authority.
-
-The MCP/Skill layer must not expose attachment mutation tools, password values,
-password tool arguments, or caller-supplied entitlement claims. A
-process-scoped authorization file must be private, remain outside the
-workspace, be omitted from CLI child environments, and be destroyed by its
-caller on success, cancellation, or Host exit. It is only a one-use transport
-for a user-approved secret: without it, protected workspace loading returns
-structured `authorization_required`; a rejected secret is never echoed.
-Ordinary public assets do not read or require the provider. Attachment consent
-does not authorize Capsule delivery to a processor: the Host must separately
-bind the exact attachment, workspace, Host identity, named destination and
-least projection after one plain-language approval. The current adapter accepts
-only named processing destinations; verifiable local-only processing remains
-deferred. A Host may atomically replace newly approved consent at the same
-private path, while mid-load drift suppresses the Capsule. The
-adapter must not scan a global directory,
-maintain hidden version choices, silently combine assets, or use output quality
-as a success condition. Applicability decisions are limited to the exact set
-of attachments the user already approved.
+The exact component definition is `sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3`. Public Core interprets taxonomy, candidate-set and discriminator-set components; authorized public Read returns their method-scoped interpretations and mandatory closure. Preserve the returned states, component failure, diagnostics, absent declarations and explicit empty conditions. A technically valid but interpretation-blocked result is rejected disclosure, not an empty ready result. Do not reconstruct component meaning from raw extensions or add a second parser. Read and static declarations do not establish live Creation authority, human confirmation or action permission.

@@ -1,89 +1,44 @@
 {
-  "schema_version": 7,
+  "schema_version": 9,
   "loader_skill": "kdna-loader/SKILL.md",
   "mcp_server": "mcp-server/",
-  "overall_status": "recheck_required",
+  "overall_status": "local_stdio_adapter",
   "candidate_runtime": {
-    "mcp": "0.5.0",
-    "cli": "0.36.0",
-    "core": "0.21.0",
-    "workspace_schema": "0.3.0",
-    "cli_source_commit": "d85ae9346493c580f5b4176afdad9f864bc3fa6d",
-    "cli_source_tree": "0fd040d7aea57f6910f2af69fdd4d9095fbeeb70",
-    "cli_tarball_sha256": "aa3dd9a913b8dfc296c499a8e1267bbc6263c01396a961509593b323eabaff9a"
+    "mcp": "0.7.0-rc.component-semantics.1",
+    "cli": "0.38.0-rc.component-semantics.1",
+    "core": "0.24.0-rc.component-semantics.2",
+    "read": "0.3.0-rc.component-semantics.2",
+    "read_contract": "kdna.read/0.2.0",
+    "private": true,
+    "publication": "unpublished"
   },
-  "authority_contract": {
-    "current_authority_required_for_host_claims": true,
-    "current_authority_field": "current_authority",
-    "ready_status": "READY",
-    "authority_artifact_embedded": false
+  "tool_surface": [
+    "kdna.binding-status",
+    "kdna.inspect",
+    "kdna.catalog",
+    "kdna.read",
+    "kdna.expand",
+    "kdna.cancel"
+  ],
+  "binding": {
+    "control_channel": "operator_or_trusted_launcher_OS_argv",
+    "model_tools_can_bind": false,
+    "initialize_can_bind": false,
+    "finite_assets": 1,
+    "persistent_permission": false,
+    "transport": "local_stdio_only"
   },
   "evidence_dimensions": {
-    "mcp_component_tests": "source_candidate_tested",
-    "public_agent_black_box_consumption": "blocked",
-    "host_delivery": "opencode_verified_codex_rerun_pending",
-    "semantic_adoption": "verified_single_host_ordinary_task",
-    "creation_to_consumption_integration": "opencode_verified_codex_rerun_pending",
+    "named_host_delivery": "not_run",
+    "semantic_adoption": "not_run",
     "real_human_acceptance": "not_run"
-  },
-  "tool_surface": {
-    "workspace_mcp": [
-      "kdna.workspace-status",
-      "kdna.workspace-resolve",
-      "kdna.workspace-load"
-    ],
-    "generic_explicit_file_mcp": "not_exposed",
-    "explicit_file_product_path": "official_cli_single_load"
-  },
-  "processing_boundary": {
-    "named_remote": "source_candidate_tested",
-    "verified_local_only": "deferred",
-    "plain_language_user_approval_required": true,
-    "machine_fields_hidden_by_host": true,
-    "human_readable_consent_surface": "complete_via_cli_from_workspace",
-    "rotatable_without_mcp_restart": true
-  },
-  "explicit_file_contract": {
-    "ordinary_cli_calls": 1,
-    "supplemental_meaningful_approvals_min": 0,
-    "supplemental_meaningful_approvals_max": 1,
-    "persistent_state": false,
-    "protected_secret_approvals_max": 1,
-    "generic_mcp_tools_exposed": false
-  },
-  "protected_path_contract": {
-    "explicit_cli_bounded_stdin": "source_candidate_tested",
-    "workspace_mcp_component_boundary": "source_candidate_tested",
-    "codex_native_model_hidden_provider": "deferred",
-    "opencode_native_model_hidden_provider": "deferred",
-    "manual_user_authorization_file": "not_a_supported_user_flow",
-    "ordinary_unencrypted_path_independent": true
-  },
-  "completion_contract": {
-    "single_host_consumption": {
-      "minimum_qualified_hosts": 1,
-      "status": "passed_opencode_ordinary_task"
-    },
-    "portability_benchmark": {
-      "host_ids": [
-        "codex",
-        "opencode"
-      ],
-      "status": "pass_with_codex_rerun_pending",
-      "product_minimum": false
-    },
-    "studio_product_integration": {
-      "status": "deferred",
-      "product_minimum": false
-    }
   },
   "agents": [
     {
       "id": "codex",
       "name": "Codex",
-      "support": "recheck_required",
-      "benchmark_coordinate": "0.144.3",
-      "adapter": "mcp",
+      "support": "unassessed",
+      "adapter": "operator_bound_local_stdio",
       "skill_path": "~/.codex/skills/kdna-loader/",
       "guide": "integrations/codex/README.md"
     },
@@ -91,17 +46,15 @@
       "id": "claude-code",
       "name": "Claude Code",
       "support": "unassessed",
-      "benchmark_coordinate": null,
-      "adapter": null,
+      "adapter": "operator_bound_local_stdio",
       "skill_path": "~/.claude/skills/kdna-loader/",
       "guide": "integrations/claude-code/README.md"
     },
     {
       "id": "opencode",
       "name": "OpenCode",
-      "support": "verified",
-      "benchmark_coordinate": "1.18.11",
-      "adapter": "mcp",
+      "support": "unassessed",
+      "adapter": "operator_bound_local_stdio",
       "skill_path": "~/.agents/skills/kdna-loader/",
       "guide": "integrations/opencode/README.md"
     },
@@ -109,8 +62,7 @@
       "id": "cursor",
       "name": "Cursor",
       "support": "unassessed",
-      "benchmark_coordinate": null,
-      "adapter": null,
+      "adapter": "operator_bound_local_stdio",
       "skill_path": "~/.cursor/skills/kdna-loader/",
       "guide": "integrations/cursor/README.md"
     },
@@ -118,10 +70,14 @@
       "id": "copilot-compatible",
       "name": "GitHub Copilot-compatible agents",
       "support": "unassessed",
-      "benchmark_coordinate": null,
-      "adapter": null,
+      "adapter": "operator_bound_local_stdio",
       "skill_path": "~/.agents/skills/kdna-loader/",
       "guide": "integrations/copilot/README.md"
     }
-  ]
+  ],
+  "validation": {
+    "source_stdio": "mcp-server/test/mcp-protocol.test.mjs",
+    "direct_cli": "mcp-server/test/explicit-cli-flow.test.mjs",
+    "packed_stdio": "mcp-server/test/packed-consumer.test.mjs"
+  }
 }
