@@ -1,13 +1,14 @@
 # Contributing to KDNA Skills
 
-This repository contains the kdna-loader agent skill and the
-installer script (install.sh) for KDNA.
+This repository contains kdna-loader Read guidance, kdna-creator bounded
+Studio session guidance, a local stdio Read MCP adapter, and explicit
+installation scripts. Each entry's README or Skill defines its current scope.
 
 ## How to Contribute
 
 ### Skill Improvements
 
-1. Edit the relevant `SKILL.md` file in `kdna-loader/`
+1. Edit the relevant `SKILL.md` file in `kdna-loader/` or `kdna-creator/`
 2. Test with your target agent (Claude Code, Codex, OpenCode, etc.)
 3. Open a PR with a description of what changed and why
 
@@ -37,6 +38,18 @@ The installer never detects Hosts, never installs into multiple Hosts, and
 never creates workspace attachments. Host detection belongs to the operator,
 not to this script. Copying a Skill file is an install step only: it does not
 mean the Host has enabled, validated or consumed the Skill.
+
+### MCP and current contract checks
+
+Use the fixed local graph and complete validation recipe in
+`mcp-server/README.md`; do not select a global CLI by version alone.
+From the repository root, run `node scripts/validate-agent-support.js` and
+`node scripts/validate-creation-agent.js`. From `mcp-server/`, run its complete
+`npm test` entry after the documented install. Keep explicit operator selection,
+Read permission, cancellation and packed-consumer checks intact.
+
+A source test or synthetic callback does not establish native Host delivery or
+editorial adoption. Record those separate observations only when actually run.
 
 ## Quality Requirements
 
