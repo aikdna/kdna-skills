@@ -118,6 +118,52 @@ test("unbound initialization, exact six-tool list and no parameter-created autho
   await s.close();
 });
 
+test("initialize negotiates only the supported protocol without enabling unoffered capabilities", async t => {
+  for (const protocolVersion of ["2024-11-05", "2025-06-18"]) await t.test(protocolVersion, async t => {
+    const s = launch(t);
+    s.notify("notifications/initialized");
+    assert.equal((await s.rpc("tools/list")).error.code, -32002);
+    const response = await s.rpc("initialize", {
+      protocolVersion,
+      capabilities: { experimental: {}, elicitation: {} },
+      clientInfo: { name: "example-mcp-client", title: "Example Client", version: "1.0.0" },
+    });
+    assert.equal(response.result?.protocolVersion, "2024-11-05", JSON.stringify(response));
+    assert.deepEqual(response.result.capabilities, { tools: {} });
+    assert.equal((await s.rpc("tools/list")).error.code, -32002);
+    s.notify("notifications/initialized");
+    assert.deepEqual((await s.rpc("tools/list")).result.tools.map(tool => tool.name), toolNames);
+    assert.equal(decoded(await s.call("kdna.binding-status")).state, "unbound");
+    assert.equal(decoded(await s.call("kdna.catalog", budget)).code, "MCP_BINDING_REQUIRED");
+    assert.equal((await s.rpc("initialize", init)).error.code, -32600);
+    await s.close();
+  });
+});
+
+test("malformed initialization cannot establish transport readiness or consume initialization", async t => {
+  const s = launch(t);
+  const invalid = [
+    {}, { ...init, protocolVersion: undefined }, { ...init, protocolVersion: null },
+    { ...init, protocolVersion: 20241105 }, { ...init, protocolVersion: [] },
+    { ...init, protocolVersion: "" }, { ...init, capabilities: undefined },
+    { ...init, capabilities: null }, { ...init, capabilities: [] },
+    { ...init, clientInfo: undefined }, { ...init, clientInfo: null },
+    { ...init, clientInfo: [] }, { ...init, clientInfo: {} },
+    { ...init, clientInfo: { name: "example-client" } },
+    { ...init, clientInfo: { version: "1.0.0" } },
+    { ...init, clientInfo: { name: 1, version: "1.0.0" } },
+    { ...init, clientInfo: { name: "example-client", version: null } },
+  ];
+  for (const params of invalid) {
+    assert.equal((await s.rpc("initialize", params)).error?.code, -32602, JSON.stringify(params));
+    s.notify("notifications/initialized");
+    assert.equal((await s.rpc("tools/list")).error.code, -32002);
+  }
+  await s.initialize();
+  assert.deepEqual((await s.rpc("tools/list")).result.tools.map(tool => tool.name), toolNames);
+  await s.close();
+});
+
 test("operator-selected path without allow-read neither binds nor opens a nonexistent file", async t => {
   const s = launch(t, { argv: ["--asset", "/definitely-not-selected-or-readable.kdna"] });
   await s.initialize();

@@ -39,9 +39,17 @@ workspace/consent/password environment values do not grant permission.
 
 ## MCP transport and tools
 
-Use newline-delimited JSON-RPC 2.0 over local stdio. Initialize with
-protocolVersion `2024-11-05`, capabilities and clientInfo, then send
-notifications/initialized. Those fields negotiate transport only.
+Use newline-delimited JSON-RPC 2.0 over local stdio. Initialize with the client's
+supported `protocolVersion` string, a `capabilities` object and `clientInfo`
+containing string `name` and `version` fields. The adapter supports MCP
+`2024-11-05` and returns that version even when a client requests a newer one,
+following [MCP version negotiation](https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#version-negotiation).
+This does not enable newer protocol features or client-offered capabilities;
+the server still advertises only `tools: {}`. A client that supports the returned
+version sends `notifications/initialized` before calling tools; a client that
+cannot use it should disconnect. Initialization never grants file or action
+permission. Malformed initialization and tool requests before readiness remain
+errors.
 
 | Tool | Arguments | Result |
 | --- | --- | --- |
