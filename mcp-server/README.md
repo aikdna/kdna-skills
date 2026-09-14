@@ -51,6 +51,13 @@ cannot use it should disconnect. Initialization never grants file or action
 permission. Malformed initialization and tool requests before readiness remain
 errors.
 
+Request `params` may contain an optional `_meta` object. Its `progressToken`,
+when present, must be a string or finite number; `0` is valid. The adapter
+accepts this transport metadata without emitting progress notifications and
+ignores other metadata. Metadata is never forwarded into tool arguments,
+operator startup binding or public Read input. This adds no permitted tool
+argument or method parameter beyond request-level `_meta`.
+
 | Tool | Arguments | Result |
 | --- | --- | --- |
 | kdna.binding-status | {} | Local binding state, not a public authority receipt |

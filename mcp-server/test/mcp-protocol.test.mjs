@@ -164,6 +164,57 @@ test("malformed initialization cannot establish transport readiness or consume i
   await s.close();
 });
 
+test("request metadata is transport-only across initialize, ping, tool discovery and calls", async t => {
+  const s = launch(t);
+  assert.equal((await s.rpc("initialize", { ...init, protocolVersion: "2025-06-18", _meta: { progressToken: 0 } })).result?.protocolVersion, "2024-11-05");
+  assert.equal((await s.rpc("tools/list", { _meta: { progressToken: 0 } })).error.code, -32002);
+  s.notify("notifications/initialized");
+  for (const _meta of [{}, { progressToken: 0 }, { progressToken: 1.5 }, { progressToken: "request-token" }, { "example.com/trace": "opaque", asset: "/unselected.kdna", allow_read: true }]) {
+    assert.deepEqual((await s.rpc("tools/list", { _meta })).result?.tools.map(tool => tool.name), toolNames);
+    assert.deepEqual((await s.rpc("ping", { _meta })).result, {});
+    const response = await s.rpc("tools/call", { name: "kdna.binding-status", arguments: {}, _meta });
+    assert.equal(decoded(response).state, "unbound");
+    assert.equal(decoded(await s.rpc("tools/call", { name: "kdna.catalog", arguments: budget, _meta })).code, "MCP_BINDING_REQUIRED");
+  }
+  for (const method of ["ping", "tools/list"]) assert.equal((await s.rpc(method, { _meta: { progressToken: 0 }, approved: true })).error.code, -32602);
+  assert.equal((await s.rpc("tools/call", { name: "kdna.binding-status", arguments: {}, _meta: {}, path: "/unselected.kdna" })).error.code, -32602);
+  for (const argumentsValue of [{ _meta: {} }, { path: "/unselected.kdna" }, { cwd: "/" }, { approved: true }, { allow_read: true }]) {
+    assert.equal((await s.rpc("tools/call", { name: "kdna.binding-status", arguments: argumentsValue, _meta: { progressToken: 0 } })).error.code, -32602);
+  }
+  await s.close();
+});
+
+test("malformed request metadata fails before initialization and on every ready request", async t => {
+  const s = launch(t);
+  const invalid = [null, [], "metadata", false, 0, { progressToken: null }, { progressToken: true }, { progressToken: {} }, { progressToken: [] }];
+  for (const _meta of invalid) assert.equal((await s.rpc("initialize", { ...init, _meta })).error?.code, -32602);
+  await s.initialize();
+  for (const _meta of invalid) {
+    for (const method of ["ping", "tools/list"]) assert.equal((await s.rpc(method, { _meta })).error?.code, -32602);
+    assert.equal((await s.rpc("tools/call", { name: "kdna.binding-status", arguments: {}, _meta })).error?.code, -32602);
+  }
+  assert.equal(decoded(await s.call("kdna.binding-status")).state, "unbound");
+  await s.close();
+});
+
+test("metadata leaves bound public Read and cancellation semantics unchanged", async t => {
+  const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize({ protocolVersion: "2025-06-18" });
+  const catalog = ready(await s.rpc("tools/call", { name: "kdna.catalog", arguments: budget, _meta: { progressToken: 0 } }));
+  assert.deepEqual(catalog.content, reference("graph-cross.kdna").content);
+  const selection = { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version, judgment_id: catalog.content.catalog[0].judgment_id };
+  const selected = ready(await s.rpc("tools/call", { name: "kdna.read", arguments: { ...budget, selection }, _meta: { progressToken: "read" } }));
+  const expected = reference("graph-cross.kdna", selection);
+  for (const field of ["declarations", "catalog", "selected", "closure", "references", "relationships", "missing", "provenance"]) assert.deepEqual(selected.content[field], expected.content[field]);
+  assert.equal(selected.snapshot_id, catalog.snapshot_id);
+  const expanded = ready(await s.rpc("tools/call", { name: "kdna.expand", arguments: { ...budget, handle: selected.content.expansion_handles[0] }, _meta: { progressToken: 0 } }));
+  assert.equal(expanded.snapshot_id, selected.snapshot_id);
+  const inspection = decoded(await s.rpc("tools/call", { name: "kdna.inspect", arguments: {}, _meta: {} }));
+  assert.equal(inspection.status, "accepted"); assert.equal(inspection.states.action_authorization, "not_evaluated");
+  assert.equal(decoded(await s.rpc("tools/call", { name: "kdna.cancel", arguments: {}, _meta: {} })).binding_closed, true);
+  assert.equal(decoded(await s.call("kdna.catalog", budget)).code, "MCP_BINDING_CANCELLED");
+  await s.close();
+});
+
 test("operator-selected path without allow-read neither binds nor opens a nonexistent file", async t => {
   const s = launch(t, { argv: ["--asset", "/definitely-not-selected-or-readable.kdna"] });
   await s.initialize();
