@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const EXPECTED_GRAPH = {
   "node_modules/@aikdna/kdna-core": {
@@ -415,7 +415,38 @@ export function verifyRuntime(root = ROOT) {
   assert.equal(cliBinding.component_semantics_digest, "sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3");
   return result;
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+// Entry guard. Both sides are compared through realpath so an invocation through
+// a symlinked or aliased directory still RUNS the verification (and can never
+// exit 0 silently, which is the failure mode this guard exists to prevent). An
+// import is not the entry point and must not run it; an entry path that realpath
+// cannot resolve refuses to run instead of reporting success.
+function entryGuardOutcome() {
+  if (!process.argv[1]) return "import";
+  const selfPath = fileURLToPath(import.meta.url);
+  let invoked = null;
+  let self = null;
+  try {
+    invoked = fs.realpathSync(process.argv[1]);
+  } catch {
+    invoked = null;
+  }
+  try {
+    self = fs.realpathSync(selfPath);
+  } catch {
+    self = null;
+  }
+  if (invoked && self && invoked === self) return "entry";
+  if (path.resolve(process.argv[1]) === path.resolve(selfPath)) return "unresolved-entry";
+  return "import";
+}
+const entryGuard = entryGuardOutcome();
+if (entryGuard === "unresolved-entry") {
+  console.error(
+    "KDNA_MCP_RUNTIME_CANDIDATES_ENTRY_GUARD_FAILED: refusing to run under an unresolved entry path",
+  );
+  process.exit(2);
+}
+if (entryGuard === "entry") {
   const args = process.argv.slice(2);
   assert.ok(args.length === 0 || (args.length === 1 && args[0] === "--source-only"), "only --source-only is supported");
   console.log(JSON.stringify(args.length ? verifySource() : verifyRuntime()));

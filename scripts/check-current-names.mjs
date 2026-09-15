@@ -5,7 +5,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE_ROOT = path.join(ROOT, "mcp-server");
@@ -210,9 +210,37 @@ export function checkCurrentNames() {
   };
 }
 
-if (
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
-) {
+// Entry guard. Both sides are compared through realpath so an invocation through
+// a symlinked or aliased directory still RUNS the naming audit (and can never
+// exit 0 silently, which is the failure mode this guard exists to prevent). An
+// import is not the entry point and must not run it; an entry path that realpath
+// cannot resolve refuses to run instead of reporting success.
+function entryGuardOutcome() {
+  if (!process.argv[1]) return "import";
+  const selfPath = fileURLToPath(import.meta.url);
+  let invoked = null;
+  let self = null;
+  try {
+    invoked = fs.realpathSync(process.argv[1]);
+  } catch {
+    invoked = null;
+  }
+  try {
+    self = fs.realpathSync(selfPath);
+  } catch {
+    self = null;
+  }
+  if (invoked && self && invoked === self) return "entry";
+  if (path.resolve(process.argv[1]) === path.resolve(selfPath)) return "unresolved-entry";
+  return "import";
+}
+const entryGuard = entryGuardOutcome();
+if (entryGuard === "unresolved-entry") {
+  console.error(
+    "KDNA_CURRENT_NAMES_ENTRY_GUARD_FAILED: refusing to run under an unresolved entry path",
+  );
+  process.exit(2);
+}
+if (entryGuard === "entry") {
   console.log(JSON.stringify(checkCurrentNames()));
 }
