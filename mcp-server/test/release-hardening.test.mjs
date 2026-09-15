@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import zlib from "node:zlib";
+import { makeCanonicalTempRoot } from "./support/canonical-temp-root.mjs";
 
 const require = createRequire(import.meta.url);
 const packageRoot = path.resolve(
@@ -277,7 +277,7 @@ test("current private candidate is not a finalizable release coordinate", () => 
 });
 
 test("pack evidence independently verifies identity, file list, sizes, SHA-1, and SHA-512", (t) => {
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "kdna-mcp-pack-test-"));
+  const temp = makeCanonicalTempRoot("kdna-mcp-pack-test-");
   t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
   const packed = spawnSync(
     "npm",

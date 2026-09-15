@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { spawn, spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import test from "node:test";
+import { makeCanonicalTempRoot } from "./support/canonical-temp-root.mjs";
 
 const root = path.resolve(".");
 const server = process.env.KDNA_MCP_TEST_SERVER || path.join(root, "bin/kdna-mcp.mjs");
@@ -20,7 +20,7 @@ const decoded = response => { assert.ok(!response.error, JSON.stringify(response
 const ready = response => { const value = decoded(response); assert.notEqual(response.result.isError, true, JSON.stringify(value)); assert.equal(value.envelope?.status, "ready"); return value.envelope; };
 
 function launch(t, options = {}) {
-  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "agent-stdio-case-"));
+  const temporary = makeCanonicalTempRoot("agent-stdio-case-");
   const tmp = path.join(temporary, "tmp"); fs.mkdirSync(tmp, { mode: 0o700 });
   const selected = path.join(temporary, "selected.kdna");
   if (options.fixture) fs.copyFileSync(path.join(fixtures, options.fixture), selected);
@@ -346,7 +346,7 @@ test("malformed UTF-8/JSON and over-limit stdio inputs fail boundedly", async t 
 });
 
 test("operator binding rejects symlinks, directories, non-kdna and relative files", async t => {
-  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "binding-policy-")); t.after(() => fs.rmSync(temporary, { recursive: true, force: true }));
+  const temporary = makeCanonicalTempRoot("binding-policy-"); t.after(() => fs.rmSync(temporary, { recursive: true, force: true }));
   const target = path.join(temporary, "data.kdna"); fs.copyFileSync(path.join(fixtures, "graph-cross.kdna"), target);
   const link = path.join(temporary, "link.kdna"); fs.symlinkSync(target, link);
   const json = path.join(temporary, "data.json"); fs.copyFileSync(target, json);
