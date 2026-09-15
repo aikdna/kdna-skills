@@ -1,13 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {makeCanonicalTempRoot} from "./support/canonical-temp-root.mjs";
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../..");
 test("local installer uses fixed offline bytes and rejects changed dependencies before installation", {timeout:60000}, t=>{
- const temporary=fs.mkdtempSync(path.join(os.tmpdir(),"kdna local installer-"));
+ const temporary=makeCanonicalTempRoot("kdna local installer-");
  t.after(()=>fs.rmSync(temporary,{recursive:true,force:true}));
  const copy=path.join(temporary,"checkout");
  fs.cpSync(root,copy,{recursive:true,filter:p=>!p.split(path.sep).some(n=>[".git","node_modules"].includes(n))});

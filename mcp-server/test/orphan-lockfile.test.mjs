@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, rmSync, writeFileSync, symlinkSync, chmodSync } from 'node:fs';
 import { join } from 'node:path';
-import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+import { makeCanonicalTempRoot } from './support/canonical-temp-root.mjs';
 
 const script = join(fileURLToPath(import.meta.url), '..', '..', 'scripts', 'check-orphan-lockfile.mjs');
 
@@ -18,10 +18,7 @@ function runCheck(rootDir) {
 }
 
 function setup() {
-  const dir = join(tmpdir(), `kdna-orphan-${process.pid}-${Date.now()}`);
-  rmSync(dir, { recursive: true, force: true });
-  mkdirSync(dir, { recursive: true });
-  return dir;
+  return makeCanonicalTempRoot(`kdna-orphan-${process.pid}-`);
 }
 
 function teardown(dir) {

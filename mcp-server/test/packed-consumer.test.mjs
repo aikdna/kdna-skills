@@ -1,16 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {createLocalConsumer} from "../scripts/create-local-consumer.mjs";
 import {EXPECTED_GRAPH} from "../scripts/verify-runtime-candidates.mjs";
+import {makeCanonicalTempRoot} from "./support/canonical-temp-root.mjs";
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 
 test("fresh packed consumer installs offline and runs the real stdio boundary suite", {timeout:120000}, t=>{
- const temporary=fs.mkdtempSync(path.join(os.tmpdir(),"mcp-packed-consumer-"));
+ const temporary=makeCanonicalTempRoot("mcp-packed-consumer-");
  t.after(()=>fs.rmSync(temporary,{recursive:true,force:true}));
  const consumer=path.join(temporary,"consumer");
  assert.equal(createLocalConsumer(consumer).archives,13);
