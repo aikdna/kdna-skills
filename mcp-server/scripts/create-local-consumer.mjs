@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import {spawnSync} from "node:child_process";
-import {fileURLToPath, pathToFileURL} from "node:url";
+import {fileURLToPath} from "node:url";
 import assert from "node:assert/strict";
 import {ARTIFACTS, EXPECTED_GRAPH, PACKED_FILES, verifySource} from "./verify-runtime-candidates.mjs";
 
@@ -42,7 +42,36 @@ export function createLocalConsumer(destination, root = source) {
   fs.writeFileSync(path.join(output,"archives.json"),JSON.stringify(archives,null,2)+"\n",{flag:"wx"});
   return {package:pkg.name,version:pkg.version,archives:archives.length,requiredPackages:ARTIFACTS.length+1,output};
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+// Entry guard: both sides are compared through realpath so an invocation through
+// a symlinked or aliased directory still RUNS this script instead of exiting 0
+// having done nothing; an import is not the entry point and must not run it.
+function entryGuardOutcome() {
+  if (!process.argv[1]) return "import";
+  const selfPath = fileURLToPath(import.meta.url);
+  let invoked = null;
+  let self = null;
+  try {
+    invoked = fs.realpathSync(process.argv[1]);
+  } catch {
+    invoked = null;
+  }
+  try {
+    self = fs.realpathSync(selfPath);
+  } catch {
+    self = null;
+  }
+  if (invoked && self && invoked === self) return "entry";
+  if (path.resolve(process.argv[1]) === path.resolve(selfPath)) return "unresolved-entry";
+  return "import";
+}
+const entryGuard = entryGuardOutcome();
+if (entryGuard === "unresolved-entry") {
+  console.error(
+    "KDNA_MCP_CREATE_LOCAL_CONSUMER_ENTRY_GUARD_FAILED: refusing to run under an unresolved entry path",
+  );
+  process.exit(2);
+}
+if (entryGuard === "entry") {
   assert.equal(process.argv.length,3,"usage: node scripts/create-local-consumer.mjs NEW_DIRECTORY");
   console.log(JSON.stringify(createLocalConsumer(process.argv[2])));
 }
