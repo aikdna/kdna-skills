@@ -397,12 +397,23 @@ export function validateCandidateFacts({ packageJson, lock, installed, packedFil
   assert.equal(required.length, 12); assert.deepEqual(Object.keys(installed).sort(), required.map(([name]) => name).sort());
   for (const [name, value] of required) { assert.equal(installed[name].version, value.version); assert.equal(installed[name].name, name.slice("node_modules/".length)); }
   assert.deepEqual(packedFiles.map(item => typeof item === "string" ? item : item.path).sort(), PACKED_FILES);
-  return { fixedArtifacts: 12, lockedRequiredPackages: 12, installedRequiredPackages: 12, optionalOmitted: 9, packedFileCount: 19, status: "LOCAL_RC_ONLY_UNPUBLISHED" };
+  // optionalOmitted counts the optional graph entries that are deliberately
+  // outside the required runtime set. It is derived from the expected graph,
+  // not from whether this machine happens to have installed them.
+  return { fixedArtifacts: 12, lockedRequiredPackages: 12, installedRequiredPackages: 12,
+    optionalOmitted: Object.values(EXPECTED_GRAPH).filter((value) => value.optional).length,
+    packedFileCount: 19, status: "LOCAL_RC_ONLY_UNPUBLISHED" };
 }
 export function verifyRuntime(root = ROOT) {
   const installed = {};
   for (const [name, value] of Object.entries(EXPECTED_GRAPH)) {
-    if (value.optional) { assert.equal(fs.existsSync(path.join(root, name)), false, "optional native graph must remain omitted"); continue; }
+    // Package managers install optional dependencies by default, so the
+    // optional native accelerator is normally present in a consumer install.
+    // This server never loads it: the bound Core requires the pure-JS
+    // `cbor-x/decode-no-eval` entry, so emitted and read bytes do not depend on
+    // the accelerator. Its presence must not turn a working install into a
+    // refusal, and it stays outside the required runtime set asserted below.
+    if (value.optional) continue;
     installed[name] = read(root, name + "/package.json");
   }
   const packed = spawnSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], { cwd: root, env: process.env, encoding: "utf8", shell: false });
