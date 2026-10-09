@@ -146,11 +146,20 @@ test('same-contract public and protected conclusion with explicit method: close/
         assert.ok(JSON.stringify(envelope.content).includes(changed),'actual saved successor Read contains revision');
         assert.notEqual(reopened.pid,revised.pid);
         for(const failedMember of ['asset.kdna','revision-receipt.json']) {
-          const partialOut=path.join(root,label+'-partial-'+failedMember),marker=path.join(root,label+'-partial-'+failedMember+'.observed'),preload=path.join(root,label+'-partial-'+failedMember+'.cjs');
-          // Test-owned preload performs a real prefix write to the exclusive
-          // destination FD, then throws ENOSPC. No production test hook exists.
-          fs.writeFileSync(preload,`'use strict';const fs=require('node:fs');const open=fs.openSync,write=fs.writeSync;let targetFD=null;fs.openSync=function(file,...args){const fd=open.call(fs,file,...args);if(file===${JSON.stringify(path.join(partialOut,failedMember))})targetFD=fd;return fd;};fs.writeSync=function(fd,buffer,offset,length,position){if(fd===targetFD){targetFD=null;write.call(fs,fd,buffer,offset,Math.min(length,17),position);fs.writeFileSync(${JSON.stringify(marker)},'actual partial write observed',{flag:'wx'});throw Object.assign(new Error('controlled partial write failure'),{code:'ENOSPC'});}return write.call(fs,fd,buffer,offset,length,position);};`,{mode:0o600});
-          const partial=await invoke('revise',fixture.asset,{password:credential,allowSource:true,edit,reason,out:partialOut,recovery:protectedAsset,preload});noContent(partial);
+          const partialOut=path.join(root,label+'-partial-'+failedMember),marker=path.join(root,label+'-partial-'+failedMember+'.observed');
+          // The preload is a committed fixture, not generated source: the target
+          // and marker paths travel through the environment, so this test never
+          // interpolates a value into executable code.
+          const previousTarget=process.env.KDNA_PARTIAL_WRITE_TARGET,previousMarker=process.env.KDNA_PARTIAL_WRITE_MARKER;
+          process.env.KDNA_PARTIAL_WRITE_TARGET=path.join(partialOut,failedMember);process.env.KDNA_PARTIAL_WRITE_MARKER=marker;
+          let partial;
+          try {
+            partial=await invoke('revise',fixture.asset,{password:credential,allowSource:true,edit,reason,out:partialOut,recovery:protectedAsset,preload:path.join(__dirname,'fixtures','partial-write-preload.cjs')});
+          } finally {
+            if(previousTarget===undefined)delete process.env.KDNA_PARTIAL_WRITE_TARGET;else process.env.KDNA_PARTIAL_WRITE_TARGET=previousTarget;
+            if(previousMarker===undefined)delete process.env.KDNA_PARTIAL_WRITE_MARKER;else process.env.KDNA_PARTIAL_WRITE_MARKER=previousMarker;
+          }
+          noContent(partial);
           assert.equal(fs.existsSync(marker),true,'the injected failure follows an actual partial filesystem write');
           assert.equal(fs.existsSync(partialOut),false,'partial asset/receipt write leaves no successor directory');
           assert.equal(partial.values.some(v=>v.status==='revision_saved'),false);assert.deepEqual(fs.readFileSync(fixture.asset),fixture.original);
