@@ -3,6 +3,7 @@
 // Synthetic editorial input proves mechanics, never real Agent/human acceptance.
 const test=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const {createRequire}=require('node:module');
 const {spawn}=require('node:child_process');
 const wrapper=path.join(__dirname,'studio-protected-host.cjs');
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
@@ -206,8 +207,14 @@ test('same-contract public and protected conclusion with explicit method: close/
         const target=path.join(copy,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(installation,relative),target);
       }
       const bindings=JSON.parse(fs.readFileSync(path.join(installation,'src/public-bindings.json'),'utf8'));
+      // Bound members are located through resolution, the way the Host itself
+      // resolves them, so this case does not assume a vendored nested layout:
+      // an installed fixture may hoist its members anywhere on the prefix.
+      const resolveFromCopy=createRequire(path.join(copy,'package.json')),resolveInstalled=createRequire(path.join(installation,'package.json'));
       for(const archive of bindings.archives) {
-        const target=path.join(copy,'node_modules',archive.name);fs.mkdirSync(path.dirname(target),{recursive:true});fs.cpSync(path.join(installation,'node_modules',archive.name),target,{recursive:true,errorOnExist:true,force:false});
+        const entry=resolveInstalled.resolve(archive.name),suffix=path.sep+archive.publicEntry.split('/').join(path.sep);
+        assert.ok(entry.endsWith(suffix),'bound member must resolve to its declared public entry');
+        const target=path.join(copy,'node_modules',archive.name);fs.mkdirSync(path.dirname(target),{recursive:true});fs.cpSync(entry.slice(0,-suffix.length),target,{recursive:true,errorOnExist:true,force:false});
       }
       const baseline=await invoke('read',asset,{bindingPatch:{installation_root:copy}});ready(baseline);
       const core=bindings.archives.find(a=>a.name==='@aikdna/kdna-core'),member=core.files.find(f=>f.path===core.publicEntry),target=path.join(copy,'node_modules',core.name,member.path),before=fs.readFileSync(target);
