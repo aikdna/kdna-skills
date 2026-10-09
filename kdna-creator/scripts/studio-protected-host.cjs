@@ -10,11 +10,11 @@ const crypto = require('node:crypto');
 const { createRequire } = require('node:module');
 const MAX = 25 * 1024 * 1024, JSON_MAX = 1024 * 1024, SECRET_MAX = 65536;
 const CLI_FILES = Object.freeze({
-  'package.json': {sha256:'b62e69c5c5e161199f13a704e9d12b8d16f6b16b03c44a7f95aa2dbb80acd2bb',mode:0o644},
+  'package.json': {sha256:'edf97b772de8582961c0f385a695e55cad406c5a2caef12d5acbc3c2da4c3c51',mode:0o644},
   'bin/kdna-studio.js': {sha256:'ccce7e14e0a2ef6adf158cd1d66c6f774210dc18fe9069c582fec752abecbe18',mode:0o755},
-  'src/terminal-workspace.js': {sha256:'4908f1700b9da42a98ce38628c4e19dff1b9179c9c02284b535b24d0bd0e82de',mode:0o644},
+  'src/terminal-workspace.js': {sha256:'8a78531a742f416238b8403d5ba6e9d819678a14fe90eda396d029f31ff4607c',mode:0o644},
   'src/component-operations.js': {sha256:'fc5e468d7b2f8a8ed760008429fa6283417007d359ac5fabd1719d0d8e49cbfb',mode:0o644},
-  'src/public-bindings.json': {sha256:'594d473823ef84db4ff85739ba5c8a604151d242f5df2be162061af798429b90',mode:0o644},
+  'src/public-bindings.json': {sha256:'b2fc98fb668e485f6b50e88442f7f40ed8e3aca4a5b9b8ef7147dc452e8ec6bf',mode:0o644},
 });
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const digest = bytes => 'sha256:' + hash(bytes);
