@@ -76,10 +76,10 @@ if (binding) {
     operation.work = (async () => {
       try {
         binding.assertReadable();
-        const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: args.budget_bytes, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: args.selection ?? args.handle?.selection ?? null, handle: args.handle ?? null };
+        const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: args.budget_bytes, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: name === "kdna.read" ? { asset_id: args.selection.asset_id, asset_version: args.selection.asset_version, judgment_ids: [args.selection.judgment_id] } : args.handle?.anchor?.selection ?? null, handle: args.handle ?? null };
         const value = name === "kdna.inspect" ? await inspectBoundFile(binding, operation.controller.signal) : await session.request(request);
         if (operation.cancelled) throw new AdapterError("MCP_READ_CANCELLED", "Local read presentation was cancelled; this process binding is closed.");
-        const success = value.channel === "read_envelope" ? value.envelope.status === "ready" : value.status === "accepted";
+        const success = value.channel === "read_envelope" ? ["ready", "catalog_only"].includes(value.envelope.status) : value.status === "accepted";
         await result(id, { ...text(value), ...(success ? {} : { isError: true }) });
       } catch (cause) {
         if (!outputFailed) await result(id, toolError(cause));

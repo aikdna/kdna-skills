@@ -1,7 +1,7 @@
 # KDNA Agent 适配器
 
-当前 Loader/MCP 是本地只读候选：MCP 0.7.0-rc.component-semantics.1、CLI 0.38.0-rc.component-semantics.1、Core 0.24.0-rc.component-semantics.2、Read 包
-0.3.0-rc.component-semantics.2；Read 公共合同仍为 kdna.read/0.2.0。候选以 `private: true` 禁止 npm 发布，只使用仓库附带
+当前 Loader/MCP 是本地只读候选：MCP 0.8.0-rc.native-sections.1、CLI 0.39.0-rc.native-sections.3、Core 0.37.1-rc.browser.1、Read 包
+0.11.2-rc.browser.1；原生容器为 0.6，Read 公共合同为 kdna.read/0.7.0-candidate。候选以 `private: true` 禁止 npm 发布，只使用仓库附带
 的精确本地依赖，不能按同名版本换成全局 CLI 或 registry 包。
 
 ## 当前本地路径
@@ -34,7 +34,7 @@ plan-load/Runtime Capsule 兼容流程。详情见 [Loader](kdna-loader/SKILL.md
 内部。旧脚本的全局 registry 安装流程已替换；使用脚本打印的本地路径，既有
 全局安装不会被选用或修改。
 
-在 `mcp-server/` 使用 Node.js 22.23.1 或 24.18.0：
+在 `mcp-server/` 使用 Node.js 22.22.3（本次可复现环境）：
 
 ```sh
 npm ci --offline --ignore-scripts --omit=optional --no-audit --no-fund
@@ -49,6 +49,7 @@ npm test
 | --- | --- |
 | Loader/MCP | 真实 CLI、源码 stdio、空缓存打包安装后的 stdio 测试 |
 | `kdna-creator/SKILL.md` | 当前归档声明、示例与独立分发链接检查 |
+| 原生作者审阅脚本 | 作者字段盘点、审阅输入身份与任务所需内容检查 |
 | 五 Host 指南 | 启动 command vector；具名 Host 交付和语义采用 NOT_RUN |
 
 [支持矩阵](docs/agent-support-matrix.json)只描述当前版本；验证器核对实际 manifest、
@@ -57,13 +58,20 @@ npm test
 
 ## 创作适配器
 
-[`kdna-creator`](kdna-creator/SKILL.md) 引导终端 Agent 使用已批准的 exact 本地
+[`kdna-creator`](kdna-creator/SKILL.md) 按 Host 的实际入口选择创作流程。原生
+`create`、`source-open`、`source-pack` 使用随 Skill 分发的
+[原生创作与内容审阅说明](kdna-creator/references/native-asset-authoring.md)。本地脚本
+盘点真实作者字段，核对绑定作者稿摘要的逐域审阅记录。内容是否适合任务仍须
+实质审阅；Core 接受、文件保存与 Reader 展示分别验证。使用 Host 具名选定的
+精确 CLI，保留原件并记录实际发生的修改。
+
+显式匹配的 Studio session 使用原有适配器，引导终端 Agent 使用已批准的 exact 本地
 Studio CLI，从显式授权的普通 UTF-8 文本或访谈形成有界判断。人类通过独立通道
 用自然语言选择、修改和确认当前预览；Agent 负责整理候选和私有机器字段。
 
 实际流程只维护在随 Skill 一同分发的
 [terminal session 适配说明](kdna-creator/references/terminal-session.md)。
-当前 live session 可以导出新的私有技术 bundle；不承诺持久 resume、迁移、
+此 Studio live session 可以导出新的私有技术 bundle；不承诺持久 resume、迁移、
 加密或远程交付。identity 为 `not_verified`，confirmation 为
 `claimed_unverified`，Creation/action 为 `not_evaluated`；
 本地导出不等于 Creation Complete、真实 Owner 同意或 编辑适用性。

@@ -20,7 +20,7 @@ import { makeCanonicalTempRoot } from "./support/canonical-temp-root.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fixtures =
   process.env.KDNA_PUBLIC_FIXTURES ||
-  path.join(root, "test/fixtures/public-read-current");
+  path.join(root, "test/fixtures/public-read-native");
 
 test("the fixture root handed to the operator binding is already canonical", (t) => {
   const fixtureRoot = makeCanonicalTempRoot("kdna-canonical-fixture-");

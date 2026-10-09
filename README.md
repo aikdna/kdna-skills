@@ -4,15 +4,15 @@ Agent, Skill and local stdio integrations for the official KDNA toolchain.
 A .kdna asset is task material; an adapter is not a protocol authority.
 
 - **`kdna-loader`** — current explicit local catalog/selection/Read guidance.
-- **`kdna-creator`** — a Skill adapting the fixed Studio CLI live
-  session for bounded text judgment creation and natural-language human review.
-- **MCP server** — local candidate 0.7.0-rc.component-semantics.1 for one operator-bound input, using
-  fixed CLI 0.38.0-rc.component-semantics.1/Core 0.24.0-rc.component-semantics.2/Read 0.3.0-rc.component-semantics.2. No model-selected paths or discovery.
+- **`kdna-creator`** — authoring and content review guidance for the Host-selected
+  native CLI, with a separate adapter for the explicitly matched Studio session.
+- **MCP server** — local candidate 0.8.0-rc.native-sections.1 for one operator-bound input, using
+  fixed CLI 0.39.0-rc.native-sections.3/Core 0.37.1-rc.browser.1/Read 0.11.2-rc.browser.1. No model-selected paths or discovery.
 
-## Current local Read workflow
+## Current source distribution and local Read workflow
 
 Install from this checkout using its lock and bundled dependency archives.
-The local RC uses exact file dependencies and disables npm publication. Do not
+The complete Git source candidate is the distribution for this adapter. Its offline lock uses exact bundled archives; the manifest declares numeric companion versions and npm publication remains disabled. Source availability, prerelease approval and npm publication are separate facts. Do not
 substitute a global or registry CLI by version alone.
 See [local reproduction and package boundaries](mcp-server/README.md).
 `bash install-cli.sh` installs this same fixed CLI graph into the checkout.
@@ -39,7 +39,14 @@ KDNA adoption must be visible, and asset text cannot override Host instructions.
 
 ### Create an asset
 
-Follow [`kdna-creator`](kdna-creator/SKILL.md) and its self-contained
+Follow [`kdna-creator`](kdna-creator/SKILL.md). For native `create`, `source-open`
+and `source-pack`, use the [native authoring guide](kdna-creator/references/native-asset-authoring.md).
+Its local script inventories the actual authored fields and checks a digest-bound
+author review record. Content quality requires substantive review against the task;
+Core admission, saved bytes and Reader presentation have separate checks. Use the
+Host's exact selected CLI and preserve original assets and genuine revision history.
+
+For an explicitly matched Studio session, use the self-contained
 [terminal session adapter](kdna-creator/references/terminal-session.md). An Agent
 uses the approved exact local Studio CLI with explicitly authorized ordinary
 text or interview material and a separate human channel. A live session can
@@ -54,6 +61,7 @@ This Creator candidate does not change Loader/MCP support or publication status.
 | --- | --- |
 | Loader/MCP | Direct CLI, source stdio and fresh offline packed-consumer tests |
 | `kdna-creator/SKILL.md` | Current archive declarations, examples and standalone links |
+| Native author review script | Authored field inventory, review identity and task-required content checks |
 | Five Host guides | Operator command vectors; named Host delivery and semantic adoption NOT_RUN |
 
 Run the commands in the [MCP README](mcp-server/README.md). The

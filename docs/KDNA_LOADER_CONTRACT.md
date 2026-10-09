@@ -1,8 +1,8 @@
 # Local Loader adapter contract
 
 This file describes the repository's consumer adapter, not a second public KDNA
-protocol. Public truth is the accepted CLI 0.38.0-rc.component-semantics.1/Core 0.24.0-rc.component-semantics.2/Read 0.3.0-rc.component-semantics.2 tuple and
-digests. Read package 0.3.0-rc.component-semantics.2 implements kdna.read/0.2.0.
+protocol. Public truth is the accepted CLI 0.39.0-rc.native-sections.3/Core 0.37.1-rc.browser.1/Read 0.11.2-rc.browser.1 tuple and
+digests. Read package 0.11.2-rc.browser.1 implements kdna.read/0.7.0-candidate.
 
 The executable user workflow is [kdna-loader](../kdna-loader/SKILL.md).
 The concrete process/stdio boundary is [MCP README](../mcp-server/README.md).
@@ -37,4 +37,4 @@ Creator uses a separate authoring interface and permission channel.
 
 ## Current component interpretation boundary
 
-The exact component definition is `sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3`. Public Core interprets taxonomy, candidate-set and discriminator-set components; authorized public Read returns their method-scoped interpretations and mandatory closure. Preserve the returned states, component failure, diagnostics, absent declarations and explicit empty conditions. A technically valid but interpretation-blocked result is rejected disclosure, not an empty ready result. Do not reconstruct component meaning from raw extensions or add a second parser. Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+The exact component definition is `sha256:37e857cc4e43f7283a51ee6abe1f6e8401803902e8dc47f6d14d712aa7d7b089`. Public Core interprets taxonomy, candidate-set and discriminator-set components; authorized public Read returns their method-scoped interpretations and mandatory closure. Preserve the returned states, component failure, diagnostics, absent declarations and explicit empty conditions. A technically valid but interpretation-blocked result is rejected disclosure, not an empty ready result. Do not reconstruct component meaning from raw extensions or add a second parser. Read and static declarations do not establish live Creation authority, human confirmation or action permission.

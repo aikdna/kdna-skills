@@ -35,3 +35,7 @@ Never inject reviewer text into the Agent pipe, forge a role, manufacture a tick
 Outputs are never replaced. The new private bundle has exact `asset.kdna`, detached private evidence/binding, live save verification, and version2 completion written last. `kdna.studio-creation-evidence/2` is current. Static verify cannot recreate `accepted_with_live_context`; it retains not_evaluated and unavailable. Public Read requires explicit local permission and grants no action. Legacy evidence is noncurrent here and remains with its old accepted graph; missing historical pins stay UNKNOWN.
 
 Creator behavior requires a separate independent forward evaluation with actual Agent decisions and an authorized real task. Static document checks and synthetic CLI I/O tests cannot replace that evaluation. No new whole-project or publication acceptance is asserted by this adapter.
+
+## Current package and container scope
+
+The [exact archive binding](current-studio-binding.json) selects StudioCLI `0.13.0-rc.components.2`, StudioCore `4.0.0-rc.components.2`, Core `0.37.1-rc.browser.1` and Read `0.11.2-rc.browser.1`. The Studio session produces container `0.5` with `kdna.read/0.6.4`; use its own `read` and `verify` operations. NativeCLI `0.39.0-rc.native-sections.3` uses container `0.6` and Read `0.7.0-candidate`. It does not consume the Studio container. Same companion package versions do not establish conversion or cross-reader support.

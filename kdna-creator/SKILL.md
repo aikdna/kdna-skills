@@ -1,11 +1,13 @@
 ---
 name: kdna-creator
-description: Help an Agent author ordinary or explicitly structured judgments from authorized text/interview materials through the current Studio CLI, with actual human or expressly delegated Agent adoption and saved-byte completion.
+description: Author and revise KDNA assets from authorized materials, review their substantive content and field coverage, and use the Host-selected native CLI or the explicitly matched Studio creation session.
 ---
 
 # KDNA Creator
 
-Use the current approved Studio CLI as the creation authority. This skill guides substantive authoring; Core owns component interpretation and Studio owns materialization and the one-use lifecycle. Read [the terminal adapter](references/terminal-session.md) before starting. Exact archive content and a Host-approved installation are required; no global binary, latest package, alternate checkout or old-Core fallback.
+Choose the creation route from the Host's exact installed contract. For native authored assets with `create`, `source-open` and `source-pack`, read [native asset authoring and content review](references/native-asset-authoring.md). That route includes an executable field inventory, task-specific content review, official no-loss reading and versioned revision. A successful save does not approve the work's content. Do not require Studio or Work as a prerequisite for that native route.
+
+For the explicitly matched Studio session, follow the remaining instructions and [the terminal adapter](references/terminal-session.md). Core owns component interpretation and Studio owns materialization and the one-use lifecycle. Exact archive content and a Host-approved installation are required; no global binary, latest package, alternate checkout or old-Core fallback. The matched Studio route creates container 0.5 assets with Read 0.6.4; the native CLI route creates container 0.6 assets with Read 0.7. A shared Core/Read package version does not make the two container routes interchangeable. Keep each workflow on its declared reader and source-revision route.
 
 Start from the user's natural language and reuse the existing authorization. Establish the intended judgment, scope, explicit materials and new private output directory. Ask only for a material ambiguity or genuinely unsupported boundary. Do not ask people to author protocol IDs, carriers, hash fields or review tickets. No material path means no directory scan. Read only named UTF-8 text files or interview through the selected live channel. If verified-local processing is required and the Host cannot attest it, stop before reading; a local executable does not prove where the Agent processes content.
 

@@ -2,11 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
+import { createRequire } from "node:module";
 import { AdapterError } from "./operator-binding.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const packageInfo = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-const versions = { cli: "0.38.0-rc.component-semantics.1", core: "0.24.0-rc.component-semantics.2", read: "0.3.0-rc.component-semantics.2" };
+const versions = { cli: "0.39.0-rc.native-sections.3", core: "0.37.1-rc.browser.1", read: "0.11.2-rc.browser.1" };
 function localPackage(name) {
   const roots = [path.join(root, "node_modules")];
   if (path.basename(path.dirname(root)) === "@aikdna" && path.basename(path.dirname(path.dirname(root))) === "node_modules") roots.push(path.dirname(path.dirname(root)));
@@ -20,10 +22,16 @@ function localPackage(name) {
   }
   throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed local CLI/Core/Read installation is unavailable.");
 }
-const cli = localPackage("cli"); localPackage("core"); localPackage("read");
+const cli = localPackage("cli"), core = localPackage("core"), read = localPackage("read");
 const cliEntry = path.resolve(cli.directory, cli.value.bin?.kdna || "");
-export const publicBinding = JSON.parse(fs.readFileSync(path.join(cli.directory, "public-contract-binding.json"), "utf8"));
-if (packageInfo.kdna_runtime?.cli !== versions.cli || packageInfo.kdna_runtime?.core !== versions.core || packageInfo.kdna_runtime?.read !== versions.read || publicBinding.semantic_source_sha256 !== "862cea95bdb3a634356ad729b95e0882cb0b75fdb80f103a11f4037783899110" || publicBinding.generated_contract_sha256 !== "ec8a2616a768f5523e8852487e757f6f9560d1933ea3a9ee90ead69fe1120f4d" || publicBinding.tuple?.read !== "kdna.read/0.2.0" || publicBinding.component_semantics_digest !== "sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3" || publicBinding.accepted_core?.tar_sha256 !== "a9cb3f08735b00657e4848766f0ac517abdcb256121a841f01e662525a0858ea" || publicBinding.accepted_read?.tar_sha256 !== "43d0f12a1a63a88d26570bfff821919a5cd478fdbd0568bd9c819bc56078b0f0" || packageInfo.kdna_runtime?.read_contract !== "kdna.read/0.2.0" || !cliEntry.startsWith(cli.directory + path.sep) || !fs.statSync(cliEntry).isFile()) throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed runtime contract binding is invalid.");
+const bindingBytes = fs.readFileSync(path.join(cli.directory, "public-contract-binding.json"));
+export const publicBinding = JSON.parse(bindingBytes);
+if (packageInfo.kdna_runtime?.cli !== versions.cli || packageInfo.kdna_runtime?.core !== versions.core || packageInfo.kdna_runtime?.read !== versions.read || createHash("sha256").update(bindingBytes).digest("hex") !== "ca729552115391c184dee30ca019fcd81bc223220be8df3caf85285863bbb5fc" || publicBinding.implementation?.version !== versions.cli || publicBinding.tuple?.container !== "0.6.0" || publicBinding.tuple?.read !== "kdna.read/0.7.0-candidate" || publicBinding.accepted_core?.version !== versions.core || publicBinding.accepted_read?.version !== versions.read || packageInfo.kdna_runtime?.read_contract !== "kdna.read/0.7.0-candidate" || !cliEntry.startsWith(cli.directory + path.sep) || !fs.statSync(cliEntry).isFile()) throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed native runtime contract binding is invalid.");
+// Every consumer resolves the same fixed Core/Read instance; nested shadow copies are refused.
+for (const [consumer, dependency] of [[cli, core], [cli, read], [read, core]]) {
+  const resolved = createRequire(path.join(consumer.directory, "package.json")).resolve(dependency.value.name + "/package.json");
+  if (resolved !== path.join(dependency.directory, "package.json")) throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed native runtime contains a shadow dependency.");
+}
 const childEnv = Object.fromEntries(["HOME", "TMPDIR", "XDG_CACHE_HOME", "PATH", "LANG", "LC_ALL", "NODE_DISABLE_COMPILE_CACHE"].filter(key => process.env[key] !== undefined).map(key => [key, process.env[key]]));
 const unavailable = () => new AdapterError("MCP_CLI_UNAVAILABLE", "The official local CLI session did not complete. Start a new operator-bound process.");
 const cancelled = () => new AdapterError("MCP_READ_CANCELLED", "Local read presentation was cancelled; this process binding is closed.");

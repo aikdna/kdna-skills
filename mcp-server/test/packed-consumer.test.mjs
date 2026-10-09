@@ -9,7 +9,7 @@ import {EXPECTED_GRAPH} from "../scripts/verify-runtime-candidates.mjs";
 import {makeCanonicalTempRoot} from "./support/canonical-temp-root.mjs";
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 
-test("fresh packed consumer installs offline and runs the real stdio boundary suite", {timeout:120000}, t=>{
+test("fresh packed consumer installs offline and runs the real stdio boundary suite", {timeout:300000}, t=>{
  const temporary=makeCanonicalTempRoot("mcp-packed-consumer-");
  t.after(()=>fs.rmSync(temporary,{recursive:true,force:true}));
  const consumer=path.join(temporary,"consumer");
@@ -24,7 +24,7 @@ test("fresh packed consumer installs offline and runs the real stdio boundary su
   else assert.equal(JSON.parse(fs.readFileSync(file)).version,value.version,name);
  }
  const server=path.join(consumer,"node_modules/@aikdna/kdna-mcp-server/bin/kdna-mcp.mjs");
- const run=spawnSync(process.execPath,["--test","--test-reporter=tap","test/mcp-protocol.test.mjs"],{cwd:root,env:{...env,KDNA_MCP_TEST_SERVER:server},encoding:"utf8",timeout:60000,maxBuffer:8*1024*1024});
+ const run=spawnSync(process.execPath,["--test","--test-reporter=tap","test/mcp-protocol.test.mjs"],{cwd:root,env:{...env,KDNA_MCP_TEST_SERVER:server,KDNA_MCP_TEST_CLI:path.join(consumer,"node_modules/@aikdna/kdna-cli/src/cli.js")},encoding:"utf8",timeout:240000,maxBuffer:8*1024*1024});
  assert.equal(run.status,0,run.stdout+run.stderr);
  assert.match(run.stdout,/^# fail 0$/m); assert.match(run.stdout,/^# skipped 0$/m);
  assert.match(run.stdout,/operator/);

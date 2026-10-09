@@ -5,9 +5,9 @@ import {spawn,spawnSync} from "node:child_process";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
 const root=path.resolve(".");
-const cli=path.join(root,"node_modules/@aikdna/kdna-cli/src/cli.js");
+const cli=process.env.KDNA_MCP_TEST_CLI || path.join(root,"node_modules/@aikdna/kdna-cli/src/cli.js");
 const binding=JSON.parse(fs.readFileSync(path.join(path.dirname(cli),"../public-contract-binding.json"),"utf8"));
-const fixture=path.join(process.env.KDNA_PUBLIC_FIXTURES || path.join(root,"test/fixtures/public-read-current"),"graph-cross.kdna");
+const fixture=path.join(process.env.KDNA_PUBLIC_FIXTURES || path.join(root,"test/fixtures/public-read-native"),"graph-cross.kdna");
 const recordRoot=process.env.KDNA_MCP_TEST_RECORD_ROOT?path.join(process.env.KDNA_MCP_TEST_RECORD_ROOT,"stdio","direct-cli"):null;
 if(recordRoot)fs.mkdirSync(recordRoot,{recursive:true,mode:0o700});
 function record(value,input,stdout,stderr){
@@ -32,12 +32,12 @@ test("Loader direct inspect is technical and unapproved read discloses no body",
 test("Loader one-shot examples select actual catalog identifiers and preserve original catalog",()=>{
  const catalog=run(["read",fixture,"--mode","catalog","--budget","1000000","--allow-read"]);
  assert.equal(catalog.status,0);
- const e=catalog.value.envelope; assert.equal(e.status,"ready");
+ const e=catalog.value.envelope; assert.equal(e.status,"catalog_only");
  const ids=e.content.catalog.map(x=>x.judgment_id);
  for(const id of ids){
    const exact=run(["read",fixture,"--mode","exact_selection","--asset-id",e.asset.asset_id,"--asset-version",e.asset.asset_version,"--judgment-id",id,"--budget","1000000","--allow-read"]);
    assert.equal(exact.status,0);assert.equal(exact.value.envelope.status,"ready");
-   assert.equal(exact.value.envelope.content.selected.judgment_id,id);
+   assert.deepEqual(exact.value.envelope.content.selected.judgment_ids,[id]);
  }
  assert.deepEqual(e.content.catalog.map(x=>x.judgment_id),ids);
 });
@@ -66,11 +66,11 @@ test("Loader progressive public requests keep one real CLI process through catal
   const line=JSON.stringify({request_id:"loader:"+randomUUID(),tuple:binding.tuple,mode,budget_bytes:1000000,selection,handle})+"\n";
   return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{pending=null;child.kill("SIGTERM");reject(new Error("CLI session timeout"));},8000);pending={resolve,reject,timer};input+=line;child.stdin.write(line);});
  }
- const c=(await request("catalog")).envelope;assert.equal(c.status,"ready");
- const selection={asset_id:c.asset.asset_id,asset_version:c.asset.asset_version,judgment_id:c.content.catalog[0].judgment_id};
+ const c=(await request("catalog")).envelope;assert.equal(c.status,"catalog_only");
+ const selection={asset_id:c.asset.asset_id,asset_version:c.asset.asset_version,judgment_ids:[c.content.catalog[0].judgment_id]};
  const e=(await request("exact_selection",selection)).envelope;assert.equal(e.status,"ready");assert.equal(e.snapshot_id,c.snapshot_id);
  const handle=e.content.expansion_handles[0];assert.ok(handle);
- const x=(await request("expand",handle.selection,handle)).envelope;assert.equal(x.status,"ready");assert.equal(x.snapshot_id,c.snapshot_id);
+ const x=(await request("expand",handle.anchor.selection,handle)).envelope;assert.equal(x.status,"ready");assert.equal(x.snapshot_id,c.snapshot_id);
  const again=(await request("catalog")).envelope;assert.deepEqual(again.content.catalog,c.content.catalog);
  assert.equal(c.receipt.host_epoch,"process:"+child.pid);
  child.stdin.end();const result=await closed;assert.equal(result.code,0);

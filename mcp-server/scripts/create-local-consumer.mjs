@@ -10,8 +10,8 @@ import {ARTIFACTS, EXPECTED_GRAPH, PACKED_FILES, verifySource} from "./verify-ru
 const source = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const digest = (bytes, algorithm, encoding = "hex") => crypto.createHash(algorithm).update(bytes).digest(encoding);
 
-// Build an explicit offline npm graph: package-relative file dependencies alone
-// cannot be resolved before npm has extracted the MCP archive.
+// Build an explicit offline graph with all archive roots available before npm
+// extracts MCP. The packed MCP manifest itself uses exact registry coordinates.
 export function createLocalConsumer(destination, root = source) {
   verifySource(root);
   const output = path.resolve(destination);
@@ -29,7 +29,7 @@ export function createLocalConsumer(destination, root = source) {
   const archive = fs.readFileSync(path.join(vendor, report.filename));
   const integrity = "sha512-" + digest(archive,"sha512","base64");
   assert.equal(report.integrity, integrity);
-  const dependencies = {[pkg.name]: "file:vendor/" + report.filename, ...pkg.dependencies};
+  const dependencies = {[pkg.name]: "file:vendor/" + report.filename, ...Object.fromEntries(ARTIFACTS.map(item => [item.name, "file:" + item.file]))};
   const manifest = {name:"kdna-mcp-local-consumer",version:"1.0.0",private:true,engines:pkg.engines,dependencies,
     overrides:Object.fromEntries(ARTIFACTS.map(a=>[a.name,"$"+a.name]))};
   const lock = {name:manifest.name,version:manifest.version,lockfileVersion:3,requires:true,packages:{

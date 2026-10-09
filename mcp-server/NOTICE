@@ -9,3 +9,7 @@ This package contains a local stdio Read MCP adapter for one explicitly
 operator-bound KDNA asset. Its parent repository contains the kdna-loader
 and kdna-creator Skill guides and explicit installers.
 Skill files are licensed under Apache-2.0.
+
+The fixed runtime archives retain their own package licenses and notices.
+Synthetic native regression data and its generator are Apache-2.0 source
+fixtures, excluded from the runtime package.
