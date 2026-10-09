@@ -50,3 +50,12 @@ container0.5 / Read0.6.4. It needs explicit text or interview material and a
 separate human or expressly delegated adoption channel. Studio sessions do
 not support persistent resume. The native MCP adapter does not decrypt Studio assets. Skill placement does not establish Host
 activation or editorial acceptance, and creation writes are not MCP read tools.
+
+For saved Studio public or protected bytes, the separate [local protection
+Host](../../kdna-creator/references/studio-protected-host.md) supports explicit
+Read and separately authorized source revision on that same container0.5
+contract. The operator's trusted launcher owns permission binding and private
+credential pipes outside model-controlled arguments. An Agent-created FD does
+not establish authorization. Static Studio read/verify do not unlock protected
+bytes; native MCP does not consume them. Current Studio export needs an
+explicitly complete method and cannot export a method-absent proposal.

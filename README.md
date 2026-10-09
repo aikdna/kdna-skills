@@ -54,6 +54,14 @@ produce a new private technical export bundle; it does not support persistent
 resume or establish Creation Complete, real identity or editorial fitness.
 This Creator candidate does not change Loader/MCP support or publication status.
 
+Saved Studio public and password-protected assets can be read and revised with
+the separate [local protection Host](kdna-creator/references/studio-protected-host.md).
+It stays on container0.5/Read0.6.4 and requires a trusted launcher to bind the
+installation, selected file, purpose and existing permissions, with separate
+credential pipes. It preserves the original and saves a versioned successor.
+The native MCP adapter does not decrypt Studio output. Current Studio export
+requires an explicitly complete method; method absence is not supported.
+
 
 ## Validation scope
 
