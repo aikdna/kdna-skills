@@ -43,3 +43,8 @@ jobs:
       - run: node scripts/validate-agent-support.js
       - run: node --test scripts/test-validate-agent-support.mjs
       - run: node scripts/validate-creation-agent.js
+      # The protection Host pins five file digests of the exact published Studio
+      # CLI it will load. Those pins are a copy of published bytes, so this step
+      # compares them with what the registry actually serves and fails if a
+      # re-publication has left them stale.
+      - run: node kdna-creator/scripts/check-studio-cli-binding.mjs
