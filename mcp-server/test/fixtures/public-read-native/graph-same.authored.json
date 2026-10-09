@@ -1,0 +1,436 @@
+{
+  "manifest": {
+    "asset_id": "asset:bytes",
+    "asset_uid": "uid:bytes",
+    "asset_type": "fixture",
+    "title": "Synthetic native Read boundary fixture",
+    "summary": "Public synthetic data for deterministic native Read adapter regression; no human acceptance claim.",
+    "languages": [
+      "en"
+    ],
+    "lineage": [],
+    "history": {
+      "coverage": "complete",
+      "statement": "Initial engineering fixture only.",
+      "entries": []
+    },
+    "version": "1.0.0",
+    "judgment_version": "1.0.0",
+    "created_at": "2026-09-06T00:00:00Z",
+    "updated_at": "2026-09-06T00:00:00Z",
+    "compatibility": {
+      "min_loader_version": "0.36.0",
+      "profile": "kdna.payload.judgment",
+      "profile_version": "0.5.1"
+    },
+    "runtime": {
+      "mandatory_entries": []
+    }
+  },
+  "payload": {
+    "profile": "kdna.payload.judgment",
+    "profile_version": "0.5.1",
+    "asset": {
+      "asset_id": "asset:bytes",
+      "asset_version": "1.0.0",
+      "judgment_version": "1.0.0"
+    },
+    "actors": [
+      {
+        "id": "actor:boundary",
+        "kind": "person",
+        "name": "Synthetic teaching author"
+      }
+    ],
+    "scope": {
+      "statement": "Asset scope"
+    },
+    "declarations": {
+      "highest_question": {
+        "state": "provided",
+        "value": "What does this engineering fixture declare?"
+      },
+      "boundaries": {
+        "state": "none",
+        "value": null
+      }
+    },
+    "kernel": {
+      "purpose": {
+        "kind": "summary"
+      },
+      "foundation_refs": []
+    },
+    "contracts": [],
+    "conditions": [
+      {
+        "id": "condition:exception",
+        "owner_ref": {
+          "kind": "exception",
+          "id": "exception:selected"
+        },
+        "expression": {
+          "kind": "interpreted",
+          "statement": "Author-supplied qualification, never evaluated by Core or Read."
+        }
+      }
+    ],
+    "shared_declarations": [],
+    "materials": [],
+    "reasons": [],
+    "sources": [],
+    "source_uses": [],
+    "resources": [],
+    "relationships": [],
+    "dependencies": [
+      {
+        "id": "dependency:optional",
+        "producer": {
+          "kind": "judgment_result",
+          "judgment_ref": "j:2",
+          "result_contract_ref": "result-contract:2"
+        },
+        "producer_port": "output:dependency:optional",
+        "consumer_judgment_ref": "j:0",
+        "consumer_port": "input:dependency:optional",
+        "input_role": "context",
+        "data_type": {
+          "term": "text"
+        },
+        "required": true,
+        "purpose": "Optional source judgment"
+      }
+    ],
+    "examples": [],
+    "exceptions": [],
+    "misuse": [],
+    "reading_order": [
+      "j:0",
+      "j:1",
+      "j:2"
+    ],
+    "extensions": [],
+    "judgments": [
+      {
+        "id": "j:0",
+        "focus": "Explicit issue 0",
+        "subject": {
+          "actor_ids": [],
+          "statement": "Example subject"
+        },
+        "scope": {
+          "statement": "Bounded scope 0"
+        },
+        "answer_kind": "preference",
+        "parent_ref": null,
+        "form": "conclusion",
+        "core_expression": {
+          "kind": "authored",
+          "statement": "Synthetic authored answer 0",
+          "qualification_refs": []
+        },
+        "method": {
+          "method": {
+            "term": "feeling"
+          },
+          "components": [
+            {
+              "id": "component:0",
+              "method": {
+                "term": "feeling"
+              },
+              "role": "个人感受",
+              "material_refs": [],
+              "statement": "Synthetic subjective basis for regression testing."
+            }
+          ],
+          "bindings": []
+        },
+        "material_refs": [],
+        "reason_refs": [],
+        "content_uses": [],
+        "ports": [
+          {
+            "name": "input:dependency:optional",
+            "meaning": "Optional source judgment",
+            "direction": "input",
+            "input_role": "context",
+            "contract_ref": {
+              "kind": "contract",
+              "id": "result-contract:2"
+            }
+          }
+        ],
+        "inputs": [
+          {
+            "name": "context",
+            "meaning": "Optional source judgment",
+            "contract_ref": {
+              "kind": "contract",
+              "id": "result-contract:2"
+            }
+          }
+        ],
+        "boundaries": {
+          "state": "provided",
+          "value": [
+            {
+              "id": "boundary:required",
+              "effect": "limit",
+              "statement": "Required qualification",
+              "declared_by": "actor:boundary",
+              "applies_to": {
+                "kind": "judgments",
+                "judgment_refs": [
+                  "j:0"
+                ]
+              },
+              "exception_refs": [
+                "exception:selected"
+              ]
+            }
+          ]
+        },
+        "exceptions": {
+          "state": "provided",
+          "value": [
+            {
+              "id": "exception:selected",
+              "statement": "Explicit conditional exception",
+              "boundary_ref": "boundary:required",
+              "applies_to": {
+                "kind": "judgments",
+                "judgment_refs": [
+                  "j:0"
+                ]
+              },
+              "when": {
+                "kind": "condition",
+                "id": "condition:exception"
+              },
+              "effect": {
+                "kind": "waive"
+              }
+            }
+          ]
+        },
+        "misuse": {
+          "state": "none",
+          "value": null
+        },
+        "extensions": [],
+        "result_contract": {
+          "id": "result-contract:0",
+          "form": {
+            "term": "scalar",
+            "vocabulary": "core"
+          },
+          "shape": {
+            "kind": "scalar",
+            "scalar_type": "text"
+          },
+          "minimum": 1,
+          "maximum": 1,
+          "allowed_result_types": [
+            {
+              "term": "text",
+              "vocabulary": "core"
+            }
+          ]
+        },
+        "result": {
+          "contract_ref": "result-contract:0",
+          "result_type": {
+            "term": "text",
+            "vocabulary": "core"
+          },
+          "value": {
+            "kind": "text",
+            "value": "Authored result 0"
+          }
+        }
+      },
+      {
+        "id": "j:1",
+        "focus": "Explicit issue 1",
+        "subject": {
+          "actor_ids": [],
+          "statement": "Example subject"
+        },
+        "scope": {
+          "statement": "Bounded scope 1"
+        },
+        "answer_kind": "preference",
+        "parent_ref": null,
+        "form": "conclusion",
+        "core_expression": {
+          "kind": "authored",
+          "statement": "Synthetic authored answer 1",
+          "qualification_refs": []
+        },
+        "method": {
+          "method": {
+            "term": "feeling"
+          },
+          "components": [
+            {
+              "id": "component:1",
+              "method": {
+                "term": "feeling"
+              },
+              "role": "个人感受",
+              "material_refs": [],
+              "statement": "Synthetic subjective basis for regression testing."
+            }
+          ],
+          "bindings": []
+        },
+        "material_refs": [],
+        "reason_refs": [],
+        "content_uses": [],
+        "ports": [],
+        "inputs": [],
+        "boundaries": {
+          "state": "none",
+          "value": null
+        },
+        "exceptions": {
+          "state": "none",
+          "value": null
+        },
+        "misuse": {
+          "state": "none",
+          "value": null
+        },
+        "extensions": [],
+        "result_contract": {
+          "id": "result-contract:1",
+          "form": {
+            "term": "scalar",
+            "vocabulary": "core"
+          },
+          "shape": {
+            "kind": "scalar",
+            "scalar_type": "text"
+          },
+          "minimum": 1,
+          "maximum": 1,
+          "allowed_result_types": [
+            {
+              "term": "text",
+              "vocabulary": "core"
+            }
+          ]
+        },
+        "result": {
+          "contract_ref": "result-contract:1",
+          "result_type": {
+            "term": "text",
+            "vocabulary": "core"
+          },
+          "value": {
+            "kind": "text",
+            "value": "Authored result 1"
+          }
+        }
+      },
+      {
+        "id": "j:2",
+        "focus": "Explicit issue 2",
+        "subject": {
+          "actor_ids": [],
+          "statement": "Example subject"
+        },
+        "scope": {
+          "statement": "Bounded scope 2"
+        },
+        "answer_kind": "preference",
+        "parent_ref": null,
+        "form": "conclusion",
+        "core_expression": {
+          "kind": "authored",
+          "statement": "Synthetic authored answer 2",
+          "qualification_refs": []
+        },
+        "method": {
+          "method": {
+            "term": "feeling"
+          },
+          "components": [
+            {
+              "id": "component:2",
+              "method": {
+                "term": "feeling"
+              },
+              "role": "个人感受",
+              "material_refs": [],
+              "statement": "Synthetic subjective basis for regression testing."
+            }
+          ],
+          "bindings": []
+        },
+        "material_refs": [],
+        "reason_refs": [],
+        "content_uses": [],
+        "ports": [
+          {
+            "name": "output:dependency:optional",
+            "meaning": "Declared result output.",
+            "direction": "output",
+            "contract_ref": {
+              "kind": "contract",
+              "id": "result-contract:2"
+            },
+            "result_field": null
+          }
+        ],
+        "inputs": [],
+        "boundaries": {
+          "state": "none",
+          "value": null
+        },
+        "exceptions": {
+          "state": "none",
+          "value": null
+        },
+        "misuse": {
+          "state": "none",
+          "value": null
+        },
+        "extensions": [],
+        "result_contract": {
+          "id": "result-contract:2",
+          "form": {
+            "term": "scalar",
+            "vocabulary": "core"
+          },
+          "shape": {
+            "kind": "scalar",
+            "scalar_type": "text"
+          },
+          "minimum": 1,
+          "maximum": 1,
+          "allowed_result_types": [
+            {
+              "term": "text",
+              "vocabulary": "core"
+            }
+          ]
+        },
+        "result": {
+          "contract_ref": "result-contract:2",
+          "result_type": {
+            "term": "text",
+            "vocabulary": "core"
+          },
+          "value": {
+            "kind": "text",
+            "value": "Authored result 2"
+          }
+        }
+      }
+    ],
+    "asset_capability": "asserted_answers"
+  },
+  "members": []
+}

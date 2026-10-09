@@ -1,45 +1,45 @@
 {
   "kind": "creator-adapter-current-archive-binding",
   "adapter": "kdna-creator",
-  "cli_version": "0.13.0-rc.components.1",
+  "cli_version": "0.13.0-rc.components.2",
   "evidence_format": "kdna.studio-creation-evidence/2",
   "provider_assertion": "declared_not_authenticated",
-  "component_definition": "sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3",
+  "component_definition": "sha256:37e857cc4e43f7283a51ee6abe1f6e8401803902e8dc47f6d14d712aa7d7b089",
   "materialization_rule": "kdna.studio-materialization/2",
   "legacy_pin_policy": "Historical evidence stays with its original accepted graph and UNKNOWN missing pins; never infer from version or relabel it current. Current CLI rejects old format and completion markers.",
   "archives": [
     {
       "name": "@aikdna/kdna-studio-cli",
-      "version": "0.13.0-rc.components.1",
-      "archive": "aikdna-kdna-studio-cli-0.13.0-rc.components.1.tgz",
-      "bytes": 66540,
-      "sha256": "e3d218a2b8dda143d8ad074e432a74434d612d5ab121ed36fec33b9d268a4dc6"
+      "version": "0.13.0-rc.components.2",
+      "archive": "aikdna-kdna-studio-cli-0.13.0-rc.components.2.tgz",
+      "bytes": 89902,
+      "sha256": "60409d0ea825b4cb7dd8f56b510926437597df0240c2f93748523431e2fb64b3"
     },
     {
       "name": "@aikdna/kdna-core",
-      "version": "0.24.0-rc.component-semantics.2",
-      "archive": "aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz",
-      "bytes": 235986,
-      "sha256": "a9cb3f08735b00657e4848766f0ac517abdcb256121a841f01e662525a0858ea"
+      "version": "0.37.1-rc.browser.1",
+      "archive": "aikdna-kdna-core-0.37.1-rc.browser.1.tgz",
+      "bytes": 8260414,
+      "sha256": "12a2d5f234ed3404aee1b394442251ad875c1531c01cd6a4f3c0366d55e5d773"
     },
     {
       "name": "@aikdna/kdna-read",
-      "version": "0.3.0-rc.component-semantics.2",
-      "archive": "aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz",
-      "bytes": 100934,
-      "sha256": "43d0f12a1a63a88d26570bfff821919a5cd478fdbd0568bd9c819bc56078b0f0"
+      "version": "0.11.2-rc.browser.1",
+      "archive": "aikdna-kdna-read-0.11.2-rc.browser.1.tgz",
+      "bytes": 3203508,
+      "sha256": "c5c2d6b65c44dd30aeddd49d6f2a4c915e9fd4d8f2a28297d6d677564e261cb7"
     },
     {
       "name": "@aikdna/kdna-studio-core",
-      "version": "4.0.0-rc.components.1",
-      "archive": "aikdna-kdna-studio-core-4.0.0-rc.components.1.tgz",
-      "bytes": 72302,
-      "sha256": "ce8d1dc59328fda100e71d6efff2a05a3d5a506afff671b7e730afa91a7552bd"
+      "version": "4.0.0-rc.components.2",
+      "archive": "aikdna-kdna-studio-core-4.0.0-rc.components.2.tgz",
+      "bytes": 99051,
+      "sha256": "026f40ad93b85c748e965f0256bf5ce3fec2499e3e29642b75029c9ecf212fb0"
     }
   ],
   "transitive_lock": {
     "repository_file": "package-lock.json in the exact CLI repository candidate",
-    "sha256": "f6018a2986348a90448e33d3732a8e359038261fc742c92098290ffd011f20fc",
+    "sha256": "46a1a6bf4c036454baca69adbea87d61e3a4d7f68921cdc5f91b9a5d209412d3",
     "install": "npm ci --offline --ignore-scripts --omit=optional; embedding must independently enforce any required network denial"
   }
 }

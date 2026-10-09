@@ -1,4 +1,4 @@
 interface:
   display_name: "KDNA Creator"
-  short_description: "Create bounded judgments through the Studio CLI"
-  default_prompt: "Use $kdna-creator to turn my explicit text or interview into a bounded judgment and review the current preview before local export."
+  short_description: "Author KDNA assets and review their content and scope"
+  default_prompt: "Use $kdna-creator to author or revise an asset from my authorized materials, review its content and field coverage, and use the exact creation route selected by my Host."

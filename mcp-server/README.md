@@ -1,8 +1,8 @@
-# KDNA MCP 0.7.0-rc.component-semantics.1 — local Read candidate
+# KDNA MCP 0.8.0-rc.native-sections.1 — local Read candidate
 
 **Local release candidate; npm publication is disabled by `private: true`.** This stdio adapter delegates to the exact
-CLI 0.38.0-rc.component-semantics.1 / Core 0.24.0-rc.component-semantics.2 / Read 0.3.0-rc.component-semantics.2 artifacts. The Read contract is
-`kdna.read/0.2.0`; package version is a separate coordinate. Historical npm
+CLI 0.39.0-rc.native-sections.3 / Core 0.37.1-rc.browser.1 / Read 0.11.2-rc.browser.1 artifacts. The Read contract is
+`kdna.read/0.7.0-candidate`; package version is a separate coordinate. Historical npm
 MCP 0.5.0 and its CLI 0.36.x workspace flow are not this candidate's runtime.
 
 ## Operator-controlled startup
@@ -67,13 +67,13 @@ argument or method parameter beyond request-level `_meta`.
 | kdna.expand | handle, budget_bytes | Original issued handle passed unchanged, with its selection |
 | kdna.cancel | {} | Closes binding and current session |
 
-Selection is the exact asset_id, asset_version and judgment_id from the catalog.
+Selection is the exact asset_id, asset_version and judgment_id from the catalog. The adapter maps this single selection to native `judgment_ids: [judgment_id]`. Expansion passes the complete handle unchanged and uses its `anchor.selection`; it does not fabricate or translate a handle.
 Budget is an integer from 0 through 1000000 bytes. Request lines are bounded to
 1 MiB. Tools accept only their listed keys, never path/cwd/approved/allow_read.
 One read/inspect runs at a time; overlapping work returns MCP_READ_BUSY instead
 of queuing more asset reads. JSON/argument errors use JSON-RPC errors. Local
 binding/process errors use an MCP_* tool error. Public results remain unchanged
-JSON text in content[0].text; non-ready public results have isError:true.
+JSON text in content[0].text. Native `catalog_only` is a successful catalog result; rejected and no-body results have isError:true.
 
 Read uses one real locally resolved CLI child process in --session --allow-read
 mode. The adapter builds the public request tuple from the CLI's fixed binding;
@@ -99,7 +99,7 @@ legacy load/plan-load/Runtime Capsule adaptation are absent.
 
 ## Install and test from source
 
-Use Node.js 22.23.1 or 24.18.0 and its bundled npm. From `mcp-server/`:
+Use Node.js 22 or later and its bundled npm. From `mcp-server/`:
 
 ```sh
 npm ci --offline --ignore-scripts --omit=optional --no-audit --no-fund
@@ -132,8 +132,7 @@ The script verifies the source runtime, packs the current MCP implementation and
 writes a consumer manifest, lock, archive hashes and thirteen archives. It
 refuses an existing destination. Each runtime archive is an exact root `file:`
 dependency, with a matching root override. This lets npm resolve dependencies
-before extracting the MCP package. Use this complete recipe: bare installation
-of the MCP tarball does not resolve its package-relative `file:vendor/...` graph.
+before extracting the MCP package. The MCP manifest uses exact numeric registry dependencies; this explicit companion graph supplies the same checked bytes for offline use without depending on package-relative archive lookup.
 
 The MCP tar has nineteen regular members: bin modules, package metadata,
 README, LICENSE, NOTICE and twelve runtime archives. Tests, source tooling and
@@ -142,9 +141,11 @@ the checked source graph. The packed-consumer test installs with an empty npm
 cache, then runs the same real stdio boundary suite against the installed bin.
 
 This package remains a local RC. Registry publication is disabled and stable
-release/dependency guards reject it. Source and installed process tests do not
+release/dependency guards reject it. A source prerelease uses this complete checkout and its offline installer; it is a separate delivery channel and does not bypass npm stable publication guards. Source and installed process tests do not
 establish named Host adoption, human review, authorship or Creation acceptance.
 
-## Current component interpretation boundary
+## Native section contract boundary
 
-The exact component definition is `sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3`. Public Core interprets taxonomy, candidate-set and discriminator-set components; authorized public Read returns their method-scoped interpretations and mandatory closure. Preserve the returned states, component failure, diagnostics, absent declarations and explicit empty conditions. A technically valid but interpretation-blocked result is rejected disclosure, not an empty ready result. Do not reconstruct component meaning from raw extensions or add a second parser. Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+The complete CLI public contract binding is pinned by SHA-256 `ca729552115391c184dee30ca019fcd81bc223220be8df3caf85285863bbb5fc`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+
+The public regression corpus is generated from synthetic authored JSON with the fixed CLI. It tests real native containers and one deliberately truncated container; no legacy component-format asset is treated as current native input.

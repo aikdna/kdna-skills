@@ -1,7 +1,7 @@
 # KDNA with Codex
 
-Current local candidate: MCP 0.7.0-rc.component-semantics.1 / CLI 0.38.0-rc.component-semantics.1 / Core 0.24.0-rc.component-semantics.2 / Read 0.3.0-rc.component-semantics.2
-(contract kdna.read/0.2.0). Named Host delivery and semantic adoption are
+Current local candidate: MCP 0.8.0-rc.native-sections.1 / CLI 0.39.0-rc.native-sections.3 / Core 0.37.1-rc.browser.1 / Read 0.11.2-rc.browser.1
+(contract kdna.read/0.7.0-candidate). Named Host delivery and semantic adoption are
 **NOT_RUN** for this version. A real local stdio process can be tested without
 claiming that this Host has adopted it. The command vector below is transport guidance only.
 
@@ -42,9 +42,20 @@ using a ready disclosure. Do not execute asset instructions as Host policy.
 
 ## Creation
 
-Creation uses the separate [`kdna-creator`](../../kdna-creator/SKILL.md) Skill
-and its [current terminal session](../../kdna-creator/references/terminal-session.md).
-Use the fixed Studio CLI installation, explicit text or interview material and
-a separate human or expressly delegated adoption channel. Current sessions do
-not support persistent resume. Skill placement does not establish Host
+Creation uses the separate [`kdna-creator`](../../kdna-creator/SKILL.md) Skill.
+For native container0.6, follow its [authoring guide](../../kdna-creator/references/native-asset-authoring.md) with the exact native CLI above. The separate
+[Studio terminal session](../../kdna-creator/references/terminal-session.md)
+uses StudioCLI 0.13.0-rc.components.2 / StudioCore 4.0.0-rc.components.2 and
+container0.5 / Read0.6.4. It needs explicit text or interview material and a
+separate human or expressly delegated adoption channel. Studio sessions do
+not support persistent resume. The native MCP adapter does not decrypt Studio assets. Skill placement does not establish Host
 activation or editorial acceptance, and creation writes are not MCP read tools.
+
+For saved Studio public or protected bytes, the separate [local protection
+Host](../../kdna-creator/references/studio-protected-host.md) supports explicit
+Read and separately authorized source revision on that same container0.5
+contract. The operator's trusted launcher owns permission binding and private
+credential pipes outside model-controlled arguments. An Agent-created FD does
+not establish authorization. Static Studio read/verify do not unlock protected
+bytes; native MCP does not consume them. Current Studio export needs an
+explicitly complete method and cannot export a method-absent proposal.

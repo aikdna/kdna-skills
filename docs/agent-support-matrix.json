@@ -4,11 +4,11 @@
   "mcp_server": "mcp-server/",
   "overall_status": "local_stdio_adapter",
   "candidate_runtime": {
-    "mcp": "0.7.0-rc.component-semantics.1",
-    "cli": "0.38.0-rc.component-semantics.1",
-    "core": "0.24.0-rc.component-semantics.2",
-    "read": "0.3.0-rc.component-semantics.2",
-    "read_contract": "kdna.read/0.2.0",
+    "mcp": "0.8.0-rc.native-sections.1",
+    "cli": "0.39.0-rc.native-sections.3",
+    "core": "0.37.1-rc.browser.1",
+    "read": "0.11.2-rc.browser.1",
+    "read_contract": "kdna.read/0.7.0-candidate",
     "private": true,
     "publication": "unpublished"
   },

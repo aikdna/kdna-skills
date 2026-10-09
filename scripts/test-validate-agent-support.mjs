@@ -29,7 +29,7 @@ test("source verification rejects actual manifest, lock and archive tampering", 
  const changes = [
   ["manifest", r=>{const p=path.join(r,"mcp-server/package.json");const v=JSON.parse(fs.readFileSync(p));v.dependencies["@aikdna/kdna-cli"]="0.38.0-rc.component-semantics.1";fs.writeFileSync(p,JSON.stringify(v));}],
   ["lock",r=>{const p=path.join(r,"mcp-server/package-lock.json");const v=JSON.parse(fs.readFileSync(p));v.packages["node_modules/@aikdna/kdna-read"].integrity="sha512-invalid";fs.writeFileSync(p,JSON.stringify(v));}],
-  ["archive",r=>{const p=path.join(r,"mcp-server/vendor/fast-uri-3.1.7.tgz");const v=fs.readFileSync(p);v[30]^=1;fs.writeFileSync(p,v);}]
+  ["archive",r=>{const p=path.join(r,"mcp-server/vendor/fast-uri-3.1.8.tgz");const v=fs.readFileSync(p);v[30]^=1;fs.writeFileSync(p,v);}]
  ];
  for(const [name,change] of changes) await t.test(name,()=>{
   const scratch=fs.mkdtempSync(path.join(os.tmpdir(),"agent-source-drift-"));

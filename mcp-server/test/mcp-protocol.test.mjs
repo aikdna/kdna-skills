@@ -8,8 +8,8 @@ import { makeCanonicalTempRoot } from "./support/canonical-temp-root.mjs";
 
 const root = path.resolve(".");
 const server = process.env.KDNA_MCP_TEST_SERVER || path.join(root, "bin/kdna-mcp.mjs");
-const cli = path.join(root, "node_modules/@aikdna/kdna-cli/src/cli.js");
-const fixtures = process.env.KDNA_PUBLIC_FIXTURES || path.join(root, "test/fixtures/public-read-current");
+const cli = process.env.KDNA_MCP_TEST_CLI || path.join(root, "node_modules/@aikdna/kdna-cli/src/cli.js");
+const fixtures = process.env.KDNA_PUBLIC_FIXTURES || path.join(root, "test/fixtures/public-read-native");
 assert.ok(fixtures, "KDNA_PUBLIC_FIXTURES must name the fixed public corpus");
 const recordRoot = process.env.KDNA_MCP_TEST_RECORD_ROOT ? path.join(process.env.KDNA_MCP_TEST_RECORD_ROOT, "stdio", process.env.KDNA_TEST_PHASE || "source") : null;
 if (recordRoot) fs.mkdirSync(recordRoot, { recursive: true, mode: 0o700 });
@@ -17,7 +17,7 @@ const init = { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { na
 const budget = { budget_bytes: 1000000 };
 const toolNames = JSON.parse(fs.readFileSync(path.join(root,"../docs/agent-support-matrix.json"),"utf8")).tool_surface;
 const decoded = response => { assert.ok(!response.error, JSON.stringify(response)); return JSON.parse(response.result.content[0].text); };
-const ready = response => { const value = decoded(response); assert.notEqual(response.result.isError, true, JSON.stringify(value)); assert.equal(value.envelope?.status, "ready"); return value.envelope; };
+const ready = response => { const value = decoded(response); assert.notEqual(response.result.isError, true, JSON.stringify(value)); assert.equal(value.envelope?.status, value.envelope?.mode === "catalog" ? "catalog_only" : "ready"); return value.envelope; };
 
 function launch(t, options = {}) {
   const temporary = makeCanonicalTempRoot("agent-stdio-case-");
@@ -244,7 +244,10 @@ for (const fixture of ["graph-cross.kdna", "graph-same.kdna", "graph-method.kdna
       assert.equal(last.snapshot_id, catalog.snapshot_id); assert.equal(last.receipt.host_epoch, catalog.receipt.host_epoch);
       const ids = new Set(last.content.closure.map(node => node.id));
       for (const ref of last.content.references.filter(ref => ref.mandatory)) assert.ok(ids.has(ref.target_node), ref.target_node);
-      assert.equal(last.states.writer, "not_evaluated"); assert.equal(last.states.confirmation, "not_evaluated"); assert.equal(last.states.action_authorization, "not_evaluated");
+      assert.deepEqual(last.states, expected.states);
+      assert.equal(last.states.writer, "not_evaluated");
+      assert.ok(["not_evaluated", "claimed_unverified"].includes(last.states.confirmation));
+      assert.equal(last.states.action_authorization, "not_evaluated");
     }
     assert.deepEqual(ready(await s.call("kdna.catalog", budget)).content.catalog, catalog.content.catalog);
     const pid = Number(last.receipt.host_epoch.split(":")[1]); await s.close(); absent(pid);
@@ -259,10 +262,10 @@ test("issued handles expand only in the original official CLI process", async t 
   assert.ok(selected.content.expansion_handles.length > 0);
   const handle = selected.content.expansion_handles[0];
   const expanded = ready(await first.call("kdna.expand", { ...budget, handle }));
-  assert.equal(expanded.snapshot_id, selected.snapshot_id); assert.ok(expanded.content.closure.some(node => node.id === handle.target));
+  assert.equal(expanded.snapshot_id, selected.snapshot_id); assert.ok(expanded.content.closure.some(node => node.role === handle.target.kind && node.value.id === handle.target.id));
   const second = launch(t, { fixture: "graph-cross.kdna" }); await second.initialize(); ready(await second.call("kdna.catalog", budget));
   const foreign = await second.call("kdna.expand", { ...budget, handle });
-  assert.equal(foreign.result.isError, true); assert.notEqual(decoded(foreign).envelope.status, "ready");
+  assert.equal(foreign.result.isError, true); assert.equal(decoded(foreign).diagnostic.code, "READ_HANDLE_STALE"); assert.equal(decoded(foreign).body, null);
   const tampered = await first.call("kdna.expand", { ...budget, handle: { ...handle, A: "sha256:" + "0".repeat(64) } });
   assert.equal(tampered.result.isError, true);
   assert.equal(ready(await first.call("kdna.catalog", budget)).snapshot_id, selected.snapshot_id);
@@ -284,8 +287,8 @@ test("public rejection and no-body budget results remain explicit without invent
   const none = await s.call("kdna.catalog", { budget_bytes: 0 }); assert.equal(none.result.isError, true); assert.notEqual(decoded(none).envelope?.status, "ready");
   const catalog = ready(await s.call("kdna.catalog", budget));
   const bad = await s.call("kdna.read", { ...budget, selection: { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version, judgment_id: "j:not-present" } });
-  assert.equal(bad.result.isError, true); assert.equal(decoded(bad).envelope.content, null);
-  const corrupt = launch(t, { fixture: "hostile-zip-crc.kdna" }); await corrupt.initialize();
+  assert.equal(bad.result.isError, true); assert.equal(decoded(bad).body, null); assert.equal(decoded(bad).body_bytes, 0); assert.equal(decoded(bad).status, "rejected"); assert.equal(decoded(bad).diagnostic.code, "READ_SELECTION_NOT_FOUND");
+  const corrupt = launch(t, { fixture: "hostile-native-truncated.kdna" }); await corrupt.initialize();
   const refused = await corrupt.call("kdna.catalog", budget); assert.equal(refused.result.isError, true); assert.notEqual(decoded(refused).envelope?.status, "ready");
   const inspected = decoded(await corrupt.call("kdna.inspect")); assert.equal(inspected.status, "rejected");
 });

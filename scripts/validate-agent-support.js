@@ -5,7 +5,7 @@ const path = require("node:path");
 const assert = require("node:assert/strict");
 const ROOT = path.resolve(__dirname, "..");
 const tools = ["kdna.binding-status", "kdna.inspect", "kdna.catalog", "kdna.read", "kdna.expand", "kdna.cancel"];
-const runtime = {mcp:"0.7.0-rc.component-semantics.1",cli:"0.38.0-rc.component-semantics.1",core:"0.24.0-rc.component-semantics.2",read:"0.3.0-rc.component-semantics.2",read_contract:"kdna.read/0.2.0",private:true,publication:"unpublished"};
+const runtime = {mcp:"0.8.0-rc.native-sections.1",cli:"0.39.0-rc.native-sections.3",core:"0.37.1-rc.browser.1",read:"0.11.2-rc.browser.1",read_contract:"kdna.read/0.7.0-candidate",private:true,publication:"unpublished"};
 const binding = {control_channel:"operator_or_trusted_launcher_OS_argv",model_tools_can_bind:false,initialize_can_bind:false,finite_assets:1,persistent_permission:false,transport:"local_stdio_only"};
 const dimensions = {named_host_delivery:"not_run",semantic_adoption:"not_run",real_human_acceptance:"not_run"};
 const {verifySource} = require("../mcp-server/scripts/verify-runtime-candidates.mjs");
@@ -32,6 +32,7 @@ function validateAgentSupport(root = ROOT, supplied) {
     assert.equal(blocks.length,1,agent.guide);
     const vector = JSON.parse(blocks[0][1]);
     assert.deepEqual(vector,{command:"/absolute/path/to/node",args:["/absolute/installed/mcp-server/bin/kdna-mcp.mjs","--asset","/absolute/selected.kdna","--allow-read"]});
+    for (const key of ["mcp","cli","core","read","read_contract"]) assert.ok(guide.includes(runtime[key]), agent.guide + ": stale " + key + " coordinate");
     assert.match(guide,/NOT_RUN/); return {id:agent.id,guide:agent.guide,vector};
   });
   const loader=fs.readFileSync(path.join(root,"kdna-loader/SKILL.md"),"utf8");

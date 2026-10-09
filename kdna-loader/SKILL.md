@@ -19,11 +19,10 @@ clear and authorized, proceed without another confirmation. Otherwise ask one
 plain-language question for the missing substantive choice. Do not ask the user
 to construct a digest, permission record, tuple, receipt or machine identifier.
 
-This candidate uses CLI 0.38.0-rc.component-semantics.1, Core 0.24.0-rc.component-semantics.2 and Read package 0.3.0-rc.component-semantics.2 implementing
-`kdna.read/0.2.0`. Resolve the accepted local installation explicitly. Do not use
+This candidate uses CLI 0.39.0-rc.native-sections.3, Core 0.37.1-rc.browser.1 and Read package 0.11.2-rc.browser.1 implementing
+`kdna.read/0.7.0-candidate`. Resolve the accepted local installation explicitly. Do not use
 a global CLI, a same-version registry replacement, a private parser or raw
-payload fallback. Encrypted/signed/checksum capabilities remain unavailable
-where the official Core rejects them; do not invent a password flow.
+payload fallback. This MCP/native CLI route does not accept protected browser assets or supply a browser credential channel. The separately supported protected Studio/browser route requires its own trusted Host and exact tuple; do not invent a password fallback here.
 
 ## Preferred operator-bound MCP flow
 
@@ -82,7 +81,7 @@ These are independent one-shot snapshots. For progressive consumption start
 once. Send newline-terminated public ReadRequest objects. Copy the exact tuple
 from that accepted CLI's public-contract-binding.json; generate request_id and
 set mode, budget_bytes, selection and handle. Catalog uses selection:null and
-handle:null; exact_selection uses the catalog selection and handle:null; expand
+handle:null; exact_selection uses {asset_id,asset_version,judgment_ids:[the selected judgment id]} and handle:null; expand
 uses the issued handle and that handle's selection. Keep the same process and
 end stdin to close it. Do not describe a separately launched CLI as the same
 snapshot or reuse a handle across launches. The executable examples and tests
@@ -90,7 +89,7 @@ in mcp-server/test/explicit-cli-flow.test.mjs exercise this exact sequence.
 
 ## Interpret the result and disclose adoption
 
-Only `read_envelope` with envelope.status=ready carries accepted disclosure.
+A ready `read_envelope` carries accepted body disclosure. `catalog_only` is a successful catalog response, not a selected judgment body. Native admission rejection, no-body control and transport failure retain their exact separate channel shapes.
 Non-ready envelopes, admission_rejection, control/no_body and transport_failure
 are not empty successes. Preserve public reason/stage/diagnostics; local
 MCP_* errors describe the adapter/transport boundary. Do not silently increase
@@ -114,4 +113,4 @@ human review and publication. No Host brand is automatically certified.
 
 ## Current component interpretation boundary
 
-The exact component definition is `sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3`. Public Core interprets taxonomy, candidate-set and discriminator-set components; authorized public Read returns their method-scoped interpretations and mandatory closure. Preserve the returned states, component failure, diagnostics, absent declarations and explicit empty conditions. A technically valid but interpretation-blocked result is rejected disclosure, not an empty ready result. Do not reconstruct component meaning from raw extensions or add a second parser. Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+The exact component definition is `sha256:37e857cc4e43f7283a51ee6abe1f6e8401803902e8dc47f6d14d712aa7d7b089`. Public Core interprets taxonomy, candidate-set and discriminator-set components; authorized public Read returns their method-scoped interpretations and mandatory closure. Preserve the returned states, component failure, diagnostics, absent declarations and explicit empty conditions. A technically valid but interpretation-blocked result is rejected disclosure, not an empty ready result. Do not reconstruct component meaning from raw extensions or add a second parser. Read and static declarations do not establish live Creation authority, human confirmation or action permission.

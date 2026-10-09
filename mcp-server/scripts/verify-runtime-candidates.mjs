@@ -8,7 +8,9 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const EXPECTED_GRAPH = {
   "node_modules/@aikdna/kdna-core": {
-    "version": "0.24.0-rc.component-semantics.2",
+    "version": "0.37.1-rc.browser.1",
+    "resolved": "file:vendor/aikdna-kdna-core-0.37.1-rc.browser.1.tgz",
+    "integrity": "sha512-WJ2Syc17BE1LgcCG0IJAxEFuLsk0D08dRSYrNLlZfoUjoGQ0jx+OUPGmHi3emsNf+VQMDhcF1XtfXAF1Git7Hg==",
     "license": "Apache-2.0",
     "dependencies": {
       "ajv": "8.20.0",
@@ -19,24 +21,22 @@ export const EXPECTED_GRAPH = {
     },
     "engines": {
       "node": ">=20"
-    },
-    "resolved": "file:vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz",
-    "integrity": "sha512-GQZj2AcVaRdbWzvQ74QfSz5wfKtIG9ygUz6hx/p5b0+GtYIyRMdt8mg7JZTL7y62i7cgl7y/3faPgZLu8R4M7w=="
+    }
   },
   "node_modules/@aikdna/kdna-read": {
-    "version": "0.3.0-rc.component-semantics.2",
+    "version": "0.11.2-rc.browser.1",
+    "resolved": "file:vendor/aikdna-kdna-read-0.11.2-rc.browser.1.tgz",
+    "integrity": "sha512-tddb6nxCC6DDyS8b/DlBRVTF2P4jgKppFo4X4aVAvzdxlKgYVlQo927peZ9APHdaA4++GUZTwh2TDU4U1WdDaA==",
     "license": "Apache-2.0",
     "dependencies": {
       "ajv": "8.20.0"
     },
     "peerDependencies": {
-      "@aikdna/kdna-core": "0.24.0-rc.component-semantics.2"
+      "@aikdna/kdna-core": "0.37.1-rc.browser.1"
     },
     "engines": {
       "node": ">=20"
-    },
-    "resolved": "file:vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz",
-    "integrity": "sha512-gz6JSH8i0fve0+nt7RdAeby2UDNtkWgEAUpb+Fi1kvCEv0O7Aw4eMiRAbR5EHLyj+7Mjn9mLjthpugqTbTRbLQ=="
+    }
   },
   "node_modules/@noble/hashes": {
     "version": "1.8.0",
@@ -99,9 +99,10 @@ export const EXPECTED_GRAPH = {
     "license": "MIT"
   },
   "node_modules/fast-uri": {
-    "version": "3.1.7",
-    "resolved": "file:vendor/fast-uri-3.1.7.tgz",
-    "integrity": "sha512-aMDEVX6P8vorK2rM048F+QQCdtOTofaUyCFWTTCkhMJL8UdXuG2FsNAGqymKRqlsvZyxJrbG9gLaeHeBPBFjVg==",
+    "version": "3.1.8",
+    "resolved": "file:vendor/fast-uri-3.1.8.tgz",
+    "integrity": "sha512-GZMtZUTNRpOVIECoXwLNZS5xUGE+mVNbTB8h/7Rwh2TFWcBQiPzTgyZi05BF9UMZKkLJv8XBRJTlU7zg8+ZfMg==",
+    "license": "BSD-3-Clause",
     "funding": [
       {
         "type": "github",
@@ -111,8 +112,7 @@ export const EXPECTED_GRAPH = {
         "type": "opencollective",
         "url": "https://opencollective.com/fastify"
       }
-    ],
-    "license": "BSD-3-Clause"
+    ]
   },
   "node_modules/json-schema-traverse": {
     "version": "1.0.0",
@@ -132,10 +132,10 @@ export const EXPECTED_GRAPH = {
     "resolved": "file:vendor/require-from-string-2.0.2.tgz",
     "integrity": "sha512-IeaUNSnLwmvGQX/Du6dRZ0Tl3G0OPi436st7XA/5BvMhNITGt/Mu0y1ymDsq4a3ljZsnveADsOGiqp0ehYZIsw==",
     "license": "MIT",
+    "dependencies": {},
     "engines": {
       "node": ">=0.10.0"
-    },
-    "dependencies": {}
+    }
   },
   "node_modules/@cbor-extract/cbor-extract-darwin-arm64": {
     "version": "2.2.2",
@@ -263,36 +263,36 @@ export const EXPECTED_GRAPH = {
     }
   },
   "node_modules/@aikdna/kdna-cli": {
-    "version": "0.38.0-rc.component-semantics.1",
+    "version": "0.39.0-rc.native-sections.3",
+    "resolved": "file:vendor/aikdna-kdna-cli-0.39.0-rc.native-sections.3.tgz",
+    "integrity": "sha512-SI5vOW9TzzHlB3FAnXfWw9y6O/5kjRRARc4OVBSFxppi2MHBIClQyKPwxbZO68YRxDFWVDnAgiPMaIM3/nHihg==",
     "license": "Apache-2.0",
     "dependencies": {
-      "@aikdna/kdna-core": "0.24.0-rc.component-semantics.2",
-      "@aikdna/kdna-read": "0.3.0-rc.component-semantics.2"
-    },
-    "bin": {
-      "kdna": "src/cli.js"
+      "@aikdna/kdna-core": "0.37.1-rc.browser.1",
+      "@aikdna/kdna-read": "0.11.2-rc.browser.1"
     },
     "engines": {
       "node": ">=22"
     },
-    "resolved": "file:vendor/aikdna-kdna-cli-0.38.0-rc.component-semantics.1.tgz",
-    "integrity": "sha512-dkiscjGAvaw3QkgRCdsex+sHYrERBv+Gx+W/NjgyCqpMXMaRBnn+47qnK9YtOhunUhkq9Q7YqIYFykB4wWX8PQ=="
+    "bin": {
+      "kdna": "src/cli.js"
+    }
   }
 };
 export const ARTIFACTS = [
   {
     "name": "@aikdna/kdna-core",
-    "version": "0.24.0-rc.component-semantics.2",
-    "sha256": "a9cb3f08735b00657e4848766f0ac517abdcb256121a841f01e662525a0858ea",
-    "integrity": "sha512-GQZj2AcVaRdbWzvQ74QfSz5wfKtIG9ygUz6hx/p5b0+GtYIyRMdt8mg7JZTL7y62i7cgl7y/3faPgZLu8R4M7w==",
-    "file": "vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz"
+    "version": "0.37.1-rc.browser.1",
+    "sha256": "12a2d5f234ed3404aee1b394442251ad875c1531c01cd6a4f3c0366d55e5d773",
+    "integrity": "sha512-WJ2Syc17BE1LgcCG0IJAxEFuLsk0D08dRSYrNLlZfoUjoGQ0jx+OUPGmHi3emsNf+VQMDhcF1XtfXAF1Git7Hg==",
+    "file": "vendor/aikdna-kdna-core-0.37.1-rc.browser.1.tgz"
   },
   {
     "name": "@aikdna/kdna-read",
-    "version": "0.3.0-rc.component-semantics.2",
-    "sha256": "43d0f12a1a63a88d26570bfff821919a5cd478fdbd0568bd9c819bc56078b0f0",
-    "integrity": "sha512-gz6JSH8i0fve0+nt7RdAeby2UDNtkWgEAUpb+Fi1kvCEv0O7Aw4eMiRAbR5EHLyj+7Mjn9mLjthpugqTbTRbLQ==",
-    "file": "vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz"
+    "version": "0.11.2-rc.browser.1",
+    "sha256": "c5c2d6b65c44dd30aeddd49d6f2a4c915e9fd4d8f2a28297d6d677564e261cb7",
+    "integrity": "sha512-tddb6nxCC6DDyS8b/DlBRVTF2P4jgKppFo4X4aVAvzdxlKgYVlQo927peZ9APHdaA4++GUZTwh2TDU4U1WdDaA==",
+    "file": "vendor/aikdna-kdna-read-0.11.2-rc.browser.1.tgz"
   },
   {
     "name": "ajv",
@@ -324,10 +324,10 @@ export const ARTIFACTS = [
   },
   {
     "name": "fast-uri",
-    "version": "3.1.7",
-    "sha256": "75d114fa009a342a4f964e099012cfc9660cab130d8df367184e01f0d0198777",
-    "integrity": "sha512-aMDEVX6P8vorK2rM048F+QQCdtOTofaUyCFWTTCkhMJL8UdXuG2FsNAGqymKRqlsvZyxJrbG9gLaeHeBPBFjVg==",
-    "file": "vendor/fast-uri-3.1.7.tgz"
+    "version": "3.1.8",
+    "sha256": "86be033b406a7737c0521edc8fe3e15c7ac0cb6b5e509478cc9539a2efaa086c",
+    "integrity": "sha512-GZMtZUTNRpOVIECoXwLNZS5xUGE+mVNbTB8h/7Rwh2TFWcBQiPzTgyZi05BF9UMZKkLJv8XBRJTlU7zg8+ZfMg==",
+    "file": "vendor/fast-uri-3.1.8.tgz"
   },
   {
     "name": "json-schema-traverse",
@@ -359,22 +359,22 @@ export const ARTIFACTS = [
   },
   {
     "name": "@aikdna/kdna-cli",
-    "version": "0.38.0-rc.component-semantics.1",
-    "sha256": "3e2fbdbc7dcaf07b6a8dbc17b8df7f365e4837c61d391d8d6416d951abcac3be",
-    "integrity": "sha512-dkiscjGAvaw3QkgRCdsex+sHYrERBv+Gx+W/NjgyCqpMXMaRBnn+47qnK9YtOhunUhkq9Q7YqIYFykB4wWX8PQ==",
-    "file": "vendor/aikdna-kdna-cli-0.38.0-rc.component-semantics.1.tgz"
+    "version": "0.39.0-rc.native-sections.3",
+    "sha256": "7f9c4f0f47d104d6c4e5fad7e956bda74b84c157575980dd5875fee620118b28",
+    "integrity": "sha512-SI5vOW9TzzHlB3FAnXfWw9y6O/5kjRRARc4OVBSFxppi2MHBIClQyKPwxbZO68YRxDFWVDnAgiPMaIM3/nHihg==",
+    "file": "vendor/aikdna-kdna-cli-0.39.0-rc.native-sections.3.tgz"
   }
 ];
-export const PACKED_FILES = ["LICENSE", "NOTICE", "README.md", "bin/kdna-mcp.mjs", "bin/operator-binding.mjs", "bin/read-session.mjs", "package.json", "vendor/aikdna-kdna-cli-0.38.0-rc.component-semantics.1.tgz", "vendor/aikdna-kdna-core-0.24.0-rc.component-semantics.2.tgz", "vendor/aikdna-kdna-read-0.3.0-rc.component-semantics.2.tgz", "vendor/ajv-8.20.0.tgz", "vendor/ajv-formats-3.0.1.tgz", "vendor/cbor-x-1.6.5.tgz", "vendor/fast-deep-equal-3.1.3.tgz", "vendor/fast-uri-3.1.7.tgz", "vendor/json-schema-traverse-1.0.0.tgz", "vendor/noble-hashes-1.8.0.tgz", "vendor/pako-2.1.0.tgz", "vendor/require-from-string-2.0.2.tgz"];
+export const PACKED_FILES = ["LICENSE", "NOTICE", "README.md", "bin/kdna-mcp.mjs", "bin/operator-binding.mjs", "bin/read-session.mjs", "package.json", "vendor/aikdna-kdna-cli-0.39.0-rc.native-sections.3.tgz", "vendor/aikdna-kdna-core-0.37.1-rc.browser.1.tgz", "vendor/aikdna-kdna-read-0.11.2-rc.browser.1.tgz", "vendor/ajv-8.20.0.tgz", "vendor/ajv-formats-3.0.1.tgz", "vendor/cbor-x-1.6.5.tgz", "vendor/fast-deep-equal-3.1.3.tgz", "vendor/fast-uri-3.1.8.tgz", "vendor/json-schema-traverse-1.0.0.tgz", "vendor/noble-hashes-1.8.0.tgz", "vendor/pako-2.1.0.tgz", "vendor/require-from-string-2.0.2.tgz"];
 const read = (root, name) => JSON.parse(fs.readFileSync(path.join(root, name), "utf8"));
 export function validateSourceFacts({ packageJson, lock, root }) {
   assert.equal(packageJson.name, "@aikdna/kdna-mcp-server");
-  assert.equal(packageJson.version, "0.7.0-rc.component-semantics.1");
+  assert.equal(packageJson.version, "0.8.0-rc.native-sections.1");
   assert.equal(packageJson.private, true, "candidate must remain private");
-  const dependencies = Object.fromEntries(ARTIFACTS.map(item => [item.name, "file:" + item.file]));
+  const dependencies = Object.fromEntries(ARTIFACTS.map(item => [item.name, item.version]));
   assert.deepEqual(packageJson.dependencies, dependencies);
-  assert.deepEqual(packageJson.kdna_runtime, { cli: "0.38.0-rc.component-semantics.1", core: "0.24.0-rc.component-semantics.2", read: "0.3.0-rc.component-semantics.2", read_contract: "kdna.read/0.2.0" });
-  assert.deepEqual(packageJson.overrides, { "fast-uri": "$fast-uri" });
+  assert.deepEqual(packageJson.kdna_runtime, { cli: "0.39.0-rc.native-sections.3", core: "0.37.1-rc.browser.1", read: "0.11.2-rc.browser.1", read_contract: "kdna.read/0.7.0-candidate" });
+  assert.deepEqual(packageJson.overrides, { "fast-uri": "$fast-uri", "@aikdna/kdna-core": "$@aikdna/kdna-core", "@aikdna/kdna-read": "$@aikdna/kdna-read" });
   assert.equal(lock.name, packageJson.name); assert.equal(lock.version, packageJson.version);
   assert.equal(lock.lockfileVersion, 3); assert.deepEqual(lock.packages[""].dependencies, dependencies);
   assert.deepEqual(Object.fromEntries(Object.entries(lock.packages).filter(([name]) => name)), EXPECTED_GRAPH, "the entire accepted dependency graph must stay exact");
@@ -397,22 +397,39 @@ export function validateCandidateFacts({ packageJson, lock, installed, packedFil
   assert.equal(required.length, 12); assert.deepEqual(Object.keys(installed).sort(), required.map(([name]) => name).sort());
   for (const [name, value] of required) { assert.equal(installed[name].version, value.version); assert.equal(installed[name].name, name.slice("node_modules/".length)); }
   assert.deepEqual(packedFiles.map(item => typeof item === "string" ? item : item.path).sort(), PACKED_FILES);
-  return { fixedArtifacts: 12, lockedRequiredPackages: 12, installedRequiredPackages: 12, optionalOmitted: 9, packedFileCount: 19, status: "LOCAL_RC_ONLY_UNPUBLISHED" };
+  // optionalOmitted counts the optional graph entries that are deliberately
+  // outside the required runtime set. It is derived from the expected graph,
+  // not from whether this machine happens to have installed them.
+  return { fixedArtifacts: 12, lockedRequiredPackages: 12, installedRequiredPackages: 12,
+    optionalOmitted: Object.values(EXPECTED_GRAPH).filter((value) => value.optional).length,
+    packedFileCount: 19, status: "LOCAL_RC_ONLY_UNPUBLISHED" };
 }
 export function verifyRuntime(root = ROOT) {
   const installed = {};
   for (const [name, value] of Object.entries(EXPECTED_GRAPH)) {
-    if (value.optional) { assert.equal(fs.existsSync(path.join(root, name)), false, "optional native graph must remain omitted"); continue; }
+    // Package managers install optional dependencies by default, so the
+    // optional native accelerator is normally present in a consumer install.
+    // This server never loads it: the bound Core requires the pure-JS
+    // `cbor-x/decode-no-eval` entry, so emitted and read bytes do not depend on
+    // the accelerator. Its presence must not turn a working install into a
+    // refusal, and it stays outside the required runtime set asserted below.
+    if (value.optional) continue;
     installed[name] = read(root, name + "/package.json");
   }
   const packed = spawnSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], { cwd: root, env: process.env, encoding: "utf8", shell: false });
   assert.equal(packed.status, 0, packed.stderr);
   const result = validateCandidateFacts({ packageJson: read(root, "package.json"), lock: read(root, "package-lock.json"), installed, packedFiles: JSON.parse(packed.stdout)[0].files, root });
-  const cliBinding = read(root, "node_modules/@aikdna/kdna-cli/public-contract-binding.json");
-  assert.equal(cliBinding.semantic_source_sha256, "862cea95bdb3a634356ad729b95e0882cb0b75fdb80f103a11f4037783899110");
-  assert.equal(cliBinding.generated_contract_sha256, "ec8a2616a768f5523e8852487e757f6f9560d1933ea3a9ee90ead69fe1120f4d");
-  assert.equal(cliBinding.tuple.read, "kdna.read/0.2.0");
-  assert.equal(cliBinding.component_semantics_digest, "sha256:3087cd19542e72322aec19b3015c916d2cfb074fa42e3fd76b3756bb4f097de3");
+  const bindingBytes = fs.readFileSync(path.join(root, "node_modules/@aikdna/kdna-cli/public-contract-binding.json"));
+  assert.equal(crypto.createHash("sha256").update(bindingBytes).digest("hex"), "ca729552115391c184dee30ca019fcd81bc223220be8df3caf85285863bbb5fc", "the entire native CLI route binding must stay exact");
+  const cliBinding = JSON.parse(bindingBytes);
+  assert.equal(cliBinding.implementation.version, "0.39.0-rc.native-sections.3");
+  assert.equal(cliBinding.tuple.container, "0.6.0");
+  assert.equal(cliBinding.tuple.read, "kdna.read/0.7.0-candidate");
+  for (const name of ["core", "read"]) {
+    const artifact = ARTIFACTS.find(item => item.name === "@aikdna/kdna-" + name);
+    assert.equal(cliBinding["accepted_" + name].version, artifact.version);
+    assert.equal(cliBinding["accepted_" + name].tar_sha256, artifact.sha256);
+  }
   return result;
 }
 // Entry guard. Both sides are compared through realpath so an invocation through

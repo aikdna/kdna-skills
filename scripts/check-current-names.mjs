@@ -21,35 +21,35 @@ const CANDIDATES = new Map([
     "51561e712fcf4af389e61377b478ad67287c1d7c4483321117922cdb0478e83e",
   ],
 ]);
-// Exact retained historical archives and current public technical fixtures.
+// Exact retained historical archives and generated native public technical fixtures.
 for (const [name, digest] of [
   [
-    "mcp-server/test/fixtures/public-read-current/graph-asset.kdna",
-    "489c0d8e15c12fc08bf5d8132a8b6174ffade35ed6e28a63cbb03655e575b554"
+    "mcp-server/test/fixtures/public-read-native/graph-asset.kdna",
+    "925417f32bc33c5baff01c2a1fc1fd207233113e729c10a1b9d9ee583a5cef8d"
   ],
   [
-    "mcp-server/test/fixtures/public-read-current/graph-cross.kdna",
-    "f0ad03241ecf263c26402cef52467f3ab276a0e20ce669a44b22b385f01620c2"
+    "mcp-server/test/fixtures/public-read-native/graph-cross.kdna",
+    "68a61d46f2df03bd087fea70b61ad226baddcff3f6318a3b4d44c0f961b8fe69"
   ],
   [
-    "mcp-server/test/fixtures/public-read-current/graph-dedup-support.kdna",
-    "f50dbe62d81a3b35e666fb90c095ba087f3c54f98a263e74392bc2b4743f6067"
+    "mcp-server/test/fixtures/public-read-native/graph-dedup-support.kdna",
+    "aa0c2c7b2ed176d1bae2a37f34bd771f2f4dfc57688bb5052483d72e2547a726"
   ],
   [
-    "mcp-server/test/fixtures/public-read-current/graph-method.kdna",
-    "4d375b3764319de9f989f32c0c04ddff372ef0ea8824328e61fd344c8be32e6c"
+    "mcp-server/test/fixtures/public-read-native/graph-method.kdna",
+    "cf8298d97bb9f911b3996fd0a986068af0d686807639aa86dd046921079e7ca7"
   ],
   [
-    "mcp-server/test/fixtures/public-read-current/graph-null.kdna",
-    "813501a0efbe18574865adcf7e6beae55f7e8a637c199d0ecb1520fb362f8b90"
+    "mcp-server/test/fixtures/public-read-native/graph-null.kdna",
+    "f030b7829e4c4a5d7b748dd3b5e6c9ca872469e49f0ff51ad93dd2abc17fd612"
   ],
   [
-    "mcp-server/test/fixtures/public-read-current/graph-same.kdna",
-    "9de1f6b0752e29703e9c7b3de28cf3df21ccbd1ddef9c2189e2e312824dcf23b"
+    "mcp-server/test/fixtures/public-read-native/graph-same.kdna",
+    "6c13d6d76efc959beac4864a3094503f16ee3a2379bab1bc658417f492e35a37"
   ],
   [
-    "mcp-server/test/fixtures/public-read-current/hostile-zip-crc.kdna",
-    "a61f0e29ae97a873472929ccbcb47ab00e199b2dd6580b10fb7f36100e86e63a"
+    "mcp-server/test/fixtures/public-read-native/hostile-native-truncated.kdna",
+    "e5080f610e32347a496bc1d7e221ac53c6b00daed64e390e4fc8c2c6fab106ed"
   ]
 ]) CANDIDATES.set(name, digest);
 for (const item of ARTIFACTS) CANDIDATES.set("mcp-server/" + item.file, item.sha256);
@@ -179,7 +179,7 @@ function packedTextEntries() {
     assert.deepEqual(files, PACKED_FILES);
     const artifact = path.join(temporary, report[0].filename);
     return files.flatMap((packedPath) => {
-      const output = spawnSync("tar", ["-xOzf", artifact, "package/" + packedPath], { cwd: ROOT, shell: false });
+      const output = spawnSync("tar", ["-xOzf", artifact, "package/" + packedPath], { cwd: ROOT, shell: false, maxBuffer: 32 * 1024 * 1024 });
       assert.equal(output.status, 0, output.stderr.toString());
       const expected = CANDIDATES.get("mcp-server/" + packedPath);
       if (expected) { assert.equal(crypto.createHash("sha256").update(output.stdout).digest("hex"), expected); return []; }
