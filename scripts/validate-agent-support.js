@@ -32,6 +32,7 @@ function validateAgentSupport(root = ROOT, supplied) {
     assert.equal(blocks.length,1,agent.guide);
     const vector = JSON.parse(blocks[0][1]);
     assert.deepEqual(vector,{command:"/absolute/path/to/node",args:["/absolute/installed/mcp-server/bin/kdna-mcp.mjs","--asset","/absolute/selected.kdna","--allow-read"]});
+    for (const key of ["mcp","cli","core","read","read_contract"]) assert.ok(guide.includes(runtime[key]), agent.guide + ": stale " + key + " coordinate");
     assert.match(guide,/NOT_RUN/); return {id:agent.id,guide:agent.guide,vector};
   });
   const loader=fs.readFileSync(path.join(root,"kdna-loader/SKILL.md"),"utf8");
