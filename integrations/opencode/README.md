@@ -23,6 +23,35 @@ The executable smoke launches precisely this command/args vector, initializes
 protocol 2024-11-05, sends notifications/initialized and tools/list, then reads
 the bound catalog. Host configuration itself is not modified by this repository.
 
+### Native configuration (verified 2026-10-10, OpenCode 1.18.35)
+
+Add the server to the `mcp` object of `~/.config/opencode/opencode.json`:
+
+```text
+{
+  "mcp": {
+    "kdna": {
+      "type": "local",
+      "command": [
+        "<absolute path to the node you used to install>",
+        "/abs/path/mcp-server/bin/kdna-mcp.mjs",
+        "--asset", "/abs/path/selected.kdna",
+        "--allow-read"
+      ],
+      "enabled": true
+    }
+  }
+}
+```
+
+`opencode mcp add kdna -- <node> <mcp-server>/bin/kdna-mcp.mjs --asset <file> --allow-read`
+writes the same entry, `opencode mcp list` should report `kdna connected`, and
+`opencode mcp remove kdna` deletes it. The first element of `command` must be the
+interpreter the offline `npm ci` used. `--asset` must be an absolute canonical path
+(the adapter resolves and compares real paths, so a relative or symlinked path fails
+the binding). The binding is per process: switching assets, or reusing the same asset
+after a revision, needs a **new session**, not a hot swap.
+
 No model-supplied path or initialize approval can create a binding. Do not let
 the model rewrite the launch arguments or automatically pick files. A Host with
 unrestricted model shell access must establish this separation itself. No

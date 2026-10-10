@@ -23,6 +23,25 @@ The executable smoke launches precisely this command/args vector, initializes
 protocol 2024-11-05, sends notifications/initialized and tools/list, then reads
 the bound catalog. Host configuration itself is not modified by this repository.
 
+### Native configuration (verified 2026-10-10, codex-cli 0.154.0)
+
+Add the server to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.kdna]
+command = "<absolute path to the node you used to install>"
+args = ["/abs/path/mcp-server/bin/kdna-mcp.mjs", "--asset", "/abs/path/selected.kdna", "--allow-read"]
+```
+
+`command` must be the interpreter the offline `npm ci` used. `--asset` must be an
+absolute canonical path: the adapter requires `path.isAbsolute(p)`, `path.resolve(p) === p`,
+a `.kdna` extension, a regular non-symlinked file and `fs.realpathSync(p) === p`, so a
+relative or symlinked path fails the binding. The binding is per process, so switching
+assets — or reusing the same asset after a revision — needs a **new session**, not a hot swap.
+For non-interactive runs let approvals pass with `codex exec --approve-for-me`; with
+`approval_policy = "never"` MCP tool calls are refused with "MCP tool call requires approval",
+which is an approval setting, not a binding or adapter fault.
+
 No model-supplied path or initialize approval can create a binding. Do not let
 the model rewrite the launch arguments or automatically pick files. A Host with
 unrestricted model shell access must establish this separation itself. No
