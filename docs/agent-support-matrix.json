@@ -10,7 +10,8 @@
     "read": "0.11.2-rc.browser.1",
     "read_contract": "kdna.read/0.7.0-candidate",
     "private": true,
-    "publication": "unpublished"
+    "publication": "published-preview",
+    "publication_scope": "cli/core/read are published on their own preview dist-tags (native-preview / browser-preview); this MCP server remains source-only with npm publication disabled by private:true; every latest coordinate is unchanged."
   },
   "tool_surface": [
     "kdna.binding-status",
