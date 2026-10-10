@@ -81,7 +81,7 @@ These are independent one-shot snapshots. For progressive consumption start
 once. Send newline-terminated public ReadRequest objects. Copy the exact tuple
 from that accepted CLI's public-contract-binding.json; generate request_id and
 set mode, budget_bytes, selection and handle. Catalog uses selection:null and
-handle:null; exact_selection uses {asset_id,asset_version,judgment_ids:[the selected judgment id]} and handle:null; expand
+handle:null; exact_selection uses either the single compatible {asset_id,asset_version,judgment_id} or the plural {asset_id,asset_version,judgment_ids:[...]} with exactly one of the two judgment keys present (a present key must also hold a valid value), and handle:null; expand
 uses the issued handle and that handle's selection. Keep the same process and
 end stdin to close it. Do not describe a separately launched CLI as the same
 snapshot or reuse a handle across launches. The executable examples and tests

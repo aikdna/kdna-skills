@@ -12,17 +12,26 @@ const emptySchema = { type: "object", properties: {}, additionalProperties: fals
 // accepted for compatibility, and `judgment_ids` lets one call carry the whole
 // selection set instead of repeating the full envelope per judgment.
 const selectionKey = { type: "string", minLength: 1, maxLength: 4096 };
-const selectionSchema = { type: "object", required: ["asset_id", "asset_version"], additionalProperties: false, anyOf: [{ required: ["judgment_id"] }, { required: ["judgment_ids"] }], properties: { asset_id: selectionKey, asset_version: selectionKey, judgment_id: selectionKey, judgment_ids: { type: "array", minItems: 1, maxItems: 64, uniqueItems: true, items: selectionKey } } };
+// Exactly one of the two forms is accepted, judged by key presence first and
+// value second, so the declared schema and the runtime check below agree: a
+// caller that skips schema validation gets the same refusals as one that does
+// not. `oneOf` (not `anyOf`) is what makes "both keys present" invalid in both.
+const selectionSchema = { type: "object", required: ["asset_id", "asset_version"], additionalProperties: false, oneOf: [{ required: ["judgment_id"] }, { required: ["judgment_ids"] }], properties: { asset_id: selectionKey, asset_version: selectionKey, judgment_id: selectionKey, judgment_ids: { type: "array", minItems: 1, maxItems: 64, uniqueItems: true, items: selectionKey } } };
 const validId = value => typeof value === "string" && value.length > 0 && value.length <= 4096;
-// Exactly one of the two forms is accepted: the compatibility singular field, or
-// the plural set that one call can carry.
+// Exactly one of the two keys must be PRESENT: the compatibility singular field,
+// or the plural set that one call can carry. Presence is checked before the
+// value, so `judgment_id: null` alongside a valid `judgment_ids` is refused
+// rather than silently ignored.
+const selectionKeys = ["asset_id", "asset_version", "judgment_id", "judgment_ids"];
 function validReadSelection(selection) {
   if (!selection || typeof selection !== "object" || Array.isArray(selection)) return false;
-  if (Object.keys(selection).some(key => !["asset_id", "asset_version", "judgment_id", "judgment_ids"].includes(key))) return false;
+  if (Object.keys(selection).some(key => !selectionKeys.includes(key))) return false;
   if (!validId(selection.asset_id) || !validId(selection.asset_version)) return false;
-  const singular = validId(selection.judgment_id), many = selection.judgment_ids;
-  const plural = Array.isArray(many) && many.length >= 1 && many.length <= 64 && many.every(validId) && new Set(many).size === many.length;
-  return singular !== plural ? singular || plural : false;
+  const hasSingular = Object.hasOwn(selection, "judgment_id"), hasPlural = Object.hasOwn(selection, "judgment_ids");
+  if (hasSingular === hasPlural) return false;
+  if (!hasPlural) return validId(selection.judgment_id);
+  const many = selection.judgment_ids;
+  return Array.isArray(many) && many.length >= 1 && many.length <= 64 && many.every(validId) && new Set(many).size === many.length;
 }
 function selectionIds(selection) {
   return Array.isArray(selection.judgment_ids) ? selection.judgment_ids : [selection.judgment_id];
