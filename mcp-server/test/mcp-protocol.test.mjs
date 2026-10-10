@@ -359,6 +359,43 @@ test("operator binding rejects symlinks, directories, non-kdna and relative file
 });
 
 
+test("kdna.read accepts exactly one present selection key, matching its declared schema", async t => {
+  const { default: Ajv } = await import("ajv");
+  const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
+  const declared = (await s.rpc("tools/list")).result.tools.find(tool => tool.name === "kdna.read").inputSchema;
+  assert.ok(declared.properties.selection.oneOf, "the declared selection schema must be oneOf, matching the runtime either/or rule");
+  assert.equal(declared.properties.selection.anyOf, undefined, "anyOf would let both keys pass the schema");
+  const validate = new Ajv({ allErrors: true, strict: false }).compile(declared);
+  const catalog = ready(await s.call("kdna.catalog", budget));
+  const asset = { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version };
+  const ids = catalog.content.catalog.map(item => item.judgment_id);
+  assert.ok(ids.length >= 2, "the fixture must carry at least two judgments for this matrix");
+  const cases = [
+    ["legacy single id", { ...asset, judgment_id: ids[0] }, true],
+    ["plural one id", { ...asset, judgment_ids: [ids[0]] }, true],
+    ["plural two ids", { ...asset, judgment_ids: ids.slice(0, 2) }, true],
+    ["null single beside valid plural", { ...asset, judgment_id: null, judgment_ids: [ids[0]] }, false],
+    ["null plural beside valid single", { ...asset, judgment_id: ids[0], judgment_ids: null }, false],
+    ["empty plural array", { ...asset, judgment_ids: [] }, false],
+    ["plural wrong type", { ...asset, judgment_ids: ids[0] }, false],
+    ["single wrong type", { ...asset, judgment_id: 7 }, false],
+    ["both keys valid", { ...asset, judgment_id: ids[0], judgment_ids: [ids[1]] }, false],
+    ["duplicate ids", { ...asset, judgment_ids: [ids[0], ids[0]] }, false],
+    ["sixty-five ids", { ...asset, judgment_ids: Array.from({ length: 65 }, (_, index) => "j:" + index) }, false],
+    ["unknown selection key", { ...asset, judgment_id: ids[0], approved: true }, false],
+    ["missing asset_version", { asset_id: asset.asset_id, judgment_id: ids[0] }, false],
+  ];
+  for (const [label, selection, expected] of cases) {
+    assert.equal(validate({ ...budget, selection }), expected, "declared schema: " + label);
+    const response = await s.call("kdna.read", { ...budget, selection });
+    const refused = Boolean(response.error);
+    if (refused) assert.equal(response.error.code, -32602, "refusal code: " + label);
+    else assert.notEqual(response.result.isError, true, "runtime accepted then failed downstream: " + label);
+    assert.equal(!refused, expected, "runtime acceptance: " + label);
+  }
+  await s.close();
+});
+
 test("all five guide command vectors launch the actual local stdio candidate",async t=>{
   const matrix=JSON.parse(fs.readFileSync(path.join(root,"../docs/agent-support-matrix.json"),"utf8"));
   const fence=String.fromCharCode(96).repeat(3);
