@@ -99,7 +99,10 @@ legacy load/plan-load/Runtime Capsule adaptation are absent.
 
 ## Install and test from source
 
-Use Node.js 22 or later and its bundled npm. From `mcp-server/`:
+Use Node.js with that release's bundled npm. This batch requires Node.js 22 or
+later (the package's declared minimum) and is verified on Node.js 22.23.1 and
+24.18.0, with 22.23.1 recommended; other versions are not covered by this
+batch's verification. From `mcp-server/`:
 
 ```sh
 npm ci --offline --ignore-scripts --omit=optional --no-audit --no-fund
