@@ -7,12 +7,31 @@ const object = value => value !== null && typeof value === "object" && !Array.is
 const keys = (value, expected) => object(value) && Object.keys(value).length === expected.length && expected.every(key => Object.hasOwn(value, key));
 const budgetSchema = { type: "integer", minimum: 0, maximum: 1000000 };
 const emptySchema = { type: "object", properties: {}, additionalProperties: false };
-const selectionSchema = { type: "object", required: ["asset_id", "asset_version", "judgment_id"], additionalProperties: false, properties: Object.fromEntries(["asset_id", "asset_version", "judgment_id"].map(key => [key, { type: "string", minLength: 1, maxLength: 4096 }])) };
+// One or several exact judgments, selected by the operator-provided binding. Both
+// forms map to the same official Read `exact_selection` call: `judgment_id` stays
+// accepted for compatibility, and `judgment_ids` lets one call carry the whole
+// selection set instead of repeating the full envelope per judgment.
+const selectionKey = { type: "string", minLength: 1, maxLength: 4096 };
+const selectionSchema = { type: "object", required: ["asset_id", "asset_version"], additionalProperties: false, anyOf: [{ required: ["judgment_id"] }, { required: ["judgment_ids"] }], properties: { asset_id: selectionKey, asset_version: selectionKey, judgment_id: selectionKey, judgment_ids: { type: "array", minItems: 1, maxItems: 64, uniqueItems: true, items: selectionKey } } };
+const validId = value => typeof value === "string" && value.length > 0 && value.length <= 4096;
+// Exactly one of the two forms is accepted: the compatibility singular field, or
+// the plural set that one call can carry.
+function validReadSelection(selection) {
+  if (!selection || typeof selection !== "object" || Array.isArray(selection)) return false;
+  if (Object.keys(selection).some(key => !["asset_id", "asset_version", "judgment_id", "judgment_ids"].includes(key))) return false;
+  if (!validId(selection.asset_id) || !validId(selection.asset_version)) return false;
+  const singular = validId(selection.judgment_id), many = selection.judgment_ids;
+  const plural = Array.isArray(many) && many.length >= 1 && many.length <= 64 && many.every(validId) && new Set(many).size === many.length;
+  return singular !== plural ? singular || plural : false;
+}
+function selectionIds(selection) {
+  return Array.isArray(selection.judgment_ids) ? selection.judgment_ids : [selection.judgment_id];
+}
 const tools = [
   { name: "kdna.binding-status", description: "Report only this process's operator-established local binding. It grants no new permission.", inputSchema: emptySchema },
   { name: "kdna.inspect", description: "Inspect the bound file through the official CLI; technical facts do not authorize actions or establish authorship.", inputSchema: emptySchema },
   { name: "kdna.catalog", description: "Read the public catalog from the fixed local CLI session within an explicit byte budget.", inputSchema: { type: "object", required: ["budget_bytes"], additionalProperties: false, properties: { budget_bytes: budgetSchema } } },
-  { name: "kdna.read", description: "Read one exact canonical selection with its mandatory closure through the same official CLI snapshot.", inputSchema: { type: "object", required: ["selection", "budget_bytes"], additionalProperties: false, properties: { selection: selectionSchema, budget_bytes: budgetSchema } } },
+  { name: "kdna.read", description: "Read one or more exact canonical selections with their mandatory closure through the same official CLI snapshot.", inputSchema: { type: "object", required: ["selection", "budget_bytes"], additionalProperties: false, properties: { selection: selectionSchema, budget_bytes: budgetSchema } } },
   { name: "kdna.expand", description: "Return an issued expansion handle unchanged to the original CLI session; the public Read package validates it.", inputSchema: { type: "object", required: ["handle", "budget_bytes"], additionalProperties: false, properties: { handle: { type: "object" }, budget_bytes: budgetSchema } } },
   { name: "kdna.cancel", description: "Cancel local presentation and revoke this process binding. Only a new operator-controlled launch can select again.", inputSchema: emptySchema },
 ];
@@ -66,7 +85,7 @@ if (binding) {
   function validCall(name, args) {
     if (["kdna.binding-status", "kdna.inspect", "kdna.cancel"].includes(name)) return keys(args, []);
     if (name === "kdna.catalog") return keys(args, ["budget_bytes"]) && validBudget(args.budget_bytes);
-    if (name === "kdna.read") return keys(args, ["selection", "budget_bytes"]) && validBudget(args.budget_bytes) && keys(args.selection, ["asset_id", "asset_version", "judgment_id"]) && Object.values(args.selection).every(value => typeof value === "string" && value.length > 0 && value.length <= 4096);
+    if (name === "kdna.read") return keys(args, ["selection", "budget_bytes"]) && validBudget(args.budget_bytes) && validReadSelection(args.selection);
     if (name === "kdna.expand") return keys(args, ["handle", "budget_bytes"]) && validBudget(args.budget_bytes) && object(args.handle);
     return false;
   }
@@ -76,7 +95,7 @@ if (binding) {
     operation.work = (async () => {
       try {
         binding.assertReadable();
-        const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: args.budget_bytes, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: name === "kdna.read" ? { asset_id: args.selection.asset_id, asset_version: args.selection.asset_version, judgment_ids: [args.selection.judgment_id] } : args.handle?.anchor?.selection ?? null, handle: args.handle ?? null };
+        const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: args.budget_bytes, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: name === "kdna.read" ? { asset_id: args.selection.asset_id, asset_version: args.selection.asset_version, judgment_ids: selectionIds(args.selection) } : args.handle?.anchor?.selection ?? null, handle: args.handle ?? null };
         const value = name === "kdna.inspect" ? await inspectBoundFile(binding, operation.controller.signal) : await session.request(request);
         if (operation.cancelled) throw new AdapterError("MCP_READ_CANCELLED", "Local read presentation was cancelled; this process binding is closed.");
         const success = value.channel === "read_envelope" ? ["ready", "catalog_only"].includes(value.envelope.status) : value.status === "accepted";
