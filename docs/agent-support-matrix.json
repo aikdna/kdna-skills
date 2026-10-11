@@ -1,5 +1,5 @@
 {
-  "schema_version": 10,
+  "schema_version": 12,
   "loader_skill": "kdna-loader/SKILL.md",
   "mcp_server": "mcp-server/",
   "overall_status": "local_stdio_adapter",
@@ -19,6 +19,7 @@
     "kdna.catalog",
     "kdna.read",
     "kdna.expand",
+    "kdna.audit",
     "kdna.cancel"
   ],
   "binding": {
@@ -30,8 +31,11 @@
     "transport": "local_stdio_only"
   },
   "evidence_dimensions": {
-    "named_host_delivery": "observed_codex_cli_case_only",
-    "semantic_adoption": "observed_codex_cli_case_only",
+    "named_host_delivery": "observed_codex_cli_full_and_task_cases_only",
+    "semantic_adoption": "observed_codex_cli_full_and_task_cases_only",
+    "task_presentation_named_host_delivery": "observed_codex_cli_task_case_only",
+    "task_presentation_semantic_adoption": "observed_codex_cli_task_case_only",
+    "audit_named_model_use": "not_run",
     "real_human_acceptance": "not_run"
   },
   "agents": [
@@ -60,6 +64,8 @@
         "installation": "retained verified offline archive graph; not public registry cold acquisition",
         "startup": "temporary trusted command-line binding; no persistent global configuration edit; other execution surfaces disabled for this turn",
         "not_run": [
+          "task presentation",
+          "kdna.audit",
           "kdna.expand",
           "MCP creation",
           "Studio protection Host",
@@ -67,7 +73,65 @@
           "Codex IDE",
           "real human acceptance"
         ],
-        "certification": "none"
+        "certification": "none",
+        "presentation": "full",
+        "implementation_scope": "Prior full-presentation implementation; this case does not validate the task/audit extension."
+      },
+      "task_observation": {
+        "date": "2026-10-11",
+        "host": "Codex CLI",
+        "host_version": "0.154.0",
+        "model": "not_separately_recorded",
+        "status": "observed_bounded_case",
+        "presentation": "task",
+        "input": "one synthetic native public asset with three selected judgments",
+        "task": "apply project-update judgments while retaining uncertainty and action limits",
+        "tools": [
+          "kdna.binding-status",
+          "kdna.catalog",
+          "kdna.read",
+          "kdna.cancel"
+        ],
+        "selection": "one exact selection batched all three task judgments from the catalog snapshot",
+        "result": "ready read; answer applied the judgments and retained scope, undeclared method, claimed-unverified confirmation and action limits; binding closed; exit 0",
+        "verification": "inline summary retained absent signature and optional signature policy satisfied; no new verification was inferred",
+        "duplicate_ready_selection_reads": 0,
+        "audit_calls": 0,
+        "expand_calls": 0,
+        "installation": "retained verified offline archive graph; not public registry cold acquisition",
+        "startup": "temporary trusted command-line binding; no persistent global configuration edit; other execution surfaces disabled for this turn",
+        "host_truncation": "raw tool result complete and no truncation reported by the model under the configured display limits; not a general no-truncation guarantee",
+        "file_boundary": "no Host-file read attempt or success observed with other execution surfaces disabled in this case",
+        "not_run": [
+          "kdna.audit named model use",
+          "kdna.expand",
+          "MCP creation",
+          "Studio protection Host",
+          "Codex Desktop",
+          "Codex IDE",
+          "other Host brands",
+          "real human acceptance"
+        ],
+        "certification": "none",
+        "token_fee_comparison": "not established"
+      },
+      "truncation_observation": {
+        "date": "2026-10-11",
+        "host": "Codex CLI",
+        "host_version": "0.154.0",
+        "model": "not_separately_recorded",
+        "status": "observed_host_truncation_stop_case",
+        "presentation": "task",
+        "condition": "deliberately constrained Host display budget",
+        "catalog": "complete MCP catalog event was truncated in Host presentation",
+        "followup_read": "automatic approval rejected one follow-up read before MCP dispatch; its parameters also lacked the required strict selection shape",
+        "result": "model cancelled the binding and stopped without inventing judgment content; no shell or Host-file read observed",
+        "not_established": [
+          "successful reading after Host truncation",
+          "named-model audit retrieval",
+          "reproduction of an external OpenCode experiment",
+          "general Host certification"
+        ]
       }
     },
     {
@@ -108,5 +172,103 @@
     "direct_cli": "mcp-server/test/explicit-cli-flow.test.mjs",
     "packed_stdio": "mcp-server/test/packed-consumer.test.mjs"
   },
-  "evidence_scope": "This matrix covers named MCP Host routes. Only the recorded Codex CLI case is observed; direct CLI authoring and reading are separate capabilities. Guide availability is not Host certification."
+  "evidence_scope": "This matrix covers named MCP Host routes. The frozen prior full-presentation case and a separate task-presentation case each cover one synthetic native public task on Codex CLI 0.154.0. A separate forced-truncation case records stopping, not successful continuation. Named-model audit use, other Hosts and direct CLI authoring retain separate scope. Guide availability is not certification.",
+  "presentation": {
+    "default": "full",
+    "choices": [
+      "full",
+      "task"
+    ],
+    "tools": [
+      "kdna.catalog",
+      "kdna.read",
+      "kdna.expand"
+    ],
+    "task_contract": {
+      "id": "kdna.mcp.task-presentation",
+      "version": "0.1.0"
+    },
+    "official_read_contract_unchanged": true,
+    "official_budget": "budget_bytes applies to the complete official Read in both presentations",
+    "view_budget": {
+      "field": "view_budget_bytes",
+      "required_for": "task",
+      "forbidden_for": "full",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "task_content": {
+      "aliases": "external content_aliases entries with at/from pointers relative to content, node_id and role; only exact structural object duplicates become null placeholders",
+      "author_prose_rewritten": false,
+      "required_meaning_needs_audit": false,
+      "original_null_without_alias_preserved": true,
+      "canonical_content_and_states_required": true,
+      "verification_summary_required": true,
+      "verification_summary_scope": [
+        "signature status and complete policy",
+        "checksum status",
+        "origin kind",
+        "mode and semantic status",
+        "digest status and profile",
+        "signature-policy check basis, policy, result and new_signature_verification",
+        "new-verification and I/O flags"
+      ],
+      "audit_only_verification_material": "long capture/section proofs and full receipt",
+      "unknown_verification_fields": "task_view_unavailable"
+    },
+    "delivery": {
+      "content": "text_only",
+      "duplicate_full_structured_content": false,
+      "duplicate_full_resource": false,
+      "partial_success": false,
+      "automatic_full_fallback": false,
+      "unknown_shape": "unavailable_not_inferred_rejection"
+    },
+    "expand": {
+      "exactly_one_of": [
+        "handle",
+        "handle_ref"
+      ],
+      "original_official_validation_required": true
+    },
+    "audit": {
+      "tool": "kdna.audit",
+      "arguments": [
+        "audit_ref",
+        "budget_bytes"
+      ],
+      "meaning": "exact past full result",
+      "new_read": false,
+      "new_verification": false,
+      "new_authorization": false
+    },
+    "references": {
+      "scope": [
+        "live_operator_binding",
+        "snapshot",
+        "asset_and_version",
+        "tuple",
+        "host_epoch"
+      ],
+      "maximum_monotonic_ttl_ms": 60000,
+      "short_handle_capped_by_original_expiry": true,
+      "invalidated_by": [
+        "cancel",
+        "process_or_session_end",
+        "observed_scope_change"
+      ],
+      "persistent": false,
+      "capacity": {
+        "audits": 32,
+        "handles": 256,
+        "combined_encoded_bytes": 4194304
+      },
+      "capacity_is_not_token_or_fee_claim": true
+    },
+    "named_host_evidence": {
+      "task": "observed_codex_cli_task_case_only",
+      "audit_named_model_use": "not_run",
+      "expand_named_model_use": "not_run"
+    }
+  }
 }

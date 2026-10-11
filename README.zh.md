@@ -56,12 +56,15 @@ Host 已启用或已取得读取许可。
 
 ## 已验范围与当前限制
 
-一个真实 Codex CLI 0.154.0 会话已通过当前 MCP 读取一份虚构的原生公开资产，
-并把其中的判断用于项目周报任务：检查绑定、读取目录、两次选读，最后取消绑定。
-具体范围见 [Codex 记录](integrations/codex/README.md#observed-codex-cli-case)。其它
-Agent 品牌仍未验；该案例不认证 Codex Desktop、受保护资产、MCP 创作或通用回答质量。
+两个独立的 Codex CLI 0.154.0 会话分别用完整呈现和任务呈现读取一份虚构的
+原生公开资产，并将判断用于项目周报。此前完整呈现案例进行了两次选读；任务
+呈现案例一次批量选读取得三个判断，并保留范围、不确定性和行动限制。具体范围
+见 [Codex 记录](integrations/codex/README.md#observed-codex-cli-case)。具名模型的
+audit 使用、扩展和其它 Agent 品牌仍未验。这些案例不认证 Codex Desktop、受保护
+资产、MCP 创作或通用回答质量。另一次强制 Host 显示截断案例只记录了停止，
+没有证明截断后能继续读完。
 
-[支持矩阵](docs/agent-support-matrix.json)把这个具名案例与其它路径分别记录。
+[支持矩阵](docs/agent-support-matrix.json)把这些具名案例与其它路径分别记录。
 直接 CLI、源码 stdio、空缓存打包安装后的进程测试，与真实 Agent 使用这些内容
 是不同层面的证据。内容质量需要看具体判断、来源、前提、例子和边界。保存或
 读取成功不代表真人确认、内容适用或行动许可。Agent 应说明哪些内容影响了答案，

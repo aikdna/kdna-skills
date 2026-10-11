@@ -19,6 +19,11 @@ The concrete process/stdio boundary is [MCP README](../mcp-server/README.md).
 4. The Host retains the complete original catalog and uses only a ready public
    disclosure. Public rejection/no_body/transport failure are not empty success.
    A budget cannot be silently enlarged or bypassed with raw payload/whole_asset.
+   Select the task's required judgments together through `judgment_ids` when
+   appropriate. Reuse content already supplied for that task's same snapshot
+   and selection; another read needs an actual information or verification
+   reason. This does not create persistent access, cache permission or a way
+   around denied/deferred content.
 5. Explicit local read permission is separate from declared provenance, human
    confirmation, action permission, CreationComplete and quality/AuthoringFit.
    All original not_evaluated states and proof limits remain visible.
@@ -30,12 +35,56 @@ The concrete process/stdio boundary is [MCP README](../mcp-server/README.md).
    actual user/system/developer/Host authority.
 
 Guide structure, source stdio, installed stdio, named Host delivery, editorial
-adoption and human review are distinct checks. The support matrix records one
-bounded Codex CLI 0.154.0 native public Read and task-use observation; other
-named Hosts remain unassessed. This case does not certify a brand, another
-route, general answer quality or human acceptance. The supplied fixtures and real CLI establish
+adoption and human review are distinct checks. The support matrix records
+separate bounded Codex CLI 0.154.0 full- and task-presentation observations
+using a synthetic native public asset; other named Hosts remain unassessed.
+These cases do not certify a brand, another route, general answer quality or
+human acceptance. The supplied fixtures and real CLI establish
 reproducible process comparisons without changing public protocol expectations.
 Creator uses a separate authoring interface and permission channel.
+
+## Presentation compatibility
+
+The seven-tool surface adds `kdna.audit` to the original six tools.
+Catalog/read/expand keep `presentation: full` as the default; full rejects
+`view_budget_bytes`. Explicit `presentation: task` requires that independent
+view budget, while `budget_bytes` still applies to the official Read. The
+adapter-owned task contract is `kdna.mcp.task-presentation/0.1.0`; it does not
+replace the public Core/Read contract. Exact structural duplicates use external
+`content_aliases` pointers to complete canonical content. Author prose,
+conditions, exceptions, source responsibilities and state distinctions are not
+summarized away. Required meaning is available without an audit request.
+The inline `verification_summary` preserves judgment-relevant signature and
+checksum status, complete policy, origin/mode/semantic status, digest
+status/profile, policy-check basis/policy/result/new-signature-verification and
+new-verification/I/O flags. Only long capture/section proofs and the full receipt
+need audit; unknown verification fields are refused as an unavailable task view.
+
+Expand accepts exactly one of an original `handle` or a short `handle_ref`.
+Audit retrieves one exact past full result through `audit_ref` and an explicit
+budget; it is not a new Read, verification or permission grant. All references
+remain bounded to the live binding, snapshot, asset/version, tuple and Host
+epoch, with a monotonic lifetime no longer than 60 seconds; original handle
+expiry also limits short handles. Cancellation/session closure or an observed
+scope change invalidates references. Storage is limited to 32 audits, 256
+handles and 4 MiB of combined encoded values. There is no arbitrary-path audit
+or persistent store.
+
+Complete task/audit results must fit their budgets. No success truncation or
+automatic full fallback occurs. An unknown result shape is unavailable, not a
+refusal inferred by the adapter. Only text carries the chosen presentation;
+structuredContent and resource fields do not carry a duplicate full body.
+The earlier named Codex CLI case still covers full presentation only. A
+[separate task case](../integrations/codex/README.md#observed-task-presentation-case)
+records one batched ready read and bounded task use. Named-model audit use and
+expansion remain NOT_RUN. A forced Host-display truncation case records
+cancellation and stopping, without establishing successful continuation.
+
+Native container `0.6.0` is this MCP route. Both public and protected Studio
+container `0.5.0` use the [separate Studio Host](../kdna-creator/references/studio-protected-host.md)
+with Read `0.6.4`; public bytes omit credential options. Source and revision
+remain separately authorized. Shared package versions are not shared file
+identities, and this adapter supplies no implicit conversion.
 
 ## Current component interpretation boundary
 

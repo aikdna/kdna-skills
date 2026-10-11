@@ -2,10 +2,13 @@
 import { randomUUID } from "node:crypto";
 import { bindOperatorInput, AdapterError } from "./operator-binding.mjs";
 import { ReadSession, inspectBoundFile, packageInfo, publicBinding } from "./read-session.mjs";
+import { ReadingViews } from "./reading-views.mjs";
 
 const object = value => value !== null && typeof value === "object" && !Array.isArray(value);
 const keys = (value, expected) => object(value) && Object.keys(value).length === expected.length && expected.every(key => Object.hasOwn(value, key));
 const budgetSchema = { type: "integer", minimum: 0, maximum: 1000000 };
+const presentationProperties = { presentation: { type: "string", enum: ["full", "task"] }, view_budget_bytes: budgetSchema };
+const presentationRules = [{ if: { required: ["presentation"], properties: { presentation: { const: "task" } } }, then: { required: ["view_budget_bytes"] }, else: { not: { required: ["view_budget_bytes"] } } }];
 const emptySchema = { type: "object", properties: {}, additionalProperties: false };
 // One or several exact judgments, selected by the operator-provided binding. Both
 // forms map to the same official Read `exact_selection` call: `judgment_id` stays
@@ -39,9 +42,10 @@ function selectionIds(selection) {
 const tools = [
   { name: "kdna.binding-status", description: "Report only this process's operator-established local binding. It grants no new permission.", inputSchema: emptySchema },
   { name: "kdna.inspect", description: "Inspect the bound file through the official CLI; technical facts do not authorize actions or establish authorship.", inputSchema: emptySchema },
-  { name: "kdna.catalog", description: "Read the public catalog from the fixed local CLI session within an explicit byte budget.", inputSchema: { type: "object", required: ["budget_bytes"], additionalProperties: false, properties: { budget_bytes: budgetSchema } } },
-  { name: "kdna.read", description: "Read one or more exact canonical selections with their mandatory closure through the same official CLI snapshot.", inputSchema: { type: "object", required: ["selection", "budget_bytes"], additionalProperties: false, properties: { selection: selectionSchema, budget_bytes: budgetSchema } } },
-  { name: "kdna.expand", description: "Return an issued expansion handle unchanged to the original CLI session; the public Read package validates it.", inputSchema: { type: "object", required: ["handle", "budget_bytes"], additionalProperties: false, properties: { handle: { type: "object" }, budget_bytes: budgetSchema } } },
+  { name: "kdna.catalog", description: "Read the complete public catalog once. Default full is unchanged; optional task presentation requires an independent view_budget_bytes.", inputSchema: { type: "object", required: ["budget_bytes"], additionalProperties: false, allOf: presentationRules, properties: { budget_bytes: budgetSchema, ...presentationProperties } } },
+  { name: "kdna.read", description: "Batch the exact judgments needed for this task with mandatory closure in one snapshot. Keep the complete result; repeat only for a new need. Optional task is a lossless adapter view, not an official Read envelope.", inputSchema: { type: "object", required: ["selection", "budget_bytes"], additionalProperties: false, allOf: presentationRules, properties: { selection: selectionSchema, budget_bytes: budgetSchema, ...presentationProperties } } },
+  { name: "kdna.expand", description: "Return an original handle or this process's short handle_ref to the same official CLI. A reference grants no permission; Read still validates scope, snapshot, epoch and expiry.", inputSchema: { type: "object", required: ["budget_bytes"], additionalProperties: false, oneOf: [{ required: ["handle"] }, { required: ["handle_ref"] }], allOf: presentationRules, properties: { handle: { type: "object" }, handle_ref: selectionKey, budget_bytes: budgetSchema, ...presentationProperties } } },
+  { name: "kdna.audit", description: "Retrieve the exact past full result for a delivered task audit_ref, within an explicit budget and the same live operator binding. This performs no new verification, reading or authorization.", inputSchema: { type: "object", required: ["audit_ref", "budget_bytes"], additionalProperties: false, properties: { audit_ref: selectionKey, budget_bytes: budgetSchema } } },
   { name: "kdna.cancel", description: "Cancel local presentation and revoke this process binding. Only a new operator-controlled launch can select again.", inputSchema: emptySchema },
 ];
 const names = new Set(tools.map(tool => tool.name));
@@ -51,6 +55,7 @@ catch (error) { process.stderr.write((error instanceof AdapterError ? error.code
 
 if (binding) {
   const session = new ReadSession(binding);
+  const views = new ReadingViews(binding, session);
   let initialized = false, ready = false, active = null, shuttingDown = false, shutdownWork = null, outputFailed = false, writing = Promise.resolve();
   const outstanding = new Set();
   const write = message => {
@@ -66,6 +71,7 @@ if (binding) {
   const text = value => ({ content: [{ type: "text", text: JSON.stringify(value) }] });
   const toolError = cause => ({ ...text({ status: "unavailable", code: cause instanceof AdapterError ? cause.code : "MCP_LOCAL_READ_FAILED", message: cause instanceof AdapterError ? cause.message : "The bounded local read did not complete.", action_authorized: false }), isError: true });
   async function revoke() {
+    views.clear();
     const current = active;
     if (current) { current.cancelled = true; current.controller.abort(); }
     await session.close(false);
@@ -73,6 +79,7 @@ if (binding) {
     binding.close();
   }
   async function shutdown(graceful) {
+    views.clear();
     if (!graceful) {
       if (active) { active.cancelled = true; active.controller.abort(); }
       void session.close(false);
@@ -91,11 +98,21 @@ if (binding) {
   process.stdout.on("close", () => { outputFailed = true; void shutdown(false); });
   for (const signal of ["SIGTERM", "SIGINT"]) process.once(signal, () => { void shutdown(false); });
   const validBudget = value => Number.isSafeInteger(value) && value >= 0 && value <= 1000000;
+  function validPresentation(args, required) {
+    if (!object(args) || Object.keys(args).some(key => ![...required, "presentation", "view_budget_bytes"].includes(key)) || !required.every(key => Object.hasOwn(args, key))) return false;
+    if (Object.hasOwn(args, "presentation") && !["full", "task"].includes(args.presentation)) return false;
+    return args.presentation === "task" ? Object.hasOwn(args, "view_budget_bytes") && validBudget(args.view_budget_bytes) : !Object.hasOwn(args, "view_budget_bytes");
+  }
   function validCall(name, args) {
     if (["kdna.binding-status", "kdna.inspect", "kdna.cancel"].includes(name)) return keys(args, []);
-    if (name === "kdna.catalog") return keys(args, ["budget_bytes"]) && validBudget(args.budget_bytes);
-    if (name === "kdna.read") return keys(args, ["selection", "budget_bytes"]) && validBudget(args.budget_bytes) && validReadSelection(args.selection);
-    if (name === "kdna.expand") return keys(args, ["handle", "budget_bytes"]) && validBudget(args.budget_bytes) && object(args.handle);
+    if (name === "kdna.catalog") return validPresentation(args, ["budget_bytes"]) && validBudget(args.budget_bytes);
+    if (name === "kdna.read") return validPresentation(args, ["selection", "budget_bytes"]) && validBudget(args.budget_bytes) && validReadSelection(args.selection);
+    if (name === "kdna.expand") {
+      if (!object(args) || Object.hasOwn(args, "handle") === Object.hasOwn(args, "handle_ref")) return false;
+      const key = Object.hasOwn(args, "handle") ? "handle" : "handle_ref";
+      return validPresentation(args, [key, "budget_bytes"]) && validBudget(args.budget_bytes) && (key === "handle" ? object(args.handle) : validId(args.handle_ref));
+    }
+    if (name === "kdna.audit") return keys(args, ["audit_ref", "budget_bytes"]) && validId(args.audit_ref) && validBudget(args.budget_bytes);
     return false;
   }
   function startRead(id, name, args) {
@@ -104,11 +121,14 @@ if (binding) {
     operation.work = (async () => {
       try {
         binding.assertReadable();
-        const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: args.budget_bytes, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: name === "kdna.read" ? { asset_id: args.selection.asset_id, asset_version: args.selection.asset_version, judgment_ids: selectionIds(args.selection) } : args.handle?.anchor?.selection ?? null, handle: args.handle ?? null };
-        const value = name === "kdna.inspect" ? await inspectBoundFile(binding, operation.controller.signal) : await session.request(request);
+        const handle = Object.hasOwn(args, "handle_ref") ? views.expand(args.handle_ref) : args.handle ?? null;
+        const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: args.budget_bytes, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: name === "kdna.read" ? { asset_id: args.selection.asset_id, asset_version: args.selection.asset_version, judgment_ids: selectionIds(args.selection) } : handle?.anchor?.selection ?? null, handle };
+        const value = name === "kdna.audit" ? views.audit(args.audit_ref, args.budget_bytes) : name === "kdna.inspect" ? await inspectBoundFile(binding, operation.controller.signal) : await session.request(request);
         if (operation.cancelled) throw new AdapterError("MCP_READ_CANCELLED", "Local read presentation was cancelled; this process binding is closed.");
         const success = value.channel === "read_envelope" ? ["ready", "catalog_only"].includes(value.envelope.status) : value.status === "accepted";
-        await result(id, { ...text(value), ...(success ? {} : { isError: true }) });
+        if (name !== "kdna.audit") views.observe(value);
+        const presentation = args.presentation === "task" ? views.task(value, args.view_budget_bytes) : value;
+        await result(id, { ...text(presentation), ...(success ? {} : { isError: true }) });
       } catch (cause) {
         if (!outputFailed) await result(id, toolError(cause));
       } finally { if (active === operation) active = null; }

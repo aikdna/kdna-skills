@@ -70,6 +70,20 @@ the file and processing purpose.
 
 ## Create, use and improve
 
+Use the asset's declared format and producing route to select its reader:
+
+| Saved asset | Matching reader | Permission and credentials |
+| --- | --- | --- |
+| Public native container `0.6.0` | Official native CLI or the local MCP route, Read `0.7.0-candidate` | Selected file and explicit Read permission |
+| Public Studio container `0.5.0` | [Studio Host](../kdna-creator/references/studio-protected-host.md), Read `0.6.4` | Trusted file/read binding; omit password and recovery options |
+| Protected Studio container `0.5.0` | The same [Studio Host](../kdna-creator/references/studio-protected-host.md) | Trusted read binding plus a separate credential pipe; Source/revision needs separate permission |
+
+The Studio guide supplies the exact installation and child-process arguments
+for both public and protected bytes. Do not send a Studio file to native MCP
+or infer its format from the `.kdna` suffix. Shared package versions do not
+make these routes interchangeable, and an unsupported input must not trigger
+implicit conversion or raw-payload reading.
+
 For creation, follow [`kdna-creator`](../kdna-creator/SKILL.md) and the
 [native authoring guide](../kdna-creator/references/native-asset-authoring.md).
 Organize the real questions, judgments, reasons, examples and necessary shared
@@ -78,13 +92,39 @@ authored judgment, inference and constructed examples. Save a draft with the
 official CLI, reopen the saved file, and compare its complete content with the
 authored input. Read it through the official runtime for a concrete task.
 
+When creation fails, show the [complete diagnostic paths](../kdna-creator/references/native-asset-authoring.md#read-the-whole-diagnostic).
+CLI input failures can report top-level `code` and `diagnostic.field`; Core
+failures keep their `code`, `subject` and `field` in each `core.diagnostics`
+entry, alongside `core.reason`. Read all entries and preserve missing fields
+and explicit null values. Explain the problem without replacing the original
+codes, pointers or causal result with only a short status.
+
 For an existing asset, follow [`kdna-loader`](../kdna-loader/SKILL.md). Read the
-catalog, select the relevant question from the returned entries and keep its
-mandatory context and limits. Expand only using the returned handle in the
-same session. Explain which asset and judgments influenced the answer. A
+catalog, select the questions the task actually needs and request them together
+through one exact selection using `judgment_ids`. Keep their mandatory context
+and limits. Use already supplied content for the same task, snapshot and
+selection; do not repeat that read without a real information or verification
+need. Expand only using the returned handle when additional detail is needed in
+the same session. Explain which asset and judgments influenced the answer. A
 catalog, technical inspection or non-ready response is not a disclosed
 judgment body; report any unresolved restriction rather than treating it as
 missing content.
+
+The Agent can explicitly choose the MCP
+[task presentation](../mcp-server/README.md#optional-task-presentation-and-exact-audit)
+to receive exact duplicate content through references instead of repeated
+objects. Full remains the default. The Agent handles the independent view
+budget and resolves every alias, keeping all author content and state
+distinctions needed for the task. It also reads the inline verification summary:
+an absent signature is different from a verified signature, and an earlier
+check is different from a new check. An audit request retrieves only the exact
+past full result when it is actually needed; it is not another permission
+grant. A budget failure cannot be bypassed with a partial answer or Host file
+access. A [separate Codex CLI task example](../integrations/codex/README.md#observed-task-presentation-case)
+used one batched ready read while retaining the judgments' scope and limits.
+The earlier full-presentation case remains separate. Named-model audit use,
+expansion and other Host brands remain unassessed; a forced Host-display
+truncation case established stopping, not successful continuation.
 
 For a revision, use the official Source workflow to save a new file. Keep the
 original, record the real change, reopen the new version in a fresh process,
@@ -149,6 +189,16 @@ packed-consumer checks. Test your actual Agent/Host, material and modification
 journey as well: process tests do not certify a Host or the quality of an
 answer. The [support matrix](agent-support-matrix.json) tracks the current
 MCP evidence separately from direct CLI capability.
+
+Applications that consume MCP results should choose the presentation explicitly
+when interpreting its shape: omitted/`full` returns the official result;
+`task` requires `view_budget_bytes` and returns
+`kdna.mcp.task-presentation/0.1.0`. Both modes still use the unchanged official
+`budget_bytes`. Task aliases are external pointers to exact canonical objects,
+not a second authoring format. Reconstruct them before interpreting content.
+`kdna.audit` is optional retrieval of one past result and never a way to renew
+authorization. Do not treat adapter unavailability, expired references or
+capacity/budget failures as an official denial or a successful empty read.
 
 Studio's interview, terminal-session and protected-file routes have their own
 [Creator references](../kdna-creator/SKILL.md). They are optional and use a

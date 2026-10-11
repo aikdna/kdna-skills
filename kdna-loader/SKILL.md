@@ -19,6 +19,14 @@ clear and authorized, proceed without another confirmation. Otherwise ask one
 plain-language question for the missing substantive choice. Do not ask the user
 to construct a digest, permission record, tuple, receipt or machine identifier.
 
+First select the reader that matches the asset's declared container contract.
+Native container `0.6.0` uses this CLI/MCP route. Studio container `0.5.0`,
+whether public or protected, uses the separate
+[Studio public/protected Host](https://github.com/aikdna/kdna-skills/blob/main/kdna-creator/references/studio-protected-host.md)
+and Read `0.6.4`; public bytes need no credential pipe. Do not infer a format
+from its filename, try a private parser or convert it implicitly after rejection.
+The shared Core/Read package versions do not merge these file contracts.
+
 This candidate uses CLI 0.39.0, Core 0.37.2 and Read package 0.11.3 implementing
 `kdna.read/0.7.0-candidate`. Resolve the accepted local installation explicitly. Do not use
 a global CLI, a same-version registry replacement, a private parser or raw
@@ -45,20 +53,85 @@ After MCP initialize and notifications/initialized:
 2. `kdna.catalog` with `budget_bytes` returns the official public catalog.
    Retain the complete catalog. An exact-selection response contains only its
    selected catalog entry and must not replace the original choice list.
-3. Choose a judgment from that catalog using the user's purpose. If the choice
-   is ambiguous, ask for the actual choice; do not fabricate IDs or rank assets.
-   Call `kdna.read` with the returned asset_id, asset_version, judgment_id as
-   `selection`, plus `budget_bytes`.
-4. Use only a ready public Read envelope. Keep the selected result together with
+3. Choose the judgments this task actually needs from that catalog. If the
+   choice is ambiguous, resolve the substantive choice; do not fabricate IDs
+   or rank assets. Send one `kdna.read` for the task's selection using the
+   returned `asset_id`, `asset_version` and `judgment_ids` array, plus
+   `budget_bytes`. MCP accepts 1–64 unique IDs per call. The compatibility
+   single `judgment_id` is still valid; never send both keys. Batch the required
+   questions together instead of requesting the same full context once per
+   judgment.
+4. With full presentation, use only a ready public Read envelope. Keep the selected result together with
    its mandatory closure, references, declarations, omissions and diagnostics.
    Do not omit a boundary or qualification because it belongs to another issue.
-5. For required additional detail, pass an issued `expansion_handles` object
+5. For required additional detail in full presentation, pass an issued `expansion_handles` object
    unchanged to `kdna.expand`, with an explicit budget. The adapter forwards its
    selection and handle to the same official CLI process. Do not serialize a
    handle for later tasks or replay it in another process.
 6. `kdna.cancel` revokes this process binding, terminates its local CLI session
    and suppresses pending presentation. A matching MCP cancellation notification
    does the same. Only a new operator-controlled launch can select again.
+
+Retain the successful disclosure for the current task. If the same selection
+and necessary context have already been supplied from the same snapshot, use
+that content without an unexplained duplicate read. Read again only for an
+actual missing detail, changed selection, explicit verification need or a new
+authorized snapshot; describe the reason. Do not treat an insufficient-budget,
+denied, deferred or failed result as content already obtained. Expansion uses
+its actual returned handle; never bypass a missing disclosure by opening a Host
+cache or raw asset bytes. Do not reuse content as a new authorization, transfer
+handles across processes or continue tool access after cancel.
+
+## Choose the presentation explicitly
+
+Catalog/read/expand omit `presentation` or use `presentation: "full"` for the
+unchanged official result. Only `presentation: "task"` accepts and requires
+`view_budget_bytes`, separate from the official `budget_bytes`; both are
+integers from 0 through 1000000. Full mode rejects `view_budget_bytes`.
+
+Task mode returns `kdna.mcp.task-presentation/0.1.0`, an adapter view. Check its
+ready/catalog/rejection state, asset version, snapshot and authorization as
+well as every supplied content node and qualification. `content_aliases`
+contains external `{at, from, node_id, role}` entries with JSON pointers
+relative to `content`: resolve the complete object from `from` at its null
+`at` placeholder, following dependencies. An original null without an alias
+stays null. Canonical nodes, roles and method interpretations are mandatory
+content; aliases remove exact duplication, not author prose or conditions.
+Do not treat the view as a summary or ignore unread/deferred state.
+
+Read `verification_summary` together with the content. It preserves signature
+status and complete policy, checksum status, origin kind, verification
+mode/semantic status, digest status/profile, signature-policy check
+basis/policy/result/`new_signature_verification`, and the original
+new-verification and I/O flags. Absent is not verified; a prior check is not a
+new check. Only the longer capture/section proofs and full receipt move behind
+audit. Unknown verification fields make task presentation unavailable.
+
+Use a returned short `handle_ref` or the old full `handle` for `kdna.expand`,
+never both. The original official handle still governs expansion. To inspect
+the exact past full result, call `kdna.audit` with its `audit_ref` and an
+explicit `budget_bytes` only when the task needs that evidence. Audit performs
+no new read, verification or authorization. Necessary author meaning is already
+in the task view; audit is not a mandatory second read.
+
+These references belong to the same live process binding, snapshot,
+asset/version, tuple and Host epoch. Their monotonic lifetime is at most 60
+seconds and a short handle cannot outlive its original handle. Cancel/session
+closure or an observed scope change invalidates them. The adapter caps stored
+audits at 32, handles at 256 and combined encoded storage at 4 MiB. Do not
+persist or transfer references, resolve them as file paths or create broader
+permission from them.
+
+A budget overflow returns an explicit failure without a partial body or
+automatic full fallback. An unknown official shape is unavailable, not an
+invented rejection; keep the original distinction. Ask for a larger authorized
+budget or explicitly select full only when needed. MCP delivers a single text
+representation, without a hidden full copy in structuredContent/resources.
+Task-view availability does not establish general named Host adoption or
+token/fee savings. The earlier Codex case used full presentation; a separate
+bounded Codex CLI task case used one batched ready read. Named-model audit use
+and expansion remain NOT_RUN. See the
+[separate observations](https://github.com/aikdna/kdna-skills/blob/main/integrations/codex/README.md#observed-task-presentation-case).
 
 An in-flight second read returns MCP_READ_BUSY; wait for the first response or
 cancel it. EOF completes an accepted request and closes the session. Cancellation
