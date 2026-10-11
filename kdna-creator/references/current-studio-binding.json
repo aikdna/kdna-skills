@@ -12,9 +12,9 @@
       "name": "@aikdna/kdna-studio-cli",
       "version": "0.13.0",
       "archive": "aikdna-kdna-studio-cli-0.13.0.tgz",
-      "bytes": 90718,
-      "sha256": "de21795594b30022fc1edbed30dc43c4ed8fa43d98930c6ba183849e27ee5acd",
-      "integrity": "sha512-jYNan7p5CtnuxqUFpl95/daRr6MbruhksdEPY1BbJ7hg6ccfwlIyCzAncspUmy0/luqsspG59ZNiXGJ7hPz6wA==",
+      "bytes": 90710,
+      "sha256": "8f1b0b8109d03c1678339f90fbf3c63ef20c4eb190004f0d4b8aabfff198415a",
+      "integrity": "sha512-Zw6BF7WvV+jzFMjCwCpYCgE429QCa/99FraT95z43SBm5LXBdkm/g+RMfGPeP6oAaKS7PL1Xze1pO6NV6EJhVQ==",
       "member_count": 10,
       "files": [
         {
@@ -69,7 +69,7 @@
           "path": "src/public-bindings.json",
           "mode": 420,
           "size": 309616,
-          "sha256": "aadcd14d2836f773560d7d8b06df73721bef6060d77808902d33d3c0fe81b565"
+          "sha256": "ba51d39481444b74380cbb3d1d8269e1e70bac46fb5a1e3bd7f7502ca2c51800"
         },
         {
           "path": "src/terminal-workspace.js",
@@ -98,9 +98,9 @@
       "name": "@aikdna/kdna-core",
       "version": "0.37.2",
       "archive": "aikdna-kdna-core-0.37.2.tgz",
-      "bytes": 8264139,
-      "sha256": "6365329576ade98ca9cda78e39124b39cfe7da6bd56371a025bf6ed352fcc562",
-      "integrity": "sha512-psXE8CMAfMt9R/+UhstiibOGwZVUJ/320TLcssycLOaUn5oMPyUUwLlR3zKGKctnjejPcA1RGsr0bVb+jdy3zQ==",
+      "bytes": 8264158,
+      "sha256": "16234f84440252b0c449c529de71435630cc79816f88ff0d0a8a2b4d852c1274",
+      "integrity": "sha512-suTPB/b+6mGiExYhZ/YA7YIII2abqfivnzuWoDKlC1sPQ2gkcWafyOAiFy/hgJvU47tBLw0citlEXCNMdQP7qg==",
       "member_count": 459,
       "files": [
         {
@@ -124,8 +124,8 @@
         {
           "path": "README.md",
           "mode": 420,
-          "size": 17778,
-          "sha256": "db53e8ae85ff467b066ff995001ad550a0ee70f8422ce8996a7f8ec78404bd23"
+          "size": 17855,
+          "sha256": "a21d594030e1d903b7a313ce3194ea800f67c2be1f6a80b7f991de6b41cee1cd"
         },
         {
           "path": "schema/agent-host-capabilities.schema.json",
@@ -3487,8 +3487,8 @@
       "version": "4.0.0",
       "archive": "aikdna-kdna-studio-core-4.0.0.tgz",
       "bytes": 99402,
-      "sha256": "9ba143fa8b5426d02a3b4669cb258aac2cc5833c2e5f9e4ba63289d72de8b8af",
-      "integrity": "sha512-p8DH3c0lZwoPRLxMPNLOATYKPFztYCY+gc4TzDqt/Zdx2ovNkbofGCD63XR7zJ6M6Vnxo+RcEbqmGQA82vaLmA==",
+      "sha256": "062c35970e4c7e3ba49f8d9420f1e221a3ec007fac145d67c04fe5ee2e88be62",
+      "integrity": "sha512-XbKzFo8vRzKa6W89KBVg5MqRKWIVQXM7vfYoeT5ZS8rgqHHy4c+imukxKLpBX528AgrUEhbC+3iUg2LTNrRl8A==",
       "member_count": 19,
       "files": [
         {
@@ -3555,7 +3555,7 @@
           "path": "src/creation-engine/component-runtime-binding.json",
           "mode": 420,
           "size": 270875,
-          "sha256": "f3109abe7d93ce08d935313ccaa7117fa3171dccbf150195c71e4d3c43d64e8d"
+          "sha256": "d97b54803f804cb6f9796a04ae68e2005f8b78d89deccd12ccdb86cfff91ebf8"
         },
         {
           "path": "src/creation-engine/component-session.js",
@@ -3625,7 +3625,7 @@
   ],
   "transitive_lock": {
     "repository_file": "package-lock.json in the exact CLI repository candidate",
-    "sha256": "21acf2f1c433c6d369545e285f1b36253c4a808f60995201ea91f30f49020f6f",
+    "sha256": "ee6801c8c4d5976e8062ee4953a29bd8f2413be3682b7efea9c1430f105bb2af",
     "install": "Source npm ci --offline --ignore-scripts --omit=optional requires all exact required registry archives in a verified npm cache; vendor files alone do not seed that cache. Unpublished local candidates use explicit local file archives and overrides for the complete required locked closure in a separate fresh-cache offline consumer. Embedding must independently enforce any required network denial."
   },
   "publication": "local-stable-candidate",

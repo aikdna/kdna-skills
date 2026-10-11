@@ -14,7 +14,7 @@ const CLI_FILES = Object.freeze({
   'bin/kdna-studio.js': {sha256:'ccce7e14e0a2ef6adf158cd1d66c6f774210dc18fe9069c582fec752abecbe18',mode:0o755},
   'src/terminal-workspace.js': {sha256:'8a78531a742f416238b8403d5ba6e9d819678a14fe90eda396d029f31ff4607c',mode:0o644},
   'src/component-operations.js': {sha256:'fc5e468d7b2f8a8ed760008429fa6283417007d359ac5fabd1719d0d8e49cbfb',mode:0o644},
-  'src/public-bindings.json': {sha256:'aadcd14d2836f773560d7d8b06df73721bef6060d77808902d33d3c0fe81b565',mode:0o644},
+  'src/public-bindings.json': {sha256:'ba51d39481444b74380cbb3d1d8269e1e70bac46fb5a1e3bd7f7502ca2c51800',mode:0o644},
 });
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const digest = bytes => 'sha256:' + hash(bytes);
