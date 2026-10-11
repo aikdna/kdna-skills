@@ -34,5 +34,6 @@ Read the selected file after operator permission:
   node "$PACKAGE_ROOT/node_modules/@aikdna/kdna-cli/src/cli.js" read /absolute/selected.kdna --mode catalog --budget 1000000 --allow-read
 
 See mcp-server/README.md for operator-bound MCP startup and packed installation.
-Creation uses the separate kdna-creator Skill and its current Studio CLI binding.
+For native creation and revision, use this same CLI with the kdna-creator Skill.
+Studio creation is an optional separate installation; see the Skill's Studio references.
 EOF

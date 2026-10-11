@@ -30,8 +30,10 @@ The concrete process/stdio boundary is [MCP README](../mcp-server/README.md).
    actual user/system/developer/Host authority.
 
 Guide structure, source stdio, installed stdio, named Host delivery, editorial
-adoption and human review are distinct checks. The support matrix makes no
-named Host support claim. The supplied fixtures and real CLI establish
+adoption and human review are distinct checks. The support matrix records one
+bounded Codex CLI 0.154.0 native public Read and task-use observation; other
+named Hosts remain unassessed. This case does not certify a brand, another
+route, general answer quality or human acceptance. The supplied fixtures and real CLI establish
 reproducible process comparisons without changing public protocol expectations.
 Creator uses a separate authoring interface and permission channel.
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": 9,
+  "schema_version": 10,
   "loader_skill": "kdna-loader/SKILL.md",
   "mcp_server": "mcp-server/",
   "overall_status": "local_stdio_adapter",
@@ -30,18 +30,45 @@
     "transport": "local_stdio_only"
   },
   "evidence_dimensions": {
-    "named_host_delivery": "not_run",
-    "semantic_adoption": "not_run",
+    "named_host_delivery": "observed_codex_cli_case_only",
+    "semantic_adoption": "observed_codex_cli_case_only",
     "real_human_acceptance": "not_run"
   },
   "agents": [
     {
       "id": "codex",
       "name": "Codex",
-      "support": "unassessed",
+      "support": "observed_native_public_read_case",
       "adapter": "operator_bound_local_stdio",
       "skill_path": "~/.codex/skills/kdna-loader/",
-      "guide": "integrations/codex/README.md"
+      "guide": "integrations/codex/README.md",
+      "observation": {
+        "date": "2026-10-11",
+        "host": "Codex CLI",
+        "host_version": "0.154.0",
+        "model": "not_separately_recorded",
+        "input": "one synthetic native public asset",
+        "task": "apply project-update judgments while retaining uncertainty and action limits",
+        "tools": [
+          "kdna.binding-status",
+          "kdna.catalog",
+          "kdna.read",
+          "kdna.read",
+          "kdna.cancel"
+        ],
+        "result": "two ready reads from one catalog snapshot; task answer used the judgments; binding closed; exit 0",
+        "installation": "retained verified offline archive graph; not public registry cold acquisition",
+        "startup": "temporary trusted command-line binding; no persistent global configuration edit; other execution surfaces disabled for this turn",
+        "not_run": [
+          "kdna.expand",
+          "MCP creation",
+          "Studio protection Host",
+          "Codex Desktop",
+          "Codex IDE",
+          "real human acceptance"
+        ],
+        "certification": "none"
+      }
     },
     {
       "id": "claude-code",
@@ -80,5 +107,6 @@
     "source_stdio": "mcp-server/test/mcp-protocol.test.mjs",
     "direct_cli": "mcp-server/test/explicit-cli-flow.test.mjs",
     "packed_stdio": "mcp-server/test/packed-consumer.test.mjs"
-  }
+  },
+  "evidence_scope": "This matrix covers named MCP Host routes. Only the recorded Codex CLI case is observed; direct CLI authoring and reading are separate capabilities. Guide availability is not Host certification."
 }

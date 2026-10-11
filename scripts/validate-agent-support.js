@@ -7,12 +7,13 @@ const ROOT = path.resolve(__dirname, "..");
 const tools = ["kdna.binding-status", "kdna.inspect", "kdna.catalog", "kdna.read", "kdna.expand", "kdna.cancel"];
 const runtime = {"mcp":"0.8.0-rc.native-sections.1","cli":"0.39.0","core":"0.37.2","read":"0.11.3","read_contract":"kdna.read/0.7.0-candidate","private":true,"publication":"local-stable-candidate","publication_scope":"CLI/Core/Read bind retained local stable candidate archives; their registry publication is recorded separately. This MCP server remains source-only with npm publication disabled by private:true."};
 const binding = {control_channel:"operator_or_trusted_launcher_OS_argv",model_tools_can_bind:false,initialize_can_bind:false,finite_assets:1,persistent_permission:false,transport:"local_stdio_only"};
-const dimensions = {named_host_delivery:"not_run",semantic_adoption:"not_run",real_human_acceptance:"not_run"};
+const dimensions = {"named_host_delivery":"observed_codex_cli_case_only","semantic_adoption":"observed_codex_cli_case_only","real_human_acceptance":"not_run"};
+const codexObservation = {"date":"2026-10-11","host":"Codex CLI","host_version":"0.154.0","model":"not_separately_recorded","input":"one synthetic native public asset","task":"apply project-update judgments while retaining uncertainty and action limits","tools":["kdna.binding-status","kdna.catalog","kdna.read","kdna.read","kdna.cancel"],"result":"two ready reads from one catalog snapshot; task answer used the judgments; binding closed; exit 0","installation":"retained verified offline archive graph; not public registry cold acquisition","startup":"temporary trusted command-line binding; no persistent global configuration edit; other execution surfaces disabled for this turn","not_run":["kdna.expand","MCP creation","Studio protection Host","Codex Desktop","Codex IDE","real human acceptance"],"certification":"none"};
 const {verifySource} = require("../mcp-server/scripts/verify-runtime-candidates.mjs");
 function validateAgentSupport(root = ROOT, supplied) {
   const matrix = supplied ?? JSON.parse(fs.readFileSync(path.join(root,"docs/agent-support-matrix.json"),"utf8"));
   const pkg = JSON.parse(fs.readFileSync(path.join(root,"mcp-server/package.json"),"utf8"));
-  assert.equal(matrix.schema_version,9);
+  assert.equal(matrix.schema_version,10);
   assert.equal(matrix.overall_status,"local_stdio_adapter");
   assert.deepEqual(matrix.candidate_runtime,runtime);
   assert.equal(pkg.version,runtime.mcp); assert.equal(pkg.private,true);
@@ -26,7 +27,14 @@ function validateAgentSupport(root = ROOT, supplied) {
   assert.deepEqual(matrix.agents.map(a=>a.id),["codex","claude-code","opencode","cursor","copilot-compatible"]);
   const fence = String.fromCharCode(96).repeat(3);
   const vectors = matrix.agents.map(agent=>{
-    assert.equal(agent.support,"unassessed"); assert.equal(agent.adapter,"operator_bound_local_stdio");
+    assert.equal(agent.adapter,"operator_bound_local_stdio");
+    if (agent.id === "codex") {
+      assert.equal(agent.support,"observed_native_public_read_case");
+      assert.deepEqual(agent.observation,codexObservation);
+    } else {
+      assert.equal(agent.support,"unassessed");
+      assert.equal(Object.hasOwn(agent,"observation"),false);
+    }
     const guide = fs.readFileSync(path.join(root,agent.guide),"utf8");
     const blocks = [...guide.matchAll(new RegExp(fence+"json\\s*\\n([\\s\\S]*?)\\n"+fence,"g"))];
     assert.equal(blocks.length,1,agent.guide);
@@ -39,7 +47,7 @@ function validateAgentSupport(root = ROOT, supplied) {
   for (const token of ["argv","mandatory","not_evaluated","kdna.cancel","--session --allow-read"]) assert.ok(loader.includes(token),token);
   const contract=fs.readFileSync(path.join(root,"docs/KDNA_LOADER_CONTRACT.md"),"utf8");
   assert.match(contract,/not a second public/);
-  return {status:"SOURCE_AND_GUIDE_STRUCTURE_VALID",runtime,tools,source,guide_vectors:vectors,proof_limit:"Source archives, graph and guide structure only; actual process tests run separately. No named Host, semantic adoption or human acceptance."};
+  return {status:"SOURCE_AND_GUIDE_STRUCTURE_VALID",runtime,tools,source,guide_vectors:vectors,proof_limit:"Source archives, graph and guide structure only; actual process tests run separately. The separately recorded Codex CLI case does not generalize to other Hosts, routes or human acceptance."};
 }
 module.exports={validateAgentSupport};
 if(require.main===module) {

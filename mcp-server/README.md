@@ -99,10 +99,12 @@ legacy load/plan-load/Runtime Capsule adaptation are absent.
 
 ## Install and test from source
 
-Use Node.js with that release's bundled npm. This batch requires Node.js 22 or
-later (the package's declared minimum) and is verified on Node.js 22.23.1 and
-24.18.0, with 22.23.1 recommended; other versions are not covered by this
-batch's verification. From `mcp-server/`:
+For an Agent-led task, begin with the [getting-started guide](https://github.com/aikdna/kdna-skills/blob/main/docs/GETTING_STARTED.md).
+The installer requires Node.js 22 or later, npm, `bash` and `tar`. The current
+CLI 0.39.0 / Core 0.37.2 / Read 0.11.3 graph was exercised with Node.js 22.23.1
+and npm 11.17.0. Earlier companion graphs' runtime checks do not verify this
+one on additional Node versions. The CI matrix is a set of required checks,
+not evidence that every run has already passed. From `mcp-server/`:
 
 ```sh
 npm ci --offline --ignore-scripts --omit=optional --no-audit --no-fund

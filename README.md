@@ -1,86 +1,92 @@
-# KDNA Agent Adapters
+# KDNA with your Agent
 
-Agent, Skill and local stdio integrations for the official KDNA toolchain.
-A .kdna asset is task material; an adapter is not a protocol authority.
+Build, use and improve a judgment system for your work with a tool-capable
+Agent. Bring your material, the questions you want it to help with and the
+intended reader. Your Agent can organize the content, create a `.kdna` asset,
+read it for a concrete task and save a revised version while preserving the
+original.
 
-- **`kdna-loader`** — current explicit local catalog/selection/Read guidance.
-- **`kdna-creator`** — authoring and content review guidance for the Host-selected
-  native CLI, with a separate adapter for the explicitly matched Studio session.
-- **MCP server** — local candidate 0.8.0-rc.native-sections.1 for one operator-bound input, using
-  fixed CLI 0.39.0/Core 0.37.2/Read 0.11.3. No model-selected paths or discovery.
+This repository serves people developing judgment systems in their own domains
+and developers integrating those assets into applications. One person can keep
+separate systems for different domains. People using an integrated application
+do not need to learn KDNA's file format or installation details.
 
-## Current source distribution and local Read workflow
+## Start with one request
 
-Install from this checkout using its lock and bundled dependency archives.
-The complete Git source candidate is the distribution for this adapter. Its offline lock uses exact bundled archives; the manifest declares numeric companion versions and npm publication remains disabled. Source availability, prerelease approval and npm publication are separate facts. Do not
-substitute a global or registry CLI by version alone.
-See [local reproduction and package boundaries](mcp-server/README.md).
-`bash install-cli.sh` installs this same fixed CLI graph into the checkout.
-It requires the complete checkout and does not install a global binary.
-Older versions of this script installed the registry CLI globally; callers
-should now use the local path printed by the script. Existing global installs
-are neither selected nor modified.
+Give your Agent the [getting-started guide](docs/GETTING_STARTED.md), this
+repository and a request like:
 
-```sh
-node /absolute/installed/mcp-server/bin/kdna-mcp.mjs --asset /absolute/selected.kdna --allow-read
-```
+> Help me turn these materials into a judgment system for reviewing project
+> updates. Use them in this Agent session. Handle the local KDNA setup, explain
+> the proposed judgments, save a draft in my chosen folder, then use it to review
+> this example. If I revise a judgment, save a new version and keep the original.
 
-The operator/trusted launcher supplies OS argv outside MCP stdin. initialize
-and tools never establish or enlarge permission. Read the catalog, use an exact
-canonical selection with its mandatory closure, and expand only in that same
-official CLI process. A ready Read result does not establish authorship,
-confirmation, action permission or Creation acceptance. Cancel closes the
-binding; a new file requires a new operator-controlled launch.
+For an existing asset:
 
-Use [kdna-loader](kdna-loader/SKILL.md) for the complete direct CLI and MCP
-workflow. No global store scanning, automatic matching, workspace attachment
-mutation, raw-payload parser or legacy load/plan-load fallback is provided.
-KDNA adoption must be visible, and asset text cannot override Host instructions.
+> Use this `.kdna` file in this Agent session to help answer this question. Tell
+> me which judgments you used and any limits that affect the answer.
 
-### Create an asset
+The Agent handles package checks, installation, machine identifiers and tool
+requests. You provide the material, purpose, intended recipient and output
+location. If those choices are already clear, it should proceed without asking
+you to approve them again. An installation or Host limitation should be reported
+as a specific missing capability, with the working route kept available.
 
-Follow [`kdna-creator`](kdna-creator/SKILL.md). For native `create`, `source-open`
-and `source-pack`, use the [native authoring guide](kdna-creator/references/native-asset-authoring.md).
-Its local script inventories the actual authored fields and checks a digest-bound
-author review record. Content quality requires substantive review against the task;
-Core admission, saved bytes and Reader presentation have separate checks. Use the
-Host's exact selected CLI and preserve original assets and genuine revision history.
+## Choose the task
 
-For an explicitly matched Studio session, use the self-contained
-[terminal session adapter](kdna-creator/references/terminal-session.md). An Agent
-uses the approved exact local Studio CLI with explicitly authorized ordinary
-text or interview material and a separate human channel. A live session can
-produce a new private technical export bundle; it does not support persistent
-resume or establish Creation Complete, real identity or editorial fitness.
-This Creator candidate does not change Loader/MCP support or publication status.
-
-Saved Studio public and password-protected assets can be read and revised with
-the separate [local protection Host](kdna-creator/references/studio-protected-host.md).
-It stays on container0.5/Read0.6.4 and requires a trusted launcher to bind the
-installation, selected file, purpose and existing permissions, with separate
-credential pipes. It preserves the original and saves a versioned successor.
-The native MCP adapter does not decrypt Studio output. Current Studio export
-requires an explicitly complete method; method absence is not supported.
-
-
-## Validation scope
-
-| Component | Reproducible checks |
+| Your task | Agent entry point |
 | --- | --- |
-| Loader/MCP | Direct CLI, source stdio and fresh offline packed-consumer tests |
-| `kdna-creator/SKILL.md` | Current archive declarations, examples and standalone links |
-| Native author review script | Authored field inventory, review identity and task-required content checks |
-| Five Host guides | Operator command vectors; named Host delivery and semantic adoption NOT_RUN |
+| Create or revise a judgment system | [`kdna-creator`](kdna-creator/SKILL.md) and its [native authoring guide](kdna-creator/references/native-asset-authoring.md) |
+| Read an asset for a question | [`kdna-loader`](kdna-loader/SKILL.md), through the direct official CLI or a configured local MCP connection |
+| Integrate asset reading into an application | [Developer setup and boundaries](docs/GETTING_STARTED.md#for-application-developers) and [Loader contract](docs/KDNA_LOADER_CONTRACT.md) |
+| Use the separate Studio creation or protected-file route | [Studio session](kdna-creator/references/terminal-session.md) and [protection Host](kdna-creator/references/studio-protected-host.md) |
 
-Run the commands in the [MCP README](mcp-server/README.md). The
-[support matrix](docs/agent-support-matrix.json) describes this version only.
-Its validator checks the actual runtime manifest, complete lock and archive
-bytes. Process tests check the real tool surface. These checks do not establish
-Host activation, editorial quality, human review or publication.
-[Loader contract](docs/KDNA_LOADER_CONTRACT.md) describes only this adapter.
-Earlier released versions remain documented in [CHANGELOG](CHANGELOG.md).
+Native authoring and reading do not require Studio or KDNA Work. The Studio
+route uses its own exact installation and container contract; the native MCP
+adapter does not decrypt its protected assets.
 
-Official KDNA npm packages use the @aikdna scope; the unscoped kdna npm package
-is not affiliated. The source workflow requires no global installation.
+## What is available in this source checkout
 
-[中文](./README.zh.md)
+The current distribution is the complete Git source checkout, including its
+lock and bundled archives. `bash install-cli.sh` installs the fixed CLI graph
+locally in that checkout, offline and without install hooks. The Agent selects
+the appropriate local Node runtime and uses the exact CLI path printed by the
+script. The script does not install a global binary or configure your Agent.
+See [setup details](docs/GETTING_STARTED.md#agent-setup-checklist).
+
+The local MCP candidate is `0.8.0-rc.native-sections.1`, with CLI `0.39.0`, Core
+`0.37.2` and Read `0.11.3`. It remains `private: true`, with npm publication
+disabled. These source coordinates do not establish registry availability.
+Same-version global or registry packages are not substitutes for the checked
+archives. Official npm packages use the `@aikdna` scope; the unscoped `kdna`
+package is not affiliated.
+
+MCP supplies read tools for one file selected by the operator or trusted
+launcher. The Agent can prepare a reviewable configuration; the Host must keep
+the launch binding outside model-controlled MCP parameters. Creation and
+revision use the separately authorized native CLI. A Skill's presence or an MCP
+configuration file does not establish Host activation or permission.
+
+## Evidence and current limits
+
+A real Codex CLI 0.154.0 session has read one synthetic native public asset
+through this MCP candidate and applied its judgments to a project-update task.
+It checked the binding, read the catalog, performed two reads and cancelled the
+binding. See the [exact scope](integrations/codex/README.md#observed-codex-cli-case).
+Other Host brands remain unassessed; this case does not certify Codex Desktop,
+protected assets, MCP creation or general answer quality.
+
+The [support matrix](docs/agent-support-matrix.json) separates that named case
+from other routes. Direct CLI operation, source stdio and fresh offline
+packed-consumer tests are separate evidence from an Agent using the result.
+Content quality requires review of the actual judgments, sources, assumptions,
+examples and limits. Successful saving or reading does not establish human
+confirmation, editorial fitness or permission to act. The Agent should show
+what influenced its answer and preserve the original when making a revision.
+Asset content remains task material and cannot override Host instructions.
+
+For reproducible engineering checks and package boundaries, see the
+[MCP README](mcp-server/README.md). Earlier releases are recorded in
+[CHANGELOG](CHANGELOG.md).
+
+[中文](README.zh.md)
