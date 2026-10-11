@@ -19,7 +19,7 @@ clear and authorized, proceed without another confirmation. Otherwise ask one
 plain-language question for the missing substantive choice. Do not ask the user
 to construct a digest, permission record, tuple, receipt or machine identifier.
 
-This candidate uses CLI 0.39.0-rc.native-sections.3, Core 0.37.1-rc.browser.1 and Read package 0.11.2-rc.browser.1 implementing
+This candidate uses CLI 0.39.0, Core 0.37.2 and Read package 0.11.3 implementing
 `kdna.read/0.7.0-candidate`. Resolve the accepted local installation explicitly. Do not use
 a global CLI, a same-version registry replacement, a private parser or raw
 payload fallback. This MCP/native CLI route does not accept protected browser assets or supply a browser credential channel. The separately supported protected Studio/browser route requires its own trusted Host and exact tuple; do not invent a password fallback here.

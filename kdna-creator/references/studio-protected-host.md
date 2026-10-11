@@ -1,14 +1,16 @@
 # Reopen and revise a locally protected Studio asset
 
-Use this source-only Host with the exact [Studio archive binding](current-studio-binding.json): StudioCLI `0.13.0-rc.components.2`, StudioCore `4.0.0-rc.components.2`, Core `0.37.1-rc.browser.1` and Read `0.11.2-rc.browser.1`. It consumes container `0.5.0` through Read `0.6.4`. The native CLI and MCP use container `0.6`; they do not decrypt or revise this Studio output.
+Use this source-only Host with the current local stable candidate and exact [Studio archive binding](current-studio-binding.json): StudioCLI `0.13.0`, StudioCore `4.0.0`, Core `0.37.2` and Read `0.11.3`. It consumes container `0.5.0` through Read `0.6.4`. The native CLI and MCP use container `0.6`; they do not decrypt or revise this Studio output.
 
-Obtain the complete matching StudioCLI source checkout, including its tracked `vendor/` archives, and install its locked graph with Node 22 and npm 10.9.8:
+Use Node 22.23.1 and npm 11.17.0 with an operator-approved exact installation. These are local stable candidate archives; this binding does not establish their availability from the public registry.
+
+The matching StudioCLI source checkout uses exact registry coordinates in its lock. Its tracked `vendor/` archives do not populate npm's cache automatically. Once all required locked registry archives have been supplied to the cache, the source checkout can use:
 
 ```sh
 npm ci --offline --ignore-scripts --omit=optional --no-audit --no-fund
 ```
 
-Run that command in the matching StudioCLI checkout. A packed StudioCLI tarball alone does not carry its dependency archives. The Host checks the frozen CLI files, public binding, declared installed package members and dependency resolution before importing the public SDK. The launcher must independently approve and protect this installation against concurrent modification. Content hashes alone do not authenticate the launcher or provider.
+For an unpublished local candidate, install in a separate consumer using explicit local file dependencies and overrides for the four bound archives and the complete required dependency closure from the exact StudioCLI lock. Verify each input archive against that lock and the archive binding, then install with a fresh cache using `--offline --ignore-scripts --omit=optional --no-audit --no-fund`. Pass that actual canonical installation to the trusted launcher. This route does not use the default public registry lookup. A packed StudioCLI tarball alone does not carry its dependency archives. The Host checks the frozen CLI files, public binding, declared installed package members and dependency resolution before importing the public SDK. The launcher must independently approve and protect this installation against concurrent modification. Content hashes alone do not authenticate the launcher or provider.
 
 Create and export through the [terminal session](terminal-session.md), using explicitly authorized material and an actual human or delegated Agent adoption channel. The current Studio exporter requires an explicitly complete method, including its required roles. An ordinary conclusion or result can use that method; a method-absent proposal currently fails with `CREATION_METHOD_REQUIRED`. Do not fabricate a method to fill the form. Use the native authoring route when its contract fits the intended asset. For password export, the trusted launcher supplies `--password-fd` on a separate pre-opened pipe.
 
