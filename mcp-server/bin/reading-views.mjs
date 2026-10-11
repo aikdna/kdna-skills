@@ -11,6 +11,25 @@ const envelopeKeys = ["contract", "mode", "request_id", "status", "tuple", "asse
 const contentKeys = ["declarations", "catalog", "selected", "closure", "references", "relationships", "missing", "provenance", "asset_capability", "asset_index", "expansion_handles"];
 const handleKeys = ["binding_kind", "handle_id", "asset", "tuple", "origin", "issuing_operation_id", "issuing_request_digest", "anchor", "target", "scope", "issued_at", "expires_at", "host_id", "host_epoch"];
 const exact = (v, names) => object(v) && Object.keys(v).length === names.length && names.every(k => Object.hasOwn(v, k));
+const byteAdmissionContract = v => exact(v, ["id", "version", "definition_digest"]) && v.id === "kdna.section-bytes-node" && v.version === "0.1.1-candidate" && v.definition_digest === "sha256:8358dfe622117bb88866d7f72ca15e21961a87b37e108978ed05015b102277ef";
+const uint = v => Number.isSafeInteger(v) && v >= 0;
+const identifier = v => typeof v === "string" && v.length > 0 && [...v].length <= 256 && !/[\u0000-\u001f\u007f-\u009f\ud800-\udfff]/u.test(v);
+const entryName = v => typeof v === "string" && [...v].length <= 4096 && /^(?!\/)(?!.*(?:^|\/)(?:\.|\.\.)(?:\/|$))(?!.*\/\/)(?!.*\/$)[^\\\u0000-\u001f\u007f-\u009f]+$/u.test(v);
+const sha = v => typeof v === "string" && /^sha256:[0-9a-f]{64}$/.test(v);
+const singleRangePurposes = ["zip_end", "zip_directory", "zip_local_header", "zip_local_name", "mimetype", "manifest", "whole_after_authorization", "zip_directory_header", "zip_directory_name", "section_table_after_authorization", "section_content_after_authorization", "resource_after_authorization", "section_structure_after_authorization", "zip_locator_local_signature", "zip_locator_local_header", "zip_locator_directory_signature", "zip_locator_directory_header", "zip_locator_directory_name", "zip_locator_local_name", "zip_locator_eocd", "zip_comment", "checksum_document_after_authorization", "checksum_member_after_authorization", "signature_document_after_authorization", "signature_member_after_authorization"];
+const rangeBytes = v => exact(v, ["offset_bytes", "length_bytes"]) && uint(v.offset_bytes) && uint(v.length_bytes);
+function byteObservation(v) {
+  if (v === null) return true;
+  if (!exact(v, ["contract", "input_kind", "input_byte_length", "ownership_copy", "capture", "access_ranges", "filesystem_reads"]) || !byteAdmissionContract(v.contract) || v.input_kind !== "owned_uint8array" || !uint(v.input_byte_length) || !rangeBytes(v.ownership_copy) || v.ownership_copy.offset_bytes !== 0 || v.ownership_copy.length_bytes !== v.input_byte_length || v.filesystem_reads !== 0 || !Array.isArray(v.access_ranges)) return false;
+  const c = v.capture;
+  if (c !== null && (!exact(c, ["capture_id", "input_byte_length", "manifest_bytes_digest", "zip_directory_bytes_digest", "table_frames", "identity_scope"]) || !identifier(c.capture_id) || !uint(c.input_byte_length) || !sha(c.manifest_bytes_digest) || !sha(c.zip_directory_bytes_digest) || c.identity_scope !== "observed_metadata_and_loaded_sections_only" || !Array.isArray(c.table_frames) || !c.table_frames.every(row => exact(row, ["section_id", "member", "offset_bytes", "length_bytes", "digest"]) && identifier(row.section_id) && entryName(row.member) && uint(row.offset_bytes) && uint(row.length_bytes) && row.length_bytes > 0 && sha(row.digest)))) return false;
+  return v.access_ranges.every(row => exact(row, ["offset_bytes", "length_bytes", "purpose"]) ? uint(row.offset_bytes) && uint(row.length_bytes) && singleRangePurposes.includes(row.purpose) : exact(row, ["purpose", "ranges"]) && ["section_structure_after_authorization", "section_interpretation_after_authorization"].includes(row.purpose) && Array.isArray(row.ranges) && row.ranges.length >= 1 && row.ranges.length <= 4096 && row.ranges.every(rangeBytes));
+}
+function byteAdmissionRejection(v) {
+  // Recognize the pinned official no-body layout only. This does not parse,
+  // validate an asset, grant authority or reinterpret its original diagnosis.
+  return exact(v, ["contract", "request_id", "status", "reason", "stage", "diagnostic", "input_observation", "snapshot"]) && byteAdmissionContract(v.contract) && ["rejected", "unsupported"].includes(v.status) && (v.request_id === null || identifier(v.request_id)) && typeof v.reason === "string" && /\S/u.test(v.reason) && ["input", "metadata", "authorization", "content", "semantic", "integrity"].includes(v.stage) && v.snapshot === null && (v.diagnostic === null || exact(v.diagnostic, ["field", "subject"]) && (v.diagnostic.field === null || typeof v.diagnostic.field === "string") && (v.diagnostic.subject === null || identifier(v.diagnostic.subject))) && byteObservation(v.input_observation);
+}
 const unavailable = () => fail("MCP_TASK_VIEW_UNAVAILABLE", "This official result cannot be represented completely by the task view. Request full presentation explicitly.");
 const stale = () => fail("MCP_REFERENCE_UNAVAILABLE", "The reference is absent, expired or outside this live operator-bound session. A reference grants no permission.");
 function summaryFields(value, kept, proof, required = []) {
@@ -74,7 +93,9 @@ export class ReadingViews {
     if (!Number.isSafeInteger(viewBudget) || viewBudget < 0 || viewBudget > 1000000) unavailable();
     // Complete official no-body controls/rejections keep every causal field.
     // They never issue an audit reference or disguise a refusal as a read.
-    if ((value?.channel === "no_body_control") || (value?.status === "rejected" && value.body === null && value.body_bytes === 0) || (value?.channel === "read_envelope" && value.envelope?.status === "rejected" && value.envelope.content === null)) {
+    const byteRejected = byteAdmissionRejection(value);
+    if (object(value) && (value.contract?.id === "kdna.section-bytes-node" || Object.hasOwn(value, "input_observation")) && !byteRejected) unavailable();
+    if (byteRejected || (value?.channel === "no_body_control") || (value?.status === "rejected" && value.body === null && value.body_bytes === 0) || (value?.channel === "read_envelope" && value.envelope?.status === "rejected" && value.envelope.content === null)) {
       const model = { contract: { id: "kdna.mcp.task-presentation", version: "0.1.0" }, status: "rejected", official_result: value, authorization: { action_authorized: false }, audit: null, budget: { view_limit_bytes: viewBudget } };
       if (bytes(model) > viewBudget) fail("MCP_TASK_VIEW_BUDGET_EXCEEDED", "The complete refusal view requires " + bytes(model) + " UTF-8 bytes; no partial result was delivered.");
       return model;

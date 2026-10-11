@@ -160,6 +160,12 @@ result, `status: rejected` and `audit: null` in the task representation. Change
 the budget, explicitly choose full, or start a new authorized session only
 when the task and permission permit it.
 
+The pinned `kdna.section-bytes-node/0.1.1-candidate` admission refusal is also
+supported. Its reason, stage, diagnostic and complete input observation remain
+in `official_result`, including a null snapshot. It has no author body and
+issues no audit or expansion reference. Unknown contract definitions or
+additional fields require an explicit full presentation; they are not guessed.
+
 The earlier Codex CLI 0.154.0 case remains a full-presentation observation. A
 separate task-presentation model turn batched three judgments in one ready read
 and used them while retaining uncertainty, scope and signature-policy limits.

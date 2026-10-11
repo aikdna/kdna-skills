@@ -24,6 +24,44 @@ function result({ snapshot = "snapshot:a", epoch = "epoch:a", version = "1.0.0",
   } };
 }
 const code = expected => error => error.code === expected;
+function byteRefusal() {
+  const contract = { id: "kdna.section-bytes-node", version: "0.1.1-candidate", definition_digest: "sha256:8358dfe622117bb88866d7f72ca15e21961a87b37e108978ed05015b102277ef" };
+  return { contract, request_id: "cli:request", status: "rejected", reason: "READ_CORE_INVALID", stage: "input", diagnostic: null, snapshot: null,
+    input_observation: { contract, input_kind: "owned_uint8array", input_byte_length: 36374, ownership_copy: { offset_bytes: 0, length_bytes: 36374 }, capture: null, access_ranges: [{ offset_bytes: 0, length_bytes: 4, purpose: "zip_locator_local_signature" }], filesystem_reads: 0 } };
+}
+test("known native owned-byte refusals retain every cause and observation with no stored references", () => {
+  for (const mutate of [() => {}, v => { v.status = "unsupported"; v.reason = "READ_UNSUPPORTED_VERSION"; v.stage = "metadata"; v.diagnostic = { field: "/payload.kdnab", subject: null }; }, v => { v.request_id = null; v.input_observation = null; }, v => { v.diagnostic = { field: "/subject", subject: "😀".repeat(200) }; }, v => {
+    const d = "sha256:" + "a".repeat(64);
+    v.stage = "semantic"; v.diagnostic = { field: "/method", subject: "j:a" };
+    v.input_observation.capture = { capture_id: "capture:a", input_byte_length: 36374, manifest_bytes_digest: d, zip_directory_bytes_digest: d, table_frames: [{ section_id: "section:a", member: "sections/pack-a", offset_bytes: 10, length_bytes: 4, digest: d }], identity_scope: "observed_metadata_and_loaded_sections_only" };
+    v.input_observation.access_ranges.push({ purpose: "section_interpretation_after_authorization", ranges: [{ offset_bytes: 10, length_bytes: 4 }] });
+  }]) {
+    const refusal = byteRefusal(); mutate(refusal);
+    const { views } = setup({ maxBytes: 0, maxRecords: 0, maxHandles: 0 }), view = views.task(refusal, budget);
+    assert.equal(view.status, "rejected"); assert.deepEqual(view.official_result, refusal);
+    assert.equal(view.authorization.action_authorized, false); assert.equal(view.audit, null);
+    assert.equal(view.content, undefined); assert.equal(view.handle_ref, undefined);
+    assert.equal(views.totalBytes, 0); assert.equal(views.records.size, 0); assert.equal(views.handles.size, 0);
+    let boundary = Buffer.byteLength(JSON.stringify(view));
+    for (;;) { const next = Buffer.byteLength(JSON.stringify({ ...view, budget: { view_limit_bytes: boundary } })); if (next === boundary) break; boundary = next; }
+    assert.equal(Buffer.byteLength(JSON.stringify(views.task(refusal, boundary))), boundary);
+    assert.throws(() => views.task(refusal, boundary - 1), code("MCP_TASK_VIEW_BUDGET_EXCEEDED"));
+    assert.equal(views.totalBytes, 0);
+  }
+});
+test("unknown native rejection contracts, fields, bodies and observations remain unavailable", () => {
+  const changes = [v => { v.contract.id = "other"; }, v => { v.contract.version = "0.2.0"; }, v => { v.contract.definition_digest = "sha256:" + "b".repeat(64); }, v => { v.future = {}; }, v => { v.snapshot = {}; }, v => { v.status = "accepted"; }, v => { v.reason = " "; }, v => { v.stage = "future"; }, v => { v.diagnostic = { field: null, subject: null, body: {} }; }, v => { v.input_observation.future = {}; }, v => { v.input_observation.ownership_copy.length_bytes--; }, v => { v.input_observation.capture = { body: {} }; }, v => { v.input_observation.access_ranges[0].purpose = "future"; }, v => { v.input_observation.access_ranges.push({ purpose: "section_structure_after_authorization", ranges: [{ offset_bytes: 0, length_bytes: 1, body: {} }] }); }, v => { v.input_observation.filesystem_reads = 1; }, v => { delete v.diagnostic; }, v => { v.body = null; }, v => { v.body = null; v.body_bytes = 0; }, v => { v.contract.id = "other"; v.body = null; v.body_bytes = 0; }];
+  for (const mutate of changes) {
+    const v = byteRefusal(), { views } = setup(); mutate(v);
+    assert.throws(() => views.task(v, budget), code("MCP_TASK_VIEW_UNAVAILABLE"));
+    assert.equal(views.totalBytes, 0); assert.equal(views.records.size, 0); assert.equal(views.handles.size, 0);
+  }
+  for (const member of ["/body", "sections/../body", "sections//body", "sections/body/", "sections\\body", "a".repeat(4097)]) {
+    const v = byteRefusal(), d = "sha256:" + "a".repeat(64), { views } = setup();
+    v.input_observation.capture = { capture_id: "capture:a", input_byte_length: 36374, manifest_bytes_digest: d, zip_directory_bytes_digest: d, table_frames: [{ section_id: "section:a", member, offset_bytes: 10, length_bytes: 4, digest: d }], identity_scope: "observed_metadata_and_loaded_sections_only" };
+    assert.throws(() => views.task(v, budget), code("MCP_TASK_VIEW_UNAVAILABLE")); assert.equal(views.totalBytes, 0);
+  }
+});
 test("task contains complete authored conditions, exceptions, unresolved and distinct responsibility states; audit returns the exact past result", () => {
   const { views } = setup(), full = result(), view = views.task(full, budget);
   assert.deepEqual(view.content.closure, full.envelope.content.closure);

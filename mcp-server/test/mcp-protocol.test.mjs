@@ -294,6 +294,34 @@ test("public rejection and no-body budget results remain explicit without invent
   const inspected = decoded(await corrupt.call("kdna.inspect")); assert.equal(inspected.status, "rejected");
 });
 
+test("task presentation preserves the official native admission rejection of damaged input", async t => {
+  const s = launch(t, { fixture: "hostile-native-truncated.kdna" }); await s.initialize();
+  const defaultResponse = await s.call("kdna.catalog", budget), fullResponse = await s.call("kdna.catalog", { ...budget, presentation: "full" });
+  const taskResponse = await s.call("kdna.catalog", { ...budget, presentation: "task", view_budget_bytes: 1000000 });
+  for (const response of [defaultResponse, fullResponse, taskResponse]) {
+    assert.equal(response.result.isError, true);
+    assert.deepEqual(Object.keys(response.result).sort(), ["content", "isError"]);
+    assert.equal(response.result.content.length, 1); assert.equal(response.result.content[0].type, "text");
+  }
+  const full = decoded(fullResponse), view = decoded(taskResponse);
+  assert.equal(full.contract.id, "kdna.section-bytes-node"); assert.equal(full.contract.version, "0.1.1-candidate");
+  assert.equal(full.status, "rejected"); assert.equal(full.reason, "READ_CORE_INVALID"); assert.equal(full.stage, "input");
+  assert.equal(full.snapshot, null); assert.equal(full.diagnostic, null);
+  assert.equal(full.input_observation.input_byte_length, fs.statSync(path.join(fixtures, "hostile-native-truncated.kdna")).size);
+  assert.ok(full.input_observation.access_ranges.length > 0);
+  const causal = ({ request_id, ...value }) => value;
+  assert.deepEqual(causal(decoded(defaultResponse)), causal(full));
+  assert.deepEqual(causal(view.official_result), causal(full));
+  assert.equal(view.status, "rejected"); assert.equal(view.audit, null); assert.equal(view.content, undefined);
+  assert.equal(view.authorization.action_authorized, false);
+  const short = await s.call("kdna.catalog", { ...budget, presentation: "task", view_budget_bytes: 1 });
+  assert.equal(short.result.isError, true); assert.equal(decoded(short).code, "MCP_TASK_VIEW_BUDGET_EXCEEDED");
+  assert.equal(decoded(short).official_result, undefined);
+  assert.equal(decoded(await s.call("kdna.audit", { ...budget, audit_ref: "audit:not-issued" })).code, "MCP_REFERENCE_UNAVAILABLE");
+  assert.equal(decoded(await s.call("kdna.binding-status")).state, "bound");
+  await s.close();
+});
+
 test("technical inspection does not promote declared writer/read/action/Creation facts", async t => {
   const s = launch(t, { fixture: "graph-cross.kdna", env: { PATH: "/nonexistent-cli-path", NODE_PATH: "" } }); await s.initialize();
   const result = decoded(await s.call("kdna.inspect"));
