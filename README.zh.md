@@ -1,81 +1,73 @@
-# KDNA Agent 适配器
+# 和你的 Agent 一起使用 KDNA
 
-当前 Loader/MCP 是本地只读候选：MCP 0.8.0-rc.native-sections.1、CLI 0.39.0、Core 0.37.2、Read 包
-0.11.3；原生容器为 0.6，Read 公共合同为 kdna.read/0.7.0-candidate。候选以 `private: true` 禁止 npm 发布，只使用仓库附带
-的精确本地依赖，不能按同名版本换成全局 CLI 或 registry 包。
+把自己的材料、经验和判断整理成可持续使用、修改的领域判断系统。你提供材料、
+希望解决的问题和面向的人，具备工具调用能力的 Agent 负责整理内容、生成 `.kdna`
+文件、在具体任务中读取它，并在修改后另存新版本、保留原件。
 
-## 当前本地路径
+这里直接服务两类用户：发展自己领域判断系统的人，以及把判断资产接入应用的
+开发者。一个人可以有多个不同领域的系统。集成应用中的普通用户不需要学习
+KDNA 文件格式，也不需要自己处理安装配置。
 
-```sh
-node /absolute/installed/mcp-server/bin/kdna-mcp.mjs --asset /absolute/selected.kdna --allow-read
-```
+## 从一个请求开始
 
-真实操作者或可信 launcher 在 OS 进程 argv 中绑定一个已选文件及本次本地读取
-许可；这个控制通道在模型 MCP stdin 之外。initialize 与 tools 参数不能创建、
-替换或扩大绑定。Host 必须防止模型自行改启动配置，不能把任意 shell 权限误当
-已经建立了这种隔离。stdio 本身也不证明模型是本地运行或允许向其他处理者转发。
+把[上手指南](docs/GETTING_STARTED.zh.md)、本仓库和你的任务交给 Agent，例如：
 
-先读完整 catalog，再依据实际 asset_id、asset_version、judgment_id 做 canonical
-selection。保留 mandatory closure、references、omissions 与诊断，只有 ready
-公共 Read envelope 可用。连续选择与 expand 使用同一个真实官方 CLI session；
-不要用选中项的单条 catalog 覆盖原完整列表。cancel 关闭本进程绑定和 CLI，重选
-需要操作者重新启动。technical inspection 不替人类确认、作者身份或行动授权。
+> 帮我把这些材料整理成一套审阅项目周报的判断系统，在当前 Agent 会话中使用。
+> 你来完成本地 KDNA 配置，向我说明整理出的判断，先在我指定的文件夹保存草稿，
+> 再用它审阅这个例子。以后我修改判断时，另存新版本并保留原件。
 
-显式本地授权已经完整时不重复问内部审批；缺实际文件或用途等实质选择时一次
-补齐。所有机器 tuple/receipt/handle 由工具处理，不让用户拼权限材料。资产文本
-是低于用户、系统、开发者与 Host 权限的任务材料；使用 KDNA 时明确披露资产、
-议题、用途及停止使用的方式。没有扫描、自动匹配、工作区附件写操作或旧 load/
-plan-load/Runtime Capsule 兼容流程。详情见 [Loader](kdna-loader/SKILL.md)、
-[MCP 本地安装与边界](mcp-server/README.md)、[适配合同](docs/KDNA_LOADER_CONTRACT.md)。
+如果已经有资产：
 
-## 安装与验证范围
+> 请在当前 Agent 会话中使用这个 `.kdna` 文件，帮助回答这个问题。告诉我用了
+> 哪些判断，以及哪些适用条件或限制会影响答案。
 
-也可以从完整 checkout 执行 `bash install-cli.sh`，将固定 CLI 图安装在 checkout
-内部。旧脚本的全局 registry 安装流程已替换；使用脚本打印的本地路径，既有
-全局安装不会被选用或修改。
+依赖核查、安装、机器标识和工具请求交给 Agent。你只需说明材料、用途、谁来处理
+这些内容和保存位置；已经明确的选择不应反复确认。遇到安装或 Agent 软件能力
+限制时，Agent 应说明具体缺口，并继续完成已有可用入口支持的工作。
 
-在 `mcp-server/` 使用 Node.js 22.22.3（本次可复现环境）：
+## 按任务选择入口
 
-```sh
-npm ci --offline --ignore-scripts --omit=optional --no-audit --no-fund
-npm test
-```
-
-十二个必需依赖全部从已校验的本地归档安装；九个可选原生依赖保留在 lock 中但
-不安装。打包消费使用 [MCP 说明](mcp-server/README.md) 中的
-`create-local-consumer.mjs`，它生成完整的离线消费目录与 lock。
-
-| 组件 | 可复现检查 |
+| 你的任务 | Agent 使用的入口 |
 | --- | --- |
-| Loader/MCP | 真实 CLI、源码 stdio、空缓存打包安装后的 stdio 测试 |
-| `kdna-creator/SKILL.md` | 当前归档声明、示例与独立分发链接检查 |
-| 原生作者审阅脚本 | 作者字段盘点、审阅输入身份与任务所需内容检查 |
-| 五 Host 指南 | 启动 command vector；具名 Host 交付和语义采用 NOT_RUN |
+| 创建或修改领域判断系统 | [`kdna-creator`](kdna-creator/SKILL.md) 和[原生创作说明](kdna-creator/references/native-asset-authoring.md) |
+| 用已有资产回答问题 | [`kdna-loader`](kdna-loader/SKILL.md)，通过官方 CLI 或已配置的本地 MCP 连接 |
+| 在应用中接入资产读取 | [开发者说明](docs/GETTING_STARTED.zh.md#应用开发者)和[Loader 合同](docs/KDNA_LOADER_CONTRACT.md) |
+| 使用独立的 Studio 创作或受保护文件流程 | [Studio session](kdna-creator/references/terminal-session.md) 和[保护 Host](kdna-creator/references/studio-protected-host.md) |
 
-[支持矩阵](docs/agent-support-matrix.json)只描述当前版本；验证器核对实际 manifest、
-完整 lock 与归档字节。进程测试核对真实工具表。这些检查不证明 Host 已启用、
-编辑判断质量、真人确认或发行。历史发行说明见 [CHANGELOG](CHANGELOG.md)。
+原生创作与读取不以 Studio 或 KDNA Work 为前置。Studio 有自己的精确安装组合和
+容器合同；原生 MCP 适配器不能解密 Studio 的受保护资产。
 
-## 创作适配器
+## 当前源码提供什么
 
-[`kdna-creator`](kdna-creator/SKILL.md) 按 Host 的实际入口选择创作流程。原生
-`create`、`source-open`、`source-pack` 使用随 Skill 分发的
-[原生创作与内容审阅说明](kdna-creator/references/native-asset-authoring.md)。本地脚本
-盘点真实作者字段，核对绑定作者稿摘要的逐域审阅记录。内容是否适合任务仍须
-实质审阅；Core 接受、文件保存与 Reader 展示分别验证。使用 Host 具名选定的
-精确 CLI，保留原件并记录实际发生的修改。
+当前交付形式是包含 lock 和全部依赖归档的完整 Git 源码检出。`bash install-cli.sh`
+把固定 CLI 依赖安装在检出目录内，离线执行、不运行安装钩子。Agent 选择合适的
+本地 Node 运行时，随后使用脚本打印的精确 CLI 路径。脚本不安装全局命令，也不
+替你配置 Agent。具体操作见[安装核查步骤](docs/GETTING_STARTED.zh.md#agent-安装核查步骤)。
 
-显式匹配的 Studio session 使用原有适配器，引导终端 Agent 使用已批准的 exact 本地
-Studio CLI，从显式授权的普通 UTF-8 文本或访谈形成有界判断。人类通过独立通道
-用自然语言选择、修改和确认当前预览；Agent 负责整理候选和私有机器字段。
+当前本地 MCP 候选为 `0.8.0-rc.native-sections.1`，配套 CLI `0.39.0`、Core `0.37.2`、
+Read `0.11.3`。MCP 保持 `private: true`、禁止 npm 发布。这些源码坐标不代表相应
+registry 制品已发布；不能用同版本的全局或 registry 包替换已经核对的归档。
+官方 npm 包使用 `@aikdna` scope，未加 scope 的 `kdna` 包与本项目无关。
 
-实际流程只维护在随 Skill 一同分发的
-[terminal session 适配说明](kdna-creator/references/terminal-session.md)。
-此 Studio live session 可以导出新的私有技术 bundle；不承诺持久 resume、迁移、
-加密或远程交付。identity 为 `not_verified`，confirmation 为
-`claimed_unverified`，Creation/action 为 `not_evaluated`；
-本地导出不等于 Creation Complete、真实 Owner 同意或 编辑适用性。
+MCP 提供读取工具，每个进程只使用操作者或可信启动器选定的一个文件。Agent 可以
+准备便于核对的配置；实际 Host 必须保证启动绑定不受模型的 MCP 参数控制。创建
+和修改通过另外获准的原生 CLI 完成。Skill 已放置或配置文件已写入，都不等于
+Host 已启用或已取得读取许可。
 
-Creator 的实际编辑表现需要结合已授权任务和实际判断另行评价；静态检查不
-证明真人确认或完整创作效果。[仓库说明](docs/KDNA_CREATION_AGENT_CONTRACT.md)只作适配入口，
-不另立公共协议权威。
+## 已验范围与当前限制
+
+一个真实 Codex CLI 0.154.0 会话已通过当前 MCP 读取一份虚构的原生公开资产，
+并把其中的判断用于项目周报任务：检查绑定、读取目录、两次选读，最后取消绑定。
+具体范围见 [Codex 记录](integrations/codex/README.md#observed-codex-cli-case)。其它
+Agent 品牌仍未验；该案例不认证 Codex Desktop、受保护资产、MCP 创作或通用回答质量。
+
+[支持矩阵](docs/agent-support-matrix.json)把这个具名案例与其它路径分别记录。
+直接 CLI、源码 stdio、空缓存打包安装后的进程测试，与真实 Agent 使用这些内容
+是不同层面的证据。内容质量需要看具体判断、来源、前提、例子和边界。保存或
+读取成功不代表真人确认、内容适用或行动许可。Agent 应说明哪些内容影响了答案，
+修改时保留原件。资产文本始终是任务材料，不能覆盖 Host 的指令。
+
+工程复现命令与包边界见 [MCP 说明](mcp-server/README.md)，历史发行见
+[CHANGELOG](CHANGELOG.md)。
+
+[English](README.md)

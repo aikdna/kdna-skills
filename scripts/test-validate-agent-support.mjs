@@ -7,7 +7,7 @@ import {fileURLToPath} from "node:url";
 import validation from "./validate-agent-support.js";
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const original=JSON.parse(fs.readFileSync(path.join(root,"docs/agent-support-matrix.json"),"utf8"));
-test("current local guide structure preserves five unassessed Host vectors",()=>{
+test("current guide structure preserves one scoped Codex case and four unassessed Host vectors",()=>{
   assert.equal(validation.validateAgentSupport(root).guide_vectors.length,5);
 });
 test("support guide validator rejects authority or delivery escalation",async t=>{
@@ -16,6 +16,9 @@ test("support guide validator rejects authority or delivery escalation",async t=
     m=>m.binding.finite_assets=2,m=>m.binding.transport="remote",
     m=>m.candidate_runtime.publication="released",m=>m.candidate_runtime.cli="0.36.0",
     m=>m.agents[0].support="verified",m=>m.evidence_dimensions.real_human_acceptance="passed",
+    m=>m.agents[1].support="verified",m=>m.agents[1].observation=structuredClone(m.agents[0].observation),
+    m=>m.agents[0].observation.host="Codex Desktop",m=>m.agents[0].observation.tools.push("kdna.expand"),
+    m=>m.agents[0].observation.not_run=[],m=>m.evidence_dimensions.named_host_delivery="passed",
     m=>m.evidence_dimensions.independent_acceptance="passed",m=>m.tool_surface.push("kdna.load"),
     m=>m.historical_previous_matrix={schema_version:7}
   ];
