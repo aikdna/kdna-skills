@@ -14,7 +14,9 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 // measured 245s for the same suite - past the previous 240s cap, which turned a
 // slow run into a failed one and truncated the child's TAP output at "ok 40"
 // with no failing case inside it. The caps below are the outer test budget and
-// the child budget; neither assertion nor the vector list changes.
+// the child budget. Projection and lifecycle unit tests are supplied by this
+// source checkout, but resolve their tested modules beside KDNA_MCP_TEST_SERVER
+// so that the same tests exercise the installed archive's implementation.
 test("fresh packed consumer installs offline and runs the real stdio boundary suite", {timeout:900000}, t=>{
  const temporary=makeCanonicalTempRoot("mcp-packed-consumer-");
  t.after(()=>fs.rmSync(temporary,{recursive:true,force:true}));
@@ -30,7 +32,9 @@ test("fresh packed consumer installs offline and runs the real stdio boundary su
   else assert.equal(JSON.parse(fs.readFileSync(file)).version,value.version,name);
  }
  const server=path.join(consumer,"node_modules/@aikdna/kdna-mcp-server/bin/kdna-mcp.mjs");
- const run=spawnSync(process.execPath,["--test","--test-reporter=tap","test/mcp-protocol.test.mjs"],{cwd:root,env:{...env,KDNA_MCP_TEST_SERVER:server,KDNA_MCP_TEST_CLI:path.join(consumer,"node_modules/@aikdna/kdna-cli/src/cli.js")},encoding:"utf8",timeout:600000,maxBuffer:8*1024*1024});
+ for (const name of ["reading-views.mjs", "task-content.mjs"]) assert.ok(fs.statSync(path.join(path.dirname(server),name)).isFile(),name+" must be installed from the package");
+ const suites=["test/mcp-protocol.test.mjs","test/reading-views.test.mjs","test/task-content.test.mjs"];
+ const run=spawnSync(process.execPath,["--test","--test-reporter=tap",...suites],{cwd:root,env:{...env,KDNA_MCP_TEST_SERVER:server,KDNA_MCP_TEST_CLI:path.join(consumer,"node_modules/@aikdna/kdna-cli/src/cli.js")},encoding:"utf8",timeout:600000,maxBuffer:8*1024*1024});
  assert.equal(run.status,0,run.stdout+run.stderr);
  assert.match(run.stdout,/^# fail 0$/m); assert.match(run.stdout,/^# skipped 0$/m);
  assert.match(run.stdout,/operator/);

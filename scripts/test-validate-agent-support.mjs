@@ -7,7 +7,7 @@ import {fileURLToPath} from "node:url";
 import validation from "./validate-agent-support.js";
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const original=JSON.parse(fs.readFileSync(path.join(root,"docs/agent-support-matrix.json"),"utf8"));
-test("current guide structure preserves one scoped Codex case and four unassessed Host vectors",()=>{
+test("seven-tool guide structure separates frozen full, bounded task and truncation-stop observations",()=>{
   assert.equal(validation.validateAgentSupport(root).guide_vectors.length,5);
 });
 test("support guide validator rejects authority or delivery escalation",async t=>{
@@ -20,7 +20,23 @@ test("support guide validator rejects authority or delivery escalation",async t=
     m=>m.agents[0].observation.host="Codex Desktop",m=>m.agents[0].observation.tools.push("kdna.expand"),
     m=>m.agents[0].observation.not_run=[],m=>m.evidence_dimensions.named_host_delivery="passed",
     m=>m.evidence_dimensions.independent_acceptance="passed",m=>m.tool_surface.push("kdna.load"),
-    m=>m.historical_previous_matrix={schema_version:7}
+    m=>m.historical_previous_matrix={schema_version:7},
+    m=>m.presentation.default="task",m=>m.presentation.official_read_contract_unchanged=false,
+    m=>m.presentation.view_budget.required_for=null,m=>m.presentation.audit.new_authorization=true,
+    m=>m.presentation.references.persistent=true,m=>m.presentation.task_content.author_prose_rewritten=true,
+    m=>m.presentation.task_content.verification_summary_required=false,
+    m=>m.presentation.delivery.duplicate_full_structured_content=true,
+    m=>m.evidence_dimensions.task_presentation_named_host_delivery="passed",
+    m=>m.agents[0].observation.presentation="task",m=>m.tool_surface=m.tool_surface.filter(tool=>tool!=="kdna.audit"),
+    m=>m.agents[0].task_observation.host="Codex Desktop",
+    m=>m.agents[0].task_observation.audit_calls=1,
+    m=>m.agents[0].task_observation.tools.push("kdna.expand"),
+    m=>m.agents[0].task_observation.not_run=[],
+    m=>m.agents[1].task_observation=structuredClone(m.agents[0].task_observation),
+    m=>m.evidence_dimensions.audit_named_model_use="passed",
+    m=>m.agents[0].truncation_observation.result="ready follow-up read",
+    m=>m.presentation.named_host_evidence.audit_named_model_use="passed",
+    m=>m.evidence_scope="All Hosts certified"
   ];
   for(const [index,change] of cases.entries()) await t.test("rejects changed claim "+index,()=>{
     const m=structuredClone(original); change(m);

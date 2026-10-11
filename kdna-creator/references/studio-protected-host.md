@@ -1,6 +1,12 @@
-# Reopen and revise a locally protected Studio asset
+# Reopen and revise a public or protected Studio asset
 
 Use this source-only Host with the current local stable candidate and exact [Studio archive binding](current-studio-binding.json): StudioCLI `0.13.0`, StudioCore `4.0.0`, Core `0.37.2` and Read `0.11.3`. It consumes container `0.5.0` through Read `0.6.4`. The native CLI and MCP use container `0.6`; they do not decrypt or revise this Studio output.
+
+This is the direct reading route for saved Studio output, including public
+assets. Choose it from the asset's actual format and producer, not merely its
+`.kdna` suffix. For public bytes the trusted launcher supplies the file and read
+binding without a password; for protected bytes it also supplies the separate
+credential pipe. Neither route requires conversion into a native `0.6` asset.
 
 Use Node 22.23.1 and npm 11.17.0 with an operator-approved exact installation. These are local stable candidate archives; this binding does not establish their availability from the public registry.
 
@@ -23,6 +29,7 @@ A separately trusted launcher selects the installation, exact file and purpose; 
 These are the **child process arguments** supplied by that launcher, not standalone shell commands that create authorization:
 
 ```text
+node kdna-creator/scripts/studio-protected-host.cjs read --asset <public-asset.kdna> --host-fd 3 --judgment 1 --budget 1048576
 node kdna-creator/scripts/studio-protected-host.cjs read --asset <asset.kdna> --host-fd 3 --password-fd 4 --judgment 1 --budget 1048576
 node kdna-creator/scripts/studio-protected-host.cjs source --asset <asset.kdna> --host-fd 3 --password-fd 4
 node kdna-creator/scripts/studio-protected-host.cjs revise --asset <original.kdna> --host-fd 3 --password-fd 4 --recovery-fd 5 --edit <edit.json> --reason <reason.json> --out <new-directory>

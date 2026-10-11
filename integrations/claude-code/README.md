@@ -28,11 +28,37 @@ the model rewrite the launch arguments or automatically pick files. A Host with
 unrestricted model shell access must establish this separation itself. No
 remote processor/local-model identity is attested by stdio transport.
 
-Use kdna.catalog, kdna.read and kdna.expand with explicit budgets; keep the
-original catalog and same official session. kdna.inspect is technical only.
+Read `kdna.catalog` once, then request the task's required `judgment_ids`
+together in one `kdna.read` with an explicit budget. Keep the complete catalog,
+selected content and same official session. Use content already supplied for
+the same snapshot and selection; another read should address a real missing
+detail, changed selection or explicit verification need. Expand only using an
+actual issued handle when the task needs that detail. A refused, deferred or
+insufficient-budget result is not content already read; do not retrieve Host
+files or raw asset bytes to bypass it. `kdna.inspect` is technical only.
 kdna.cancel ends further use and closes the binding; remove/stop the configured
 process to disable it. Another file needs a new operator-controlled launch.
 No workspace attachments, global discovery, legacy load or implicit adoption.
+
+
+For `kdna.catalog`, `kdna.read` and `kdna.expand`, omitted `presentation` means
+`"full"`. Explicit `presentation: "task"` requires `view_budget_bytes` in addition
+to the unchanged official `budget_bytes`; full rejects the view budget. Task
+mode supplies the adapter's `kdna.mcp.task-presentation/0.1.0` representation:
+read all canonical content, states, `verification_summary` and external
+`content_aliases`; do not treat alias placeholders as missing author content.
+Signature status and complete policy, checksum/origin/digest states, policy
+checks and new-verification/I/O flags remain inline; they are not hidden behind
+audit. An absent signature is not a verified signature. Expand accepts either the old
+`handle` or the delivered `handle_ref`, never both. `kdna.audit` accepts only
+`audit_ref` and `budget_bytes` to retrieve one exact past full result; it adds no
+read permission or fresh verification. References are bound to the same live
+process/snapshot/asset/tuple/Host epoch and expire within 60 seconds, no later
+than the original expiry for short handles. Cancel closes them. Budget overflow
+refuses the whole view; there is no partial-success or automatic full fallback.
+See [presentation and capacity details](../../mcp-server/README.md#optional-task-presentation-and-exact-audit).
+A named Host run of the new task/audit route is **NOT_RUN** here; a prior full
+case does not establish it. No token, fee or cross-Host performance claim is made.
 
 Skill location from the existing placement guide: `~/.claude/skills/kdna-loader/`.
 Skill placement is not Host activation or permission. Follow
@@ -50,3 +76,17 @@ container0.5 / Read0.6.4. It needs explicit text or interview material and a
 separate human or expressly delegated adoption channel. Studio sessions do
 not support persistent resume. The native MCP adapter does not decrypt Studio assets. Skill placement does not establish Host
 activation or editorial acceptance, and creation writes are not MCP read tools.
+
+## Saved Studio assets
+
+For Studio container `0.5.0`, both public and protected assets go directly to the
+[separate Studio Host](../../kdna-creator/references/studio-protected-host.md)
+with Read `0.6.4`. Public bytes omit password/recovery options; protected bytes
+use its trusted credential channel. The trusted launcher owns permission and
+credential pipes outside model-controlled arguments; an Agent-created FD does
+not establish authorization. Static Studio `read`/`verify` do not unlock
+protected bytes. Read and Source/revision permission remain separate. The native MCP route above uses container `0.6.0` and does not accept
+Studio files; neither a shared package version nor the `.kdna` suffix permits
+conversion or a raw-payload fallback. The linked Host guide gives its exact
+installation and child-process arguments. This route has separate evidence
+from the named MCP observation, if any.

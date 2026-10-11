@@ -78,6 +78,32 @@ requirements. Check the complete readable work and its field relationships
 independently. If necessary content is unfinished, deliver an explicit draft,
 not a finished benchmark. A well-formed record can still describe poor content.
 
+## Read the whole diagnostic
+
+The native CLI already returns JSON with the original failure details. Do not
+present only a short top-level status. Identify the failing layer and keep its
+complete result available to the authorized task:
+
+| Result shape | Fields to show |
+| --- | --- |
+| CLI argument or authored-input rejection | Top-level `status` and `code`; when supplied, `diagnostic.field`, `diagnostic.reason` and `diagnostic.expected` |
+| `core_rejected` | Top-level `status` and `stage`, `core.reason`, and every item in `core.diagnostics`, including its `code`, `stage`, `severity`, `subject` and `field` |
+| Source-route failure carrying `diagnostic` | The original `diagnostic.code` and `diagnostic.stage`, plus any other fields actually present |
+
+For example, `members: null` produces `KDNA_AUTHORED_INPUT_INVALID` with
+`diagnostic.field` equal to `/members`. An empty first judgment `focus` produces
+`core_rejected` with `core.reason: READ_CORE_INVALID` and
+`core.diagnostics[0].field: /payload/judgments/0/focus`. The latter field is nested;
+its absence at the top level does not mean Core omitted the location.
+
+Read the complete diagnostics array, not just its first element. Preserve an
+absent field and an explicit `null` subject as different reported states; do not
+invent a pointer or subject from nearby text. Show exact codes and pointers
+alongside an ordinary-language explanation, retain nested reference details and
+the original causal result, and correct the actual authored input. A translated
+summary does not replace the diagnostic. Do not retry a refused operation by
+changing formats, dropping required content or bypassing the official CLI.
+
 ## Save, read, revise
 
 Use the exact authorized installed CLI entry, represented below by `KDNA_CLI`.

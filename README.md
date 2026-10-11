@@ -69,14 +69,17 @@ configuration file does not establish Host activation or permission.
 
 ## Evidence and current limits
 
-A real Codex CLI 0.154.0 session has read one synthetic native public asset
-through this MCP candidate and applied its judgments to a project-update task.
-It checked the binding, read the catalog, performed two reads and cancelled the
-binding. See the [exact scope](integrations/codex/README.md#observed-codex-cli-case).
-Other Host brands remain unassessed; this case does not certify Codex Desktop,
-protected assets, MCP creation or general answer quality.
+Separate Codex CLI 0.154.0 sessions have used full and task presentations to
+read a synthetic native public asset and apply its judgments to a project-update
+task. The earlier full case performed two reads; the task case selected all
+three judgments in one ready read and retained scope, uncertainty and action
+limits. See the [separate observations](integrations/codex/README.md#observed-codex-cli-case).
+Named-model audit use, expansion and other Host brands remain unassessed. These
+cases do not certify Codex Desktop, protected assets, MCP creation or general
+answer quality. A separate forced Host-display truncation case records stopping,
+not successful continuation.
 
-The [support matrix](docs/agent-support-matrix.json) separates that named case
+The [support matrix](docs/agent-support-matrix.json) separates these named cases
 from other routes. Direct CLI operation, source stdio and fresh offline
 packed-consumer tests are separate evidence from an Agent using the result.
 Content quality requires review of the actual judgments, sources, assumptions,
