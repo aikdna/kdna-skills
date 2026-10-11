@@ -3,11 +3,10 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import zlib from "node:zlib";
-import { makeCanonicalTempRoot } from "./support/canonical-temp-root.mjs";
+import { runReleaseLifecycleFixture } from "./support/release-lifecycle-fixture.mjs";
 
 const require = createRequire(import.meta.url);
 const packageRoot = path.resolve(
@@ -200,7 +199,7 @@ test("source Runtime candidate binds private local CLI Core and Read", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"));
   const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, "package-lock.json"), "utf8"));
   assert.equal(pkg.version, "0.8.0-rc.native-sections.1"); assert.equal(pkg.private, true);
-  const versions = {cli:"0.39.0-rc.native-sections.3",core:"0.37.1-rc.browser.1",read:"0.11.2-rc.browser.1"};
+  const versions = {cli:"0.39.0",core:"0.37.2",read:"0.11.3"};
   const expected = Object.fromEntries(Object.entries(versions).map(([name,version]) => ["@aikdna/kdna-"+name, version]));
   for (const [name,spec] of Object.entries(expected)) assert.equal(pkg.dependencies[name],spec); assert.equal(Object.keys(pkg.dependencies).length,12); assert.deepEqual(lock.packages[""].dependencies,pkg.dependencies);
   for (const [name,version] of Object.entries(versions)) {
@@ -211,8 +210,8 @@ test("source Runtime candidate binds private local CLI Core and Read", () => {
     assert.equal(installed.version,version);
     assert.deepEqual(Object.keys(lock.packages).filter(k=>k.endsWith(key)),[key]);
   }
-  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-core"],"0.37.1-rc.browser.1");
-  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"],"0.11.2-rc.browser.1");
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-core"],"0.37.2");
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"],"0.11.3");
   assert.equal(lock.packages["node_modules/fast-uri"].version,"3.1.8");
 });
 
@@ -274,57 +273,6 @@ test("current private candidate is not a finalizable release coordinate", () => 
   const changelog = fs.readFileSync(path.join(root,"CHANGELOG.md"),"utf8");
   assert.equal(pkg.private,true); assert.equal(pkg.version,"0.8.0-rc.native-sections.1");
   assert.throws(()=>validateReleaseContext(releaseInput({pkg,changelog})),/CHANGELOG|version|stable|release/i);
-});
-
-test("pack evidence independently verifies identity, file list, sizes, SHA-1, and SHA-512", (t) => {
-  const temp = makeCanonicalTempRoot("kdna-mcp-pack-test-");
-  t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
-  const packed = spawnSync(
-    "npm",
-    ["pack", "--json", "--ignore-scripts", "--pack-destination", temp],
-    {
-      cwd: packageRoot,
-      encoding: "utf8",
-      env: {
-        ...process.env,
-        npm_config_dry_run: "false",
-        NPM_CONFIG_DRY_RUN: "false",
-      },
-      maxBuffer: 16 * 1024 * 1024,
-      shell: false,
-    },
-  );
-  assert.equal(packed.status, 0, packed.stderr);
-  const report = JSON.parse(packed.stdout)[0];
-  const tarball = fs.readFileSync(path.join(temp, report.filename));
-  const pkg = JSON.parse(
-    fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
-  );
-  if (pkg.version.includes("-")) {
-    assert.throws(() => validatePackReport({reportText: packed.stdout,tarball,pkg,source: {ref: `refs/tags/${pkg.version}`,commit: HASH}}), /stable canonical SemVer/);
-    assert.deepEqual(parseTarFiles(tarball).map(x => ({path:x.path,size:x.size})).sort((a,b)=>a.path.localeCompare(b.path)), report.files.map(x=>({path:x.path,size:x.size})).sort((a,b)=>a.path.localeCompare(b.path)));
-    assert.equal(report.shasum,crypto.createHash("sha1").update(tarball).digest("hex"));
-    assert.equal(report.integrity,"sha512-"+crypto.createHash("sha512").update(tarball).digest("base64"));
-    return; // A private prerelease archive cannot be promoted to stable release evidence.
-  }
-  const candidate = validatePackReport({
-    reportText: packed.stdout,
-    tarball,
-    pkg,
-    source: { ref: `refs/tags/${pkg.version}`, commit: HASH },
-  });
-  assert.equal(
-    candidate.artifact.shasum,
-    crypto.createHash("sha1").update(tarball).digest("hex"),
-  );
-  assert.equal(candidate.artifact.files.length, candidate.artifact.file_count);
-  assert.equal(validateEvidenceArtifact(candidate, tarball), candidate);
-  const tampered = Buffer.from(tarball);
-  tampered[tampered.length - 1] ^= 1;
-  assert.throws(
-    () => validateEvidenceArtifact(candidate, tampered),
-    /shasum|integrity|tar/i,
-  );
 });
 
 test("independent tar parser supports strict PAX paths and GNU long names", () => {
@@ -504,60 +452,37 @@ test("non-tar bytes cannot reach registry lookup or npm publication with matchin
   assert.equal(publishCalls, 0);
 });
 
-test(
-  "npm publish --dry-run completes nested pack verification before the real release tag gate",
-  { skip: process.env.KDNA_MCP_NESTED_PUBLISH_TEST === "1" },
-  () => {
-    const pkg = JSON.parse(
-      fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
-    );
-    const publishEnv = { ...process.env };
-    delete publishEnv.NODE_TEST_CONTEXT;
-    delete publishEnv.npm_lifecycle_event;
-    delete publishEnv.npm_lifecycle_script;
-    delete publishEnv.npm_command;
-    const result = spawnSync(
-      "npm",
-      [
-        "publish",
-        "--dry-run",
-        "--ignore-scripts=false",
-        "--access",
-        "public",
-        "--registry=https://registry.npmjs.org/",
-      ],
-      {
-        cwd: packageRoot,
-        encoding: "utf8",
-        env: {
-          ...publishEnv,
-          KDNA_MCP_NESTED_PUBLISH_TEST: "1",
-          GITHUB_EVENT_NAME: "release",
-          RELEASE_EVENT_ACTION: "published",
-          RELEASE_TAG_NAME: `${pkg.version}.wrong`,
-          RELEASE_IS_DRAFT: "false",
-          RELEASE_IS_PRERELEASE: "false",
-          GITHUB_REF: `refs/tags/${pkg.version}.wrong`,
-          GITHUB_SHA: HASH,
-        },
-        maxBuffer: 32 * 1024 * 1024,
-        shell: false,
-      },
-    );
-    const output = `${result.stdout || ""}\n${result.stderr || ""}`;
-    assert.notEqual(result.status, 0, output);
-    assert.match(output, /pack evidence independently verifies identity/);
-    assert.match(output, /Release context rejected:/);
-    assert.match(
-      output,
-      new RegExp(
-        `${pkg.version.replaceAll(".", "\\.")}.*(?:tag|commit)|tag.*${pkg.version.replaceAll(".", "\\.")}`,
-        "is",
-      ),
-    );
-    assert.doesNotMatch(output, /ENOENT|no such file[^\n]*\.tgz/i);
-  },
-);
+test("npm dry-run verifies pack once before the real release policy rejects the wrong tag", (t) => {
+  const result = runReleaseLifecycleFixture({ wrongTag: true });
+  assert.equal(result.error, undefined, result.output);
+  assert.equal(result.signal, null, result.output);
+  assert.equal(result.status, 1, result.output);
+  assert.equal(result.packRuns, 1, result.output);
+  assert.match(result.output, /^# tests 1$/m);
+  assert.match(result.output, /^# pass 1$/m);
+  assert.match(result.output, /^# fail 0$/m);
+  assert.match(result.output, /^# skipped 0$/m);
+  assert.match(result.output, /Release context rejected: release tag must be exactly 1\.2\.3(?:\r?\n|$)/);
+  assert.doesNotMatch(result.output, /Release dependencies verified:|Release dependency rejected:/);
+  assert.doesNotMatch(result.output, /ENOENT|no such file[^\n]*\.tgz|MCP response timeout|fresh packed consumer|official catalog and every canonical selection/);
+  t.diagnostic(result.output);
+});
+
+test("npm dry-run reaches the unchanged dependency gate only after a matching release tag", (t) => {
+  const result = runReleaseLifecycleFixture({ wrongTag: false });
+  assert.equal(result.error, undefined, result.output);
+  assert.equal(result.signal, null, result.output);
+  assert.equal(result.status, 1, result.output);
+  assert.equal(result.packRuns, 1, result.output);
+  assert.match(result.output, /^# tests 1$/m);
+  assert.match(result.output, /^# pass 1$/m);
+  assert.match(result.output, /^# fail 0$/m);
+  assert.match(result.output, /^# skipped 0$/m);
+  assert.match(result.output, /Release context verified: @aikdna\/kdna-mcp-server@1\.2\.3 [a-f0-9]{40}/);
+  assert.match(result.output, /Release dependency rejected:/);
+  assert.doesNotMatch(result.output, /Release dependencies verified:|Release context rejected:|MCP response timeout|fresh packed consumer/);
+  t.diagnostic(result.output);
+});
 
 test("stale release evidence blocks lookup and publish before either side effect", () => {
   let calls = 0;

@@ -1,7 +1,7 @@
 # KDNA MCP 0.8.0-rc.native-sections.1 — local Read candidate
 
 **Local release candidate; npm publication is disabled by `private: true`.** This stdio adapter delegates to the exact
-CLI 0.39.0-rc.native-sections.3 / Core 0.37.1-rc.browser.1 / Read 0.11.2-rc.browser.1 artifacts. The Read contract is
+CLI 0.39.0 / Core 0.37.2 / Read 0.11.3 artifacts. The Read contract is
 `kdna.read/0.7.0-candidate`; package version is a separate coordinate. Historical npm
 MCP 0.5.0 and its CLI 0.36.x workspace flow are not this candidate's runtime.
 
@@ -149,6 +149,6 @@ establish named Host adoption, human review, authorship or Creation acceptance.
 
 ## Native section contract boundary
 
-The complete CLI public contract binding is pinned by SHA-256 `ca729552115391c184dee30ca019fcd81bc223220be8df3caf85285863bbb5fc`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+The complete CLI public contract binding is pinned by SHA-256 `2ff1e7bb9cb325a0c90723ab8d684c7b1a8c56c8c9f2a5cfc8a7d2e5e57c797b`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
 
 The public regression corpus is generated from synthetic authored JSON with the fixed CLI. It tests real native containers and one deliberately truncated container; no legacy component-format asset is treated as current native input.

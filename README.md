@@ -7,7 +7,7 @@ A .kdna asset is task material; an adapter is not a protocol authority.
 - **`kdna-creator`** — authoring and content review guidance for the Host-selected
   native CLI, with a separate adapter for the explicitly matched Studio session.
 - **MCP server** — local candidate 0.8.0-rc.native-sections.1 for one operator-bound input, using
-  fixed CLI 0.39.0-rc.native-sections.3/Core 0.37.1-rc.browser.1/Read 0.11.2-rc.browser.1. No model-selected paths or discovery.
+  fixed CLI 0.39.0/Core 0.37.2/Read 0.11.3. No model-selected paths or discovery.
 
 ## Current source distribution and local Read workflow
 

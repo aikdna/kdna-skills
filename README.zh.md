@@ -1,7 +1,7 @@
 # KDNA Agent 适配器
 
-当前 Loader/MCP 是本地只读候选：MCP 0.8.0-rc.native-sections.1、CLI 0.39.0-rc.native-sections.3、Core 0.37.1-rc.browser.1、Read 包
-0.11.2-rc.browser.1；原生容器为 0.6，Read 公共合同为 kdna.read/0.7.0-candidate。候选以 `private: true` 禁止 npm 发布，只使用仓库附带
+当前 Loader/MCP 是本地只读候选：MCP 0.8.0-rc.native-sections.1、CLI 0.39.0、Core 0.37.2、Read 包
+0.11.3；原生容器为 0.6，Read 公共合同为 kdna.read/0.7.0-candidate。候选以 `private: true` 禁止 npm 发布，只使用仓库附带
 的精确本地依赖，不能按同名版本换成全局 CLI 或 registry 包。
 
 ## 当前本地路径

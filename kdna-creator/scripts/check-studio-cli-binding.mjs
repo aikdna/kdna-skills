@@ -3,14 +3,14 @@
 
 // The protection Host pins five file digests of the exact Studio CLI it will
 // load (CLI_FILES in studio-protected-host.cjs) and refuses anything else with
-// HOST_CLI_BINDING_MISMATCH. Those pins are a copy of published bytes, so they
-// can silently go stale when the Studio CLI is re-published. This check compares
-// them with the bytes the public registry actually serves for the pinned
-// coordinate, and fails when they disagree.
+// HOST_CLI_BINDING_MISMATCH. These pins select exact candidate archive bytes.
+// By default this check compares the public registry coordinate; an explicit
+// local installed package path verifies a local candidate before publication.
+// Either path fails when the packed bytes disagree.
 //
 // usage: node check-studio-cli-binding.mjs [--coordinate <name@version>]
 //
-// Requires npm and tar. It reads only the public registry.
+// Requires npm and tar. The default coordinate reads the public registry.
 
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -20,7 +20,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const REGISTRY = 'https://registry.npmjs.org/';
-const DEFAULT_COORDINATE = '@aikdna/kdna-studio-cli@0.13.0-rc.components.2';
+const DEFAULT_COORDINATE = '@aikdna/kdna-studio-cli@0.13.0';
 const hostScript = path.join(path.dirname(fileURLToPath(import.meta.url)), 'studio-protected-host.cjs');
 
 function pinnedFiles() {
