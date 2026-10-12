@@ -45,7 +45,7 @@ const tools = [
   { name: "kdna.catalog", description: "Read the complete public catalog once. Default full is unchanged; optional task presentation requires an independent view_budget_bytes.", inputSchema: { type: "object", required: ["budget_bytes"], additionalProperties: false, allOf: presentationRules, properties: { budget_bytes: budgetSchema, ...presentationProperties } } },
   { name: "kdna.read", description: "Batch the exact judgments needed for this task with mandatory closure in one snapshot. Keep the complete result; repeat only for a new need. Optional task is a lossless adapter view, not an official Read envelope.", inputSchema: { type: "object", required: ["selection", "budget_bytes"], additionalProperties: false, allOf: presentationRules, properties: { selection: selectionSchema, budget_bytes: budgetSchema, ...presentationProperties } } },
   { name: "kdna.expand", description: "Return an original handle or this process's short handle_ref to the same official CLI. A reference grants no permission; Read still validates scope, snapshot, epoch and expiry.", inputSchema: { type: "object", required: ["budget_bytes"], additionalProperties: false, oneOf: [{ required: ["handle"] }, { required: ["handle_ref"] }], allOf: presentationRules, properties: { handle: { type: "object" }, handle_ref: selectionKey, budget_bytes: budgetSchema, ...presentationProperties } } },
-  { name: "kdna.audit", description: "Retrieve the exact past full result for a delivered task audit_ref, within an explicit budget and the same live operator binding. This performs no new verification, reading or authorization.", inputSchema: { type: "object", required: ["audit_ref", "budget_bytes"], additionalProperties: false, properties: { audit_ref: selectionKey, budget_bytes: budgetSchema } } },
+  { name: "kdna.audit", description: "Retrieve the exact past full result for a delivered task audit_ref, within an explicit budget and the same live operator binding. When the exact result does not fit the budget, the call returns status budget_insufficient with a byte cursor instead of a truncated body: repeat with offset = next_offset and concatenate the chunks. This performs no new verification, reading or authorization.", inputSchema: { type: "object", required: ["audit_ref", "budget_bytes"], additionalProperties: false, properties: { audit_ref: selectionKey, budget_bytes: budgetSchema, offset: { type: "integer", minimum: 0, maximum: 67108864 } } } },
   { name: "kdna.cancel", description: "Cancel local presentation and revoke this process binding. Only a new operator-controlled launch can select again.", inputSchema: emptySchema },
 ];
 const names = new Set(tools.map(tool => tool.name));
@@ -112,7 +112,7 @@ if (binding) {
       const key = Object.hasOwn(args, "handle") ? "handle" : "handle_ref";
       return validPresentation(args, [key, "budget_bytes"]) && validBudget(args.budget_bytes) && (key === "handle" ? object(args.handle) : validId(args.handle_ref));
     }
-    if (name === "kdna.audit") return keys(args, ["audit_ref", "budget_bytes"]) && validId(args.audit_ref) && validBudget(args.budget_bytes);
+    if (name === "kdna.audit") return keys(args, ["audit_ref", "budget_bytes", "offset"]) && validId(args.audit_ref) && validBudget(args.budget_bytes) && (!Object.hasOwn(args, "offset") || (Number.isSafeInteger(args.offset) && args.offset >= 0));
     return false;
   }
   function startRead(id, name, args) {
@@ -123,7 +123,7 @@ if (binding) {
         binding.assertReadable();
         const handle = Object.hasOwn(args, "handle_ref") ? views.expand(args.handle_ref) : args.handle ?? null;
         const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: args.budget_bytes, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: name === "kdna.read" ? { asset_id: args.selection.asset_id, asset_version: args.selection.asset_version, judgment_ids: selectionIds(args.selection) } : handle?.anchor?.selection ?? null, handle };
-        const value = name === "kdna.audit" ? views.audit(args.audit_ref, args.budget_bytes) : name === "kdna.inspect" ? await inspectBoundFile(binding, operation.controller.signal) : await session.request(request);
+        const value = name === "kdna.audit" ? views.audit(args.audit_ref, args.budget_bytes, args.offset ?? 0) : name === "kdna.inspect" ? await inspectBoundFile(binding, operation.controller.signal) : await session.request(request);
         if (operation.cancelled) throw new AdapterError("MCP_READ_CANCELLED", "Local read presentation was cancelled; this process binding is closed.");
         const success = value.channel === "read_envelope" ? ["ready", "catalog_only"].includes(value.envelope.status) : value.status === "accepted";
         if (name !== "kdna.audit") views.observe(value);

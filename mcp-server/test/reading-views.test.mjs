@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import test from "node:test";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -93,12 +94,23 @@ test("self-key and pinned-key signature states and checksum coverage remain dist
     assert.equal(v.states.confirmation, "claimed_unverified"); assert.equal(v.states.action_authorization, "not_evaluated"); assert.equal(v.authorization.action_authorized, false);
   }
 });
-test("delivery budgets and store limits refuse atomically without a partial view or hidden fallback", () => {
+test("delivery budgets refuse atomically without a partial view and hand back a byte cursor", () => {
   const { views } = setup();
-  assert.throws(() => views.task(result(), 0), code("MCP_TASK_VIEW_BUDGET_EXCEEDED"));
-  assert.equal(views.records.size, 0); assert.equal(views.handles.size, 0); assert.equal(views.totalBytes, 0);
+  // Over budget: no partial body is delivered, the exact result stays
+  // referenceable and the caller pages it with the cursor.
+  const starved = views.task(result(), 0);
+  assert.equal(starved.status, "budget_insufficient");
+  assert.equal(starved.official_result, undefined);
+  assert.equal(starved.cursor.next_offset, 0);
+  assert.equal(views.records.size, 1);
   const v = views.task(result(), budget);
-  assert.throws(() => views.audit(v.audit.audit_ref, 1), code("MCP_AUDIT_BUDGET_EXCEEDED"));
+  // A starved page still makes real progress and never silently truncates; only
+  // a budget that cannot carry a single character refuses.
+  const tiny = views.audit(v.audit.audit_ref, 1);
+  assert.equal(tiny.status, "budget_insufficient");
+  assert.equal(tiny.chunk_bytes, 1);
+  assert.equal(tiny.next_offset, 1);
+  assert.throws(() => views.audit(v.audit.audit_ref, 0), code("MCP_AUDIT_BUDGET_EXCEEDED"));
   for (const options of [{ maxRecords: 0 }, { maxHandles: 0 }, { maxBytes: 1 }]) {
     const limited = setup(options).views;
     assert.throws(() => limited.task(result(), budget), code("MCP_REFERENCE_STORAGE_FULL"));
@@ -111,7 +123,24 @@ test("delivery budgets and store limits refuse atomically without a partial view
   }
   const exact = setup().views.task(result(), boundary);
   assert.equal(Buffer.byteLength(JSON.stringify(exact)), boundary);
-  assert.throws(() => setup().views.task(result(), boundary - 1), code("MCP_TASK_VIEW_BUDGET_EXCEEDED"));
+  const justOver = setup();
+  const short = justOver.views.task(result(), boundary - 1);
+  assert.equal(short.status, "budget_insufficient");
+  assert.equal(short.required_view_bytes > short.view_limit_bytes, true);
+  // The cursor pages the exact retained bytes: concatenating chunks in
+  // next_offset order reproduces the full result byte for byte.
+  const ref = short.audit.audit_ref;
+  let offset = 0, assembled = "";
+  for (let guard = 0; guard < 1000; guard++) {
+    const page = justOver.views.audit(ref, 4096, offset);
+    assembled += page.chunk;
+    if (page.next_offset === null) break;
+    assert.equal(page.next_offset, offset + page.chunk_bytes);
+    offset = page.next_offset;
+  }
+  const expected = JSON.stringify(result());
+  assert.equal(assembled, expected);
+  assert.equal(createHash("sha256").update(assembled).digest("hex"), short.audit.full_result_sha256.slice("sha256:".length));
 });
 test("the total store cap includes complete encoded keys, scopes, expiry metadata and escaping", () => {
   const full = result(), probe = setup(); probe.views.task(full, budget);

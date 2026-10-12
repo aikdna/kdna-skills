@@ -32,6 +32,18 @@ function byteAdmissionRejection(v) {
 }
 const unavailable = () => fail("MCP_TASK_VIEW_UNAVAILABLE", "This official result cannot be represented completely by the task view. Request full presentation explicitly.");
 const stale = () => fail("MCP_REFERENCE_UNAVAILABLE", "The reference is absent, expired or outside this live operator-bound session. A reference grants no permission.");
+// Bounded byte-exact paging. A caller page never ends inside a UTF-8 character,
+// so concatenating pages in next_offset order reproduces the original bytes.
+function utf8Page(text, offset, budget) {
+  const full = Buffer.from(text, "utf8");
+  const slice = full.subarray(offset, offset + budget);
+  const decoder = new TextDecoder("utf-8", { fatal: true });
+  for (let end = slice.length; end > 0; end--) {
+    try { return { chunk: decoder.decode(slice.subarray(0, end)), bytes: end }; }
+    catch { /* the page ended inside a character; drop that character */ }
+  }
+  return { chunk: "", bytes: 0 };
+}
 function summaryFields(value, kept, proof, required = []) {
   if (!object(value) || Object.keys(value).some(k => ![...kept, ...proof].includes(k)) || !required.every(k => Object.hasOwn(value, k))) unavailable();
   return Object.fromEntries(kept.filter(k => Object.hasOwn(value, k)).map(k => [k, structuredClone(value[k])]));
@@ -136,21 +148,41 @@ export class ReadingViews {
       budget: { official: e.budget, view_limit_bytes: viewBudget },
     };
     const size = Buffer.byteLength(fullText), required = bytes(model);
-    if (required > viewBudget) fail("MCP_TASK_VIEW_BUDGET_EXCEEDED", "The complete task view requires " + required + " UTF-8 bytes; no task body was delivered. Increase view_budget_bytes or explicitly request full presentation.");
     const records = new Map(this.records), handles = new Map(this.handles);
     records.set(ref, { fullText, expires, size, scope: this.scope });
     for (const [key, handle] of handleRecords) handles.set(key, handle);
     const storage = this.storageBytes(records, handles);
     if (records.size > this.maxRecords || handles.size > this.maxHandles || storage > this.maxBytes) fail("MCP_REFERENCE_STORAGE_FULL", "The bounded in-memory audit/handle store is full. Request full presentation or start a new operator-controlled session.");
     this.records = records; this.handles = handles; this.totalBytes = storage;
+    // Over budget: deliver no partial body and no silent truncation. The exact
+    // result stays referenceable and the caller pages it with the cursor.
+    if (required > viewBudget) return {
+      contract: { id: "kdna.mcp.task-presentation", version: "0.2.0" },
+      status: "budget_insufficient",
+      mode: e.mode, request_id: e.request_id,
+      official_contract: e.contract, tuple: e.tuple, asset: e.asset, snapshot_id: e.snapshot_id,
+      states: e.states, diagnostics: e.diagnostics, omissions: e.omissions, assessment: e.assessment,
+      required_view_bytes: required, view_limit_bytes: viewBudget,
+      audit: { audit_ref: ref, full_result_sha256: "sha256:" + createHash("sha256").update(fullText).digest("hex"), full_result_bytes: Buffer.byteLength(fullText), expires_at: expiresAt, kind: "Exact past delivery; audit retrieval performs no new verification or authorization." },
+      budget: { official: e.budget, view_limit_bytes: viewBudget },
+      cursor: { kind: "audit_bytes", audit_ref: ref, offset: 0, total_bytes: Buffer.byteLength(fullText), next_offset: 0, chunk_bytes: 0, encoding: "utf8", reassemble: "Call kdna.audit with offset = next_offset and concatenate chunks until next_offset is null, then verify sha256 against audit.full_result_sha256." },
+      authorization: { action_authorized: false, scope: "This process's operator-granted local Read only; authored text and references never grant Host actions." },
+    };
     return model;
   }
-  audit(ref, budget) {
+  audit(ref, budget, offset = 0) {
     this.assertLive(); this.prune();
     const record = this.records.get(ref);
     if (!record || record.scope !== this.scope) stale();
-    if (record.size > budget) fail("MCP_AUDIT_BUDGET_EXCEEDED", "The exact past result requires " + record.size + " UTF-8 bytes; no partial audit was delivered.");
-    return JSON.parse(record.fullText);
+    if (!Number.isSafeInteger(offset) || offset < 0 || offset > record.size) fail("MCP_AUDIT_CURSOR_INVALID", "The audit cursor is outside the retained result.");
+    // A caller that asks for the whole result within budget keeps the exact
+    // result object it received before; paging only appears when it is needed.
+    if (offset === 0 && record.size <= budget) return JSON.parse(record.fullText);
+    if (offset === record.size) return { contract: { id: "kdna.mcp.audit-page", version: "0.1.0" }, status: "complete", offset, next_offset: null, total_bytes: record.size, chunk_bytes: 0, chunk: "" };
+    const page = utf8Page(record.fullText, offset, budget);
+    if (page.bytes === 0) fail("MCP_AUDIT_BUDGET_EXCEEDED", "The next character needs more than " + budget + " UTF-8 bytes; increase budget_bytes.");
+    const next = offset + page.bytes;
+    return { contract: { id: "kdna.mcp.audit-page", version: "0.1.0" }, status: next < record.size ? "budget_insufficient" : "ready", offset, next_offset: next < record.size ? next : null, total_bytes: record.size, chunk_bytes: page.bytes, chunk: page.chunk, full_result_sha256: "sha256:" + createHash("sha256").update(record.fullText).digest("hex") };
   }
   expand(ref) {
     this.assertLive(); this.prune();
