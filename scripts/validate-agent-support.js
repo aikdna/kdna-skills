@@ -10,11 +10,13 @@ const binding = {control_channel:"operator_or_trusted_launcher_OS_argv",model_to
 const dimensions = {"named_host_delivery":"observed_codex_cli_full_and_task_cases_only","semantic_adoption":"observed_codex_cli_full_and_task_cases_only","task_presentation_named_host_delivery":"observed_codex_cli_task_case_only","task_presentation_semantic_adoption":"observed_codex_cli_task_case_only","audit_named_model_use":"not_run","real_human_acceptance":"not_run"};
 const codexObservation = {"date":"2026-10-11","host":"Codex CLI","host_version":"0.154.0","model":"not_separately_recorded","input":"one synthetic native public asset","task":"apply project-update judgments while retaining uncertainty and action limits","tools":["kdna.binding-status","kdna.catalog","kdna.read","kdna.read","kdna.cancel"],"result":"two ready reads from one catalog snapshot; task answer used the judgments; binding closed; exit 0","installation":"retained verified offline archive graph; not public registry cold acquisition","startup":"temporary trusted command-line binding; no persistent global configuration edit; other execution surfaces disabled for this turn","not_run":["task presentation","kdna.audit","kdna.expand","MCP creation","Studio protection Host","Codex Desktop","Codex IDE","real human acceptance"],"certification":"none","presentation":"full","implementation_scope":"Prior full-presentation implementation; this case does not validate the task/audit extension."};
 const presentation = {
-  "default": "full",
+  "default": "body",
   "choices": [
+    "body",
     "full",
     "task"
   ],
+  "default_fallback": "when the installed Read package cannot project the body view, the default is the complete official envelope and an explicit body request is refused",
   "tools": [
     "kdna.catalog",
     "kdna.read",
