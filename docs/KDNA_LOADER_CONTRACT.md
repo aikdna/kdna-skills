@@ -46,8 +46,12 @@ Creator uses a separate authoring interface and permission channel.
 ## Presentation compatibility
 
 The seven-tool surface adds `kdna.audit` to the original six tools.
-Catalog/read/expand keep `presentation: full` as the default; full rejects
-`view_budget_bytes`. Explicit `presentation: task` requires that independent
+Catalog/read/expand return the installed Read package's body view (authored
+content plus one fingerprint) when `presentation` is omitted and that package
+provides the projection; when it does not, the default is the complete
+official envelope and an explicit body request is refused. The full
+presentation rejects `view_budget_bytes`. Explicit `presentation: task`
+requires that independent
 view budget, while `budget_bytes` still applies to the official Read. The
 adapter-owned task contract is `kdna.mcp.task-presentation/0.1.0`; it does not
 replace the public Core/Read contract. Exact structural duplicates use external

@@ -142,9 +142,12 @@ process to disable it. Another file needs a new operator-controlled launch.
 No workspace attachments, global discovery, legacy load or implicit adoption.
 
 
-For `kdna.catalog`, `kdna.read` and `kdna.expand`, omitted `presentation` means
-`"full"`. Explicit `presentation: "task"` requires `view_budget_bytes` in addition
-to the unchanged official `budget_bytes`; full rejects the view budget. Task
+For `kdna.catalog`, `kdna.read` and `kdna.expand`, omitted `presentation`
+returns the installed Read package's body view (authored content plus one
+fingerprint); when that package cannot project, the default is the complete
+official envelope, and an explicit `presentation: "body"` is refused. Explicit
+`presentation: "task"` requires `view_budget_bytes` in addition
+to the unchanged official `budget_bytes`; full and body reject the view budget. Task
 mode supplies the adapter's `kdna.mcp.task-presentation/0.1.0` representation:
 read all canonical content, states, `verification_summary` and external
 `content_aliases`; do not treat alias placeholders as missing author content.

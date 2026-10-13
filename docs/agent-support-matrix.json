@@ -174,11 +174,13 @@
   },
   "evidence_scope": "This matrix covers named MCP Host routes. The frozen prior full-presentation case and a separate task-presentation case each cover one synthetic native public task on Codex CLI 0.154.0. A separate forced-truncation case records stopping, not successful continuation. Named-model audit use, other Hosts and direct CLI authoring retain separate scope. Guide availability is not certification.",
   "presentation": {
-    "default": "full",
+    "default": "body",
     "choices": [
+      "body",
       "full",
       "task"
     ],
+    "default_fallback": "when the installed Read package cannot project the body view, the default is the complete official envelope and an explicit body request is refused",
     "tools": [
       "kdna.catalog",
       "kdna.read",

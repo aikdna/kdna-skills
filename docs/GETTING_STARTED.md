@@ -113,7 +113,10 @@ missing content.
 The Agent can explicitly choose the MCP
 [task presentation](../mcp-server/README.md#optional-task-presentation-and-exact-audit)
 to receive exact duplicate content through references instead of repeated
-objects. Full remains the default. The Agent handles the independent view
+objects. Omitted `presentation` returns the installed Read package's body view
+(authored content plus one fingerprint); when that package cannot project, the
+default is the complete official envelope and an explicit body request is
+refused. The Agent handles the independent view
 budget and resolves every alias, keeping all author content and state
 distinctions needed for the task. It also reads the inline verification summary:
 an absent signature is different from a verified signature, and an earlier
