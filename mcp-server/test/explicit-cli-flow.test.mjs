@@ -30,19 +30,24 @@ test("Loader direct inspect is technical and unapproved read discloses no body",
  assert.equal(refused.value.envelope?.content??null,null);
 });
 test("Loader one-shot examples select actual catalog identifiers and preserve original catalog",()=>{
+ // With the installed Read, an unviewed read answers with the projected body
+ // surface: the catalog and the selected closure are authored content and
+ // stay on it, while the fingerprint names the full-view recovery.
  const catalog=run(["read",fixture,"--mode","catalog","--budget","1000000","--allow-read"]);
  assert.equal(catalog.status,0);
- const e=catalog.value.envelope; assert.equal(e.status,"catalog_only");
+ const e=catalog.value; assert.equal(e.view,"body"); assert.equal(e.status,"catalog_only");
  const ids=e.content.catalog.map(x=>x.judgment_id);
  for(const id of ids){
-   const exact=run(["read",fixture,"--mode","exact_selection","--asset-id",e.asset.asset_id,"--asset-version",e.asset.asset_version,"--judgment-id",id,"--budget","1000000","--allow-read"]);
-   assert.equal(exact.status,0);assert.equal(exact.value.envelope.status,"ready");
-   assert.deepEqual(exact.value.envelope.content.selected.judgment_ids,[id]);
+   const exact=run(["read",fixture,"--mode","exact_selection","--asset-id",e.fingerprint.asset.asset_id,"--asset-version",e.fingerprint.asset.asset_version,"--judgment-id",id,"--budget","1000000","--allow-read"]);
+   assert.equal(exact.status,0);assert.equal(exact.value.status,"ready");
+   assert.deepEqual(exact.value.content.selected.judgment_ids,[id]);
  }
  assert.deepEqual(e.content.catalog.map(x=>x.judgment_id),ids);
 });
 test("Loader progressive public requests keep one real CLI process through catalog selection expand and EOF",async t=>{
- const argv=[cli,"read",fixture,"--session","--allow-read"],started=new Date().toISOString();
+ // Expansion handles are audit machinery, so this session asks the CLI for the
+ // explicit full surface, exactly as the adapter's own session does.
+ const argv=[cli,"read",fixture,"--session","--allow-read","--view","full"],started=new Date().toISOString();
  const child=spawn(process.execPath,argv,{cwd:root,env:process.env,stdio:["pipe","pipe","pipe"]});
  let input="",stdout="",stderr="",buffer="",pending=null,exit=null;
  const closed=new Promise(resolve=>child.once("close",(code,signal)=>{exit={code,signal,at:new Date().toISOString()};if(pending){pending.reject(new Error("CLI closed"));pending=null;}resolve(exit);}));

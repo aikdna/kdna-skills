@@ -19,6 +19,16 @@ const budget = { budget_bytes: 1000000 };
 const toolNames = JSON.parse(fs.readFileSync(path.join(root,"../docs/agent-support-matrix.json"),"utf8")).tool_surface;
 const decoded = response => { assert.ok(!response.error, JSON.stringify(response)); return JSON.parse(response.result.content[0].text); };
 const ready = response => { const value = decoded(response); assert.notEqual(response.result.isError, true, JSON.stringify(value)); assert.equal(value.envelope?.status, value.envelope?.mode === "catalog" ? "catalog_only" : "ready"); return value.envelope; };
+// The default presentation of the installed Read is the projected body view:
+// authored content plus one fingerprint that names the full-view recovery.
+const bodyView = response => {
+  const value = decoded(response); assert.notEqual(response.result.isError, true, JSON.stringify(value));
+  assert.equal(value.view_contract, "kdna.read.model-view/0.1.0");
+  assert.equal(value.view, "body");
+  assert.equal(value.status, value.fingerprint?.recovery?.mode === "catalog" ? "catalog_only" : "ready");
+  assert.equal(value.fingerprint?.recovery?.view, "full");
+  return value;
+};
 
 function launch(t, options = {}) {
   const temporary = makeCanonicalTempRoot("agent-stdio-case-");
@@ -87,8 +97,8 @@ function launch(t, options = {}) {
   });
   return api;
 }
-function reference(fixture, selection = null) {
-  const argv = [cli, "read", path.join(fixtures, fixture), "--mode", selection ? "exact_selection" : "catalog", "--budget", "1000000", "--allow-read"];
+function cliReferenceResult(fixture, selection, view) {
+  const argv = [cli, "read", path.join(fixtures, fixture), "--mode", selection ? "exact_selection" : "catalog", "--budget", "1000000", "--allow-read", ...(view ? ["--view", view] : [])];
   if (selection) argv.push("--asset-id", selection.asset_id, "--asset-version", selection.asset_version, "--judgment-id", selection.judgment_id);
   const started = new Date().toISOString();
   const response = spawnSync(process.execPath, argv, { encoding: "utf8", env: process.env, timeout: 30000 });
@@ -99,8 +109,13 @@ function reference(fixture, selection = null) {
     fs.writeFileSync(prefix+".json",JSON.stringify({started,completed:new Date().toISOString(),pid:response.pid,argv:[process.execPath,...argv],cwd:process.cwd(),node:process.version,status:response.status,signal:response.signal,error:response.error?.message},null,2)+"\n");
   }
   assert.equal(response.status, 0, response.stderr || response.stdout);
-  return JSON.parse(response.stdout).envelope;
+  return JSON.parse(response.stdout);
 }
+// The enveloped comparison reference: envelope fields asserted field by field.
+function reference(fixture, selection = null) { return cliReferenceResult(fixture, selection, "full").envelope; }
+// The default-surface comparison reference: exactly what this CLI prints for a
+// read with no view flag, which is the surface the adapter must deliver.
+function bodyReference(fixture, selection = null) { return cliReferenceResult(fixture, selection, null); }
 function absent(pid) { assert.throws(() => process.kill(pid, 0), error => error.code === "ESRCH"); }
 
 test("unbound initialization, exact declared tool list and no parameter-created authority", async t => {
@@ -200,19 +215,48 @@ test("malformed request metadata fails before initialization and on every ready 
 
 test("metadata leaves bound public Read and cancellation semantics unchanged", async t => {
   const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize({ protocolVersion: "2025-06-18" });
-  const catalog = ready(await s.rpc("tools/call", { name: "kdna.catalog", arguments: budget, _meta: { progressToken: 0 } }));
-  assert.deepEqual(catalog.content, reference("graph-cross.kdna").content);
-  const selection = { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version, judgment_id: catalog.content.catalog[0].judgment_id };
-  const selected = ready(await s.rpc("tools/call", { name: "kdna.read", arguments: { ...budget, selection }, _meta: { progressToken: "read" } }));
+  const catalog = bodyView(await s.rpc("tools/call", { name: "kdna.catalog", arguments: budget, _meta: { progressToken: 0 } }));
+  assert.deepEqual(catalog.content, bodyReference("graph-cross.kdna").content);
+  const selection = { asset_id: catalog.fingerprint.asset.asset_id, asset_version: catalog.fingerprint.asset.asset_version, judgment_id: catalog.content.catalog[0].judgment_id };
+  const selected = bodyView(await s.rpc("tools/call", { name: "kdna.read", arguments: { ...budget, selection }, _meta: { progressToken: "read" } }));
   const expected = reference("graph-cross.kdna", selection);
   for (const field of ["declarations", "catalog", "selected", "closure", "references", "relationships", "missing", "provenance"]) assert.deepEqual(selected.content[field], expected.content[field]);
-  assert.equal(selected.snapshot_id, catalog.snapshot_id);
-  const expanded = ready(await s.rpc("tools/call", { name: "kdna.expand", arguments: { ...budget, handle: selected.content.expansion_handles[0] }, _meta: { progressToken: 0 } }));
-  assert.equal(expanded.snapshot_id, selected.snapshot_id);
+  assert.equal(selected.fingerprint.snapshot_id, catalog.fingerprint.snapshot_id);
+  // Expansion handles are audit machinery the default view omits; the
+  // fingerprint names that omission and the explicit full surface still
+  // carries them in the same session.
+  assert.ok(selected.fingerprint.omitted.content.includes("expansion_handles"));
+  const selectedFull = ready(await s.rpc("tools/call", { name: "kdna.read", arguments: { ...budget, selection, presentation: "full" }, _meta: { progressToken: "read" } }));
+  for (const field of ["declarations", "catalog", "selected", "closure", "references", "relationships", "missing", "provenance"]) assert.deepEqual(selectedFull.content[field], expected.content[field]);
+  const expanded = bodyView(await s.rpc("tools/call", { name: "kdna.expand", arguments: { ...budget, handle: selectedFull.content.expansion_handles[0] }, _meta: { progressToken: 0 } }));
+  assert.equal(expanded.fingerprint.snapshot_id, selected.fingerprint.snapshot_id);
   const inspection = decoded(await s.rpc("tools/call", { name: "kdna.inspect", arguments: {}, _meta: {} }));
   assert.equal(inspection.status, "accepted"); assert.equal(inspection.states.action_authorization, "not_evaluated");
   assert.equal(decoded(await s.rpc("tools/call", { name: "kdna.cancel", arguments: {}, _meta: {} })).binding_closed, true);
   assert.equal(decoded(await s.call("kdna.catalog", budget)).code, "MCP_BINDING_CANCELLED");
+  await s.close();
+});
+
+test("the default presentation is the official projected body view with full recovery", async t => {
+  const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
+  const catalog = bodyView(await s.call("kdna.catalog", budget));
+  assert.deepEqual(catalog.content, bodyReference("graph-cross.kdna").content, "the default catalog is exactly what the CLI prints with no view flag");
+  const selection = { asset_id: catalog.fingerprint.asset.asset_id, asset_version: catalog.fingerprint.asset.asset_version, judgment_id: catalog.content.catalog[0].judgment_id };
+  const selected = bodyView(await s.call("kdna.read", { ...budget, selection }));
+  assert.deepEqual(selected.content, bodyReference("graph-cross.kdna", selection).content);
+  assert.equal(selected.fingerprint.snapshot_id, catalog.fingerprint.snapshot_id);
+  const explicitBody = bodyView(await s.call("kdna.catalog", { ...budget, presentation: "body" }));
+  assert.deepEqual(explicitBody.content, catalog.content);
+  assert.equal(explicitBody.fingerprint.snapshot_id, catalog.fingerprint.snapshot_id);
+  const enveloped = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
+  assert.deepEqual(enveloped.content.catalog, catalog.content.catalog);
+  // No second copy of the full object travels beside the projected one: the
+  // single text channel is the body view, measurably smaller than the envelope.
+  assert.ok(JSON.stringify(catalog).length < JSON.stringify(enveloped).length);
+  for (const key of ["channel", "envelope", "contract", "receipt", "verification", "digests"]) assert.equal(Object.hasOwn(catalog, key), false, key);
+  const status = decoded(await s.call("kdna.binding-status"));
+  assert.equal(status.presentation_default, "body");
+  assert.equal(status.body_view_contract, "kdna.read.model-view/0.1.0");
   await s.close();
 });
 
@@ -234,12 +278,14 @@ test("adapter rejects malformed selection/budget and all old arbitrary-path tool
 for (const fixture of ["graph-cross.kdna", "graph-same.kdna", "graph-method.kdna", "graph-asset.kdna", "graph-null.kdna", "graph-dedup-support.kdna"]) {
   test("official catalog and every canonical selection/mandatory closure stay exact: " + fixture, async t => {
     const s = launch(t, { fixture }); await s.initialize();
-    const catalog = ready(await s.call("kdna.catalog", budget));
+    // This matrix asserts the enveloped surface field by field, so every read
+    // asks for it explicitly; the projected default is covered separately.
+    const catalog = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
     assert.deepEqual(catalog.content, reference(fixture).content);
     let last;
     for (const item of catalog.content.catalog) {
       const selection = { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version, judgment_id: item.judgment_id };
-      last = ready(await s.call("kdna.read", { ...budget, selection }));
+      last = ready(await s.call("kdna.read", { ...budget, selection, presentation: "full" }));
       const expected = reference(fixture, selection);
       for (const field of ["declarations", "catalog", "selected", "closure", "references", "relationships", "missing", "provenance"]) assert.deepEqual(last.content[field], expected.content[field]);
       assert.equal(last.snapshot_id, catalog.snapshot_id); assert.equal(last.receipt.host_epoch, catalog.receipt.host_epoch);
@@ -250,43 +296,43 @@ for (const fixture of ["graph-cross.kdna", "graph-same.kdna", "graph-method.kdna
       assert.ok(["not_evaluated", "claimed_unverified"].includes(last.states.confirmation));
       assert.equal(last.states.action_authorization, "not_evaluated");
     }
-    assert.deepEqual(ready(await s.call("kdna.catalog", budget)).content.catalog, catalog.content.catalog);
+    assert.deepEqual(ready(await s.call("kdna.catalog", { ...budget, presentation: "full" })).content.catalog, catalog.content.catalog);
     const pid = Number(last.receipt.host_epoch.split(":")[1]); await s.close(); absent(pid);
   });
 }
 
 test("issued handles expand only in the original official CLI process", async t => {
   const first = launch(t, { fixture: "graph-cross.kdna" }); await first.initialize();
-  const catalog = ready(await first.call("kdna.catalog", budget));
+  const catalog = ready(await first.call("kdna.catalog", { ...budget, presentation: "full" }));
   const selection = { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version, judgment_id: catalog.content.catalog[0].judgment_id };
-  const selected = ready(await first.call("kdna.read", { ...budget, selection }));
+  const selected = ready(await first.call("kdna.read", { ...budget, selection, presentation: "full" }));
   assert.ok(selected.content.expansion_handles.length > 0);
   const handle = selected.content.expansion_handles[0];
-  const expanded = ready(await first.call("kdna.expand", { ...budget, handle }));
+  const expanded = ready(await first.call("kdna.expand", { ...budget, handle, presentation: "full" }));
   assert.equal(expanded.snapshot_id, selected.snapshot_id); assert.ok(expanded.content.closure.some(node => node.role === handle.target.kind && node.value.id === handle.target.id));
-  const second = launch(t, { fixture: "graph-cross.kdna" }); await second.initialize(); ready(await second.call("kdna.catalog", budget));
+  const second = launch(t, { fixture: "graph-cross.kdna" }); await second.initialize(); ready(await second.call("kdna.catalog", { ...budget, presentation: "full" }));
   const foreign = await second.call("kdna.expand", { ...budget, handle });
   assert.equal(foreign.result.isError, true); assert.equal(decoded(foreign).diagnostic.code, "READ_HANDLE_STALE"); assert.equal(decoded(foreign).body, null);
   const tampered = await first.call("kdna.expand", { ...budget, handle: { ...handle, A: "sha256:" + "0".repeat(64) } });
   assert.equal(tampered.result.isError, true);
-  assert.equal(ready(await first.call("kdna.catalog", budget)).snapshot_id, selected.snapshot_id);
+  assert.equal(ready(await first.call("kdna.catalog", { ...budget, presentation: "full" })).snapshot_id, selected.snapshot_id);
 });
 
 test("startup bytes remain fixed across original-file replacement; restart creates a new snapshot", async t => {
   const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
-  const before = ready(await s.call("kdna.catalog", budget));
+  const before = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
   fs.writeFileSync(s.selected, "corrupted after operator binding");
-  const after = ready(await s.call("kdna.catalog", budget));
+  const after = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
   assert.equal(after.snapshot_id, before.snapshot_id); assert.deepEqual(after.digests, before.digests); assert.deepEqual(after.content, before.content);
   await s.close();
   const fresh = launch(t, { fixture: "graph-cross.kdna" }); await fresh.initialize();
-  assert.notEqual(ready(await fresh.call("kdna.catalog", budget)).snapshot_id, before.snapshot_id);
+  assert.notEqual(ready(await fresh.call("kdna.catalog", { ...budget, presentation: "full" })).snapshot_id, before.snapshot_id);
 });
 
 test("public rejection and no-body budget results remain explicit without invented content", async t => {
   const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
   const none = await s.call("kdna.catalog", { budget_bytes: 0 }); assert.equal(none.result.isError, true); assert.notEqual(decoded(none).envelope?.status, "ready");
-  const catalog = ready(await s.call("kdna.catalog", budget));
+  const catalog = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
   const bad = await s.call("kdna.read", { ...budget, selection: { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version, judgment_id: "j:not-present" } });
   assert.equal(bad.result.isError, true); assert.equal(decoded(bad).body, null); assert.equal(decoded(bad).body_bytes, 0); assert.equal(decoded(bad).status, "rejected"); assert.equal(decoded(bad).diagnostic.code, "READ_SELECTION_NOT_FOUND");
   const corrupt = launch(t, { fixture: "hostile-native-truncated.kdna" }); await corrupt.initialize();
@@ -334,14 +380,14 @@ test("technical inspection does not promote declared writer/read/action/Creation
 test("overlapping reads fail busy without changing selection or issuing an extra read", async t => {
   const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
   const first = s.call("kdna.catalog", budget), second = s.call("kdna.catalog", budget);
-  assert.equal(decoded(await second).code, "MCP_READ_BUSY"); const accepted = ready(await first);
-  assert.equal(ready(await s.call("kdna.catalog", budget)).snapshot_id, accepted.snapshot_id);
+  assert.equal(decoded(await second).code, "MCP_READ_BUSY"); const accepted = bodyView(await first);
+  assert.equal(bodyView(await s.call("kdna.catalog", budget)).fingerprint.snapshot_id, accepted.fingerprint.snapshot_id);
 });
 
 for (const method of ["tool", "notification"]) {
   test("real pending read cancellation closes the CLI and binding: " + method, async t => {
     const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
-    const previous = ready(await s.call("kdna.catalog", budget));
+    const previous = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
     const pending = s.call("kdna.catalog", budget);
     if (method === "tool") {
       const cancelled = s.call("kdna.cancel"); assert.equal(decoded(await cancelled).binding_closed, true);
@@ -357,13 +403,13 @@ for (const method of ["tool", "notification"]) {
 
 test("EOF waits for the accepted read and releases its real CLI child", async t => {
   const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
-  const pending = s.call("kdna.catalog", budget); s.child.stdin.end();
+  const pending = s.call("kdna.catalog", { ...budget, presentation: "full" }); s.child.stdin.end();
   const value = ready(await pending); await s.close(); absent(Number(value.receipt.host_epoch.split(":")[1]));
 });
 
 test("SIGTERM and a broken output pipe terminate without private snapshot survivors", async t => {
   const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
-  const catalog = ready(await s.call("kdna.catalog", budget)); s.child.kill("SIGTERM");
+  const catalog = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" })); s.child.kill("SIGTERM");
   await s.close(); absent(Number(catalog.receipt.host_epoch.split(":")[1]));
   const broken = launch(t, { fixture: "graph-cross.kdna" });
   broken.child.stdout.destroy();
@@ -395,7 +441,7 @@ test("kdna.read accepts exactly one present selection key, matching its declared
   assert.ok(declared.properties.selection.oneOf, "the declared selection schema must be oneOf, matching the runtime either/or rule");
   assert.equal(declared.properties.selection.anyOf, undefined, "anyOf would let both keys pass the schema");
   const validate = new Ajv({ allErrors: true, strict: false }).compile(declared);
-  const catalog = ready(await s.call("kdna.catalog", budget));
+  const catalog = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
   const asset = { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version };
   const ids = catalog.content.catalog.map(item => item.judgment_id);
   assert.ok(ids.length >= 2, "the fixture must carry at least two judgments for this matrix");
@@ -436,7 +482,7 @@ test("all five guide command vectors launch the actual local stdio candidate",as
     assert.equal(args.shift(),server);
     const s=launch(t,{argv:args}); await s.initialize();
     assert.equal(decoded(await s.call("kdna.binding-status")).state,"bound");
-    ready(await s.call("kdna.catalog",budget)); await s.close();
+    bodyView(await s.call("kdna.catalog",budget)); await s.close();
   });
 });
 
@@ -478,26 +524,30 @@ for (const fixture of ["graph-cross.kdna", "graph-same.kdna", "graph-method.kdna
   });
 }
 
-test("presentation and short-reference schemas match runtime refusal; full default remains compatible", async t => {
+test("presentation and short-reference schemas match runtime refusal; the projected default stays compatible", async t => {
   const { default: Ajv } = await import("ajv");
   const s = launch(t, { fixture: "graph-cross.kdna" }); await s.initialize();
   const list = (await s.rpc("tools/list")).result.tools;
   for (const name of ["kdna.catalog", "kdna.expand", "kdna.audit"]) {
     const validate = new Ajv({ strict: false }).compile(list.find(t => t.name === name).inputSchema);
-    const cases = name === "kdna.catalog" ? [budget, { ...budget, presentation: "full" }, { ...budget, presentation: "task", view_budget_bytes: 0 }, { ...budget, presentation: "task" }, { ...budget, view_budget_bytes: 1 }, { ...budget, presentation: "full", view_budget_bytes: 1 }, { ...budget, presentation: null }, { ...budget, presentation: "task", view_budget_bytes: 1000001 }] : name === "kdna.expand" ? [{ ...budget, handle: {} }, { ...budget, handle_ref: "handle:missing" }, { ...budget, handle: {}, handle_ref: "handle:missing" }, { ...budget, handle: null, handle_ref: "handle:missing" }, { ...budget }, { ...budget, handle_ref: 1 }] : [{ ...budget, audit_ref: "audit:missing" }, { ...budget, audit_ref: "audit:missing", path: "/other.kdna" }, { ...budget, audit_ref: "" }, { ...budget, audit_ref: "audit:missing", presentation: "task" }];
+    const cases = name === "kdna.catalog" ? [budget, { ...budget, presentation: "body" }, { ...budget, presentation: "full" }, { ...budget, presentation: "task", view_budget_bytes: 0 }, { ...budget, presentation: "task" }, { ...budget, view_budget_bytes: 1 }, { ...budget, presentation: "full", view_budget_bytes: 1 }, { ...budget, presentation: "body", view_budget_bytes: 1 }, { ...budget, presentation: null }, { ...budget, presentation: "unknown" }, { ...budget, presentation: "task", view_budget_bytes: 1000001 }] : name === "kdna.expand" ? [{ ...budget, handle: {} }, { ...budget, handle_ref: "handle:missing" }, { ...budget, handle: {}, handle_ref: "handle:missing" }, { ...budget, handle: null, handle_ref: "handle:missing" }, { ...budget }, { ...budget, handle_ref: 1 }, { ...budget, handle: {}, presentation: "body" }, { ...budget, handle: {}, presentation: "unknown" }] : [{ ...budget, audit_ref: "audit:missing" }, { ...budget, audit_ref: "audit:missing", path: "/other.kdna" }, { ...budget, audit_ref: "" }, { ...budget, audit_ref: "audit:missing", presentation: "task" }];
     for (const args of cases) {
       const expected = validate(args), response = await s.call(name, args);
       assert.equal(!response.error, expected, JSON.stringify({ name, args }));
       if (response.error) assert.equal(response.error.code, -32602);
     }
   }
-  const original = ready(await s.call("kdna.catalog", budget)), explicit = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
-  assert.deepEqual(original.content, explicit.content); assert.equal(original.snapshot_id, explicit.snapshot_id);
+  const original = bodyView(await s.call("kdna.catalog", budget)), explicitBody = bodyView(await s.call("kdna.catalog", { ...budget, presentation: "body" }));
+  assert.deepEqual(original.content, explicitBody.content);
+  assert.equal(original.fingerprint.snapshot_id, explicitBody.fingerprint.snapshot_id);
+  const enveloped = ready(await s.call("kdna.catalog", { ...budget, presentation: "full" }));
+  assert.deepEqual(enveloped.content.catalog, original.content.catalog);
+  assert.equal(enveloped.snapshot_id, original.fingerprint.snapshot_id);
+  assert.ok(original.fingerprint.omitted.envelope.includes("states"));
   const low = decoded(await s.call("kdna.catalog", { budget_bytes: 0, presentation: "task", view_budget_bytes: 1000000 }));
   assert.equal(low.status, "rejected"); assert.equal(low.audit, null); assert.ok(low.official_result);
   assert.equal(decoded(await s.call("kdna.catalog", { ...budget, presentation: "task", view_budget_bytes: 0 })).code, "MCP_TASK_VIEW_BUDGET_EXCEEDED");
-  const catalog = ready(await s.call("kdna.catalog", budget));
-  const missing = decoded(await s.call("kdna.read", { ...budget, presentation: "task", view_budget_bytes: 1000000, selection: { asset_id: catalog.asset.asset_id, asset_version: catalog.asset.asset_version, judgment_id: "j:missing" } }));
+  const missing = decoded(await s.call("kdna.read", { ...budget, presentation: "task", view_budget_bytes: 1000000, selection: { asset_id: enveloped.asset.asset_id, asset_version: enveloped.asset.asset_version, judgment_id: "j:missing" } }));
   assert.equal(missing.status, "rejected"); assert.equal(missing.official_result.diagnostic.code, "READ_SELECTION_NOT_FOUND"); assert.equal(missing.audit, null);
   await s.close();
 });

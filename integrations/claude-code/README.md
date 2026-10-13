@@ -1,6 +1,6 @@
 # KDNA with Claude Code
 
-Current local candidate: MCP 0.8.0-rc.native-sections.1 / CLI 0.39.0 / Core 0.37.2 / Read 0.11.3
+Current local candidate: MCP 0.8.0-rc.native-sections.1 / CLI 0.40.0 / Core 0.37.3 / Read 0.12.0
 (contract kdna.read/0.7.0-candidate). Named Host delivery and semantic adoption are
 **NOT_RUN** for this version. A real local stdio process can be tested without
 claiming that this Host has adopted it. The command vector below is transport guidance only.

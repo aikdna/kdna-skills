@@ -16,7 +16,7 @@ test("private local candidate binds exact twelve artifacts and complete installe
  const result=validateCandidateFacts(facts());
  assert.equal(result.fixedArtifacts,12); assert.equal(result.lockedRequiredPackages,12);
  assert.equal(result.installedRequiredPackages,12); assert.equal(result.optionalOmitted,9);
- assert.equal(result.packedFileCount,21); assert.equal(result.status,"LOCAL_RC_ONLY_UNPUBLISHED");
+ assert.equal(result.packedFileCount,22); assert.equal(result.status,"LOCAL_RC_ONLY_UNPUBLISHED");
 });
 test("runtime binding rejects candidate, graph, dependency and package drift",async t=>{
  const mutations=[

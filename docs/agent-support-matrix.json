@@ -5,9 +5,9 @@
   "overall_status": "local_stdio_adapter",
   "candidate_runtime": {
     "mcp": "0.8.0-rc.native-sections.1",
-    "cli": "0.39.0",
-    "core": "0.37.2",
-    "read": "0.11.3",
+    "cli": "0.40.0",
+    "core": "0.37.3",
+    "read": "0.12.0",
     "read_contract": "kdna.read/0.7.0-candidate",
     "private": true,
     "publication": "local-stable-candidate",

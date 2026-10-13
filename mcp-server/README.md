@@ -1,7 +1,7 @@
 # KDNA MCP 0.8.0-rc.native-sections.1 — local Read candidate
 
 **Local release candidate; npm publication is disabled by `private: true`.** This stdio adapter delegates to the exact
-CLI 0.39.0 / Core 0.37.2 / Read 0.11.3 artifacts. The Read contract is
+CLI 0.40.0 / Core 0.37.3 / Read 0.12.0 artifacts. The Read contract is
 `kdna.read/0.7.0-candidate`; package version is a separate coordinate. Historical npm
 MCP 0.5.0 and its CLI 0.36.x workspace flow are not this candidate's runtime.
 
@@ -68,10 +68,23 @@ argument or method parameter beyond request-level `_meta`.
 | kdna.audit | audit_ref, budget_bytes | Exact original full result of an earlier task delivery |
 | kdna.cancel | {} | Closes binding and current session |
 
-For catalog/read/expand, `presentation` is `"full"` or `"task"`; omission means
-`"full"`. Task presentation also requires `view_budget_bytes`. Full presentation
-rejects that additional field. These presentation options are not accepted by
-binding-status, inspect, audit or cancel.
+For catalog/read/expand, `presentation` is `"body"`, `"full"` or `"task"`.
+Omission means `"body"` whenever the installed Read package provides the body
+projection (the fixed combination below always does); on an installation
+without it, omission keeps the previous `"full"` answer and an explicit
+`"body"` request is refused with `MCP_MODEL_VIEW_UNAVAILABLE` instead of
+quietly returning the envelope. Task presentation also requires
+`view_budget_bytes`; body and full presentations reject that additional field.
+These presentation options are not accepted by binding-status, inspect, audit
+or cancel, and `kdna.audit` always returns the exact full result it stored.
+
+`kdna.binding-status` reports `presentation_default` and `body_view_contract`
+so a consumer can detect the installed projection instead of assuming it.
+
+Migration note for earlier consumers: a read that used to receive the official
+envelope now receives the projected body by default. Pass
+`presentation: "full"` to keep the previous answer, and request `"body"`
+explicitly only when the body view is what the task needs.
 
 Selection is the exact asset_id, asset_version and either one `judgment_id` or a `judgment_ids` array (1..64 unique ids) taken from the catalog. Exactly one of the two keys must be *present*, and the present key's value must also be valid: `judgment_id: null` beside a valid `judgment_ids` is refused, not ignored, and the declared JSON schema (`oneOf`, not `anyOf`) refuses the same inputs the adapter does, so a caller that skips schema validation gets the same refusals. The adapter maps both forms to the native `judgment_ids: [...]` selection, so one call can carry the whole set instead of repeating the full audit envelope once per judgment; `judgment_ids` is additive, the single-id form is unchanged, sending both at once is refused, and the 64-item bound is a tool-surface convenience limit rather than a KDNA limit. Expansion passes the complete handle unchanged and uses its `anchor.selection`; it does not fabricate or translate a handle.
 
@@ -87,12 +100,17 @@ Budget is an integer from 0 through 1000000 bytes. Request lines are bounded to
 1 MiB. Tools accept only their listed keys, never path/cwd/approved/allow_read.
 One read/inspect runs at a time; overlapping work returns MCP_READ_BUSY instead
 of queuing more asset reads. JSON/argument errors use JSON-RPC errors. Local
-binding/process errors use an MCP_* tool error. Full presentation returns the
-unchanged official result as JSON text in `content[0].text`. Task presentation
-uses the adapter contract below in the same text field. No structuredContent
-or resource field carries a second copy of the full result. Native
-`catalog_only` is a successful catalog result; rejected and no-body results
-have `isError:true`.
+binding/process errors use an MCP_* tool error. Body presentation returns the
+official Read projection of the complete result — authored content plus one
+fingerprint whose `omitted`/`recovery` names what the full view restores — as
+JSON text in `content[0].text`. Full presentation returns the unchanged
+official result in the same single text field. Task presentation uses the
+adapter contract below in the same text field. No structuredContent or resource
+field carries a second copy of the full result; the model-visible text is the
+only channel and it is measurably smaller than the full result it was projected
+from. Native `catalog_only` is a successful catalog result; rejected and no-body
+results have `isError:true` (a rejection or no-body control is returned
+verbatim rather than projected).
 
 ## Optional task presentation and exact audit
 
@@ -213,7 +231,7 @@ format is not permission to convert it or read its raw payload.
 
 For an Agent-led task, begin with the [getting-started guide](https://github.com/aikdna/kdna-skills/blob/main/docs/GETTING_STARTED.md).
 The installer requires Node.js 22 or later, npm, `bash` and `tar`. The current
-CLI 0.39.0 / Core 0.37.2 / Read 0.11.3 graph was exercised with Node.js 22.23.1
+CLI 0.40.0 / Core 0.37.3 / Read 0.12.0 graph was exercised with Node.js 22.23.1
 and npm 11.17.0. Earlier companion graphs' runtime checks do not verify this
 one on additional Node versions. The CI matrix is a set of required checks,
 not evidence that every run has already passed. From `mcp-server/`:
