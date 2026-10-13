@@ -78,6 +78,51 @@ requirements. Check the complete readable work and its field relationships
 independently. If necessary content is unfinished, deliver an explicit draft,
 not a finished benchmark. A well-formed record can still describe poor content.
 
+## When the author has not stated something
+
+These authoring situations have an honest encoding even though the payload
+cannot label them directly. None of them authorizes fabrication, and none of
+them is a reason to drop real content.
+
+- **The author has not stated how a judgment was formed.** Do not pick a
+  method term on the author's behalf; ask first. When the answer really is
+  "I have never thought about it", the honest encoding is
+  `method.method.term: "other"` with the required `other` definition naming
+  the absence, and the term's mandated role components kept as explicit
+  not-stated statements; record the domain as incomplete or unknown in the
+  author review record with a remaining action. A term chosen by the encoder
+  passes admission silently and reads back exactly like a stated method, so
+  this is the one substitution nothing downstream can detect.
+- **A question inside the author's own domain is still undecided.** Keep it
+  as a judgment with `answer_kind: "other"` and an `answer_other` definition
+  saying the author has not decided, and keep it in `reading_order` and the
+  review record. Do not convert it to `out_of_domain` or `none` and do not
+  delete it; either rewrite silently removes the open question from the work
+  while admission stays green.
+- **The author's words, an Agent inference, a suggestion and commissioned
+  research coexist.** Each has its own place: the author's statement is the
+  judgment with an authored core expression; an inference is a judgment whose
+  method is `inference` with its premise and derivation components, material
+  references and reasons; a suggestion stays a material under `content_uses`
+  (role `discuss`) until the author adopts it; commissioned research is a
+  `source` with its `source_uses` role. None of the three non-author items is
+  presented as the author's adopted answer, and none is deleted. The payload
+  has no structural field for adoption state today, so the distinction lives
+  in the component and statement text and in the author review record; report
+  that as a gap instead of blurring it.
+- **Do not force non-empty relationships.** `relationships`, `reasons` and
+  every other optional collection stay empty when the content does not
+  produce them. A larger graph is not a better work.
+
+The complete required and optional role set for every method term is listed
+in the CLI authoring field reference (section 6), generated from the installed
+contract; read it before authoring a method instead of discovering it through
+rejections. The Studio export route separately rejects a method-absent
+proposal, so a stated absence belongs on this native route; never invent a
+method to satisfy the exporter. When the current contract cannot carry
+something at all, keep the draft and the review record's remaining action
+rather than filling a field with invented content.
+
 ## Read the whole diagnostic
 
 The native CLI already returns JSON with the original failure details. Do not
@@ -101,8 +146,12 @@ absent field and an explicit `null` subject as different reported states; do not
 invent a pointer or subject from nearby text. Show exact codes and pointers
 alongside an ordinary-language explanation, retain nested reference details and
 the original causal result, and correct the actual authored input. A translated
-summary does not replace the diagnostic. Do not retry a refused operation by
-changing formats, dropping required content or bypassing the official CLI.
+summary does not replace the diagnostic. A Core `READ_CORE_INVALID` carries
+exact coordinates but no explanatory sentence; resolve the pointer against the
+contract — for a method-role rejection, against the field reference's role
+table — before paraphrasing it, and never adjust the input to silence a
+pointer you have not understood. Do not retry a refused operation by changing
+formats, dropping required content or bypassing the official CLI.
 
 ## Save, read, revise
 
