@@ -199,7 +199,7 @@ test("source Runtime candidate binds private local CLI Core and Read", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"));
   const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, "package-lock.json"), "utf8"));
   assert.equal(pkg.version, "0.8.0-rc.native-sections.1"); assert.equal(pkg.private, true);
-  const versions = {cli:"0.39.0",core:"0.37.2",read:"0.11.3"};
+  const versions = {cli:"0.40.0",core:"0.37.3",read:"0.12.0"};
   const expected = Object.fromEntries(Object.entries(versions).map(([name,version]) => ["@aikdna/kdna-"+name, version]));
   for (const [name,spec] of Object.entries(expected)) assert.equal(pkg.dependencies[name],spec); assert.equal(Object.keys(pkg.dependencies).length,12); assert.deepEqual(lock.packages[""].dependencies,pkg.dependencies);
   for (const [name,version] of Object.entries(versions)) {
@@ -210,8 +210,8 @@ test("source Runtime candidate binds private local CLI Core and Read", () => {
     assert.equal(installed.version,version);
     assert.deepEqual(Object.keys(lock.packages).filter(k=>k.endsWith(key)),[key]);
   }
-  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-core"],"0.37.2");
-  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"],"0.11.3");
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-core"],"0.37.3");
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"],"0.12.0");
   assert.equal(lock.packages["node_modules/fast-uri"].version,"3.1.8");
 });
 
