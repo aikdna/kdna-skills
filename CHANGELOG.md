@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.0-rc.native-sections.2 (local release candidate)
+
+- Re-pin the fixed runtime graph to the released CLI 0.42.0 with Core 0.37.6
+  and Read 0.13.0: the checked archives, the lock, the runtime binding digest
+  and every integration guide move together in one batch.
+- Carry the session on the CLI's explicit raw library envelope and project per
+  request with the official Read projection, so the adapter's default body
+  folds the non-selected closure members behind their issued handles exactly
+  as the CLI prints them — re-projecting the full surface could not, because
+  that surface intentionally no longer carries the reduction machinery.
+- Keep the default body and full presentation shapes; the task presentation
+  reads the same complete envelope fields.
+
 ## 0.7.0-rc.component-semantics.1 (local release candidate)
 
 - Replace the workspace flow with one operator-bound local file and the exact
