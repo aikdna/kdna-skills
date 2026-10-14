@@ -88,7 +88,7 @@ smaller one. Do not fill the shape without the answer.
 
 | Signal in the author's words | Ask | Record as |
 | --- | --- | --- |
-| "how I read this kind of case", "the way I work is…" | Does that stance hold across the whole work rather than inside one judgment? | A `worldview` shared declaration (`statement` + `items`, in the author's own words), scoped to the work it actually covers. |
+| "how I read this kind of case", "the way I work is…" | Does that stance hold across the whole work rather than inside one judgment? | A `worldview` shared declaration: the stance in `subject.statement`, the author's stated items in `value`, scoped by `applies_to`. |
 | "one standard", "the same rule for all of them" | Does the statement cover only the named cases or all of them? Does the author say one claim backs another? | The scoped `subject`/`applies_to` of the statement; a `support` relation when the author says one claim backs another. |
 | "these two don't fight", "they go together" | Which statement completes the other, and what does each side add? | A `complement` relation between the two judgments. |
 | "when they disagree I follow X", "X comes first" | Which two statements disagree, and which one wins in the author's practice? | A `conflict` relation between the two judgments, and the winning order in a `value_order` shared declaration. |
