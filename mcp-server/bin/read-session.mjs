@@ -8,7 +8,7 @@ import { AdapterError } from "./operator-binding.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const packageInfo = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-const versions = { cli: "0.40.0", core: "0.37.3", read: "0.12.0" };
+const versions = { cli: "0.42.0", core: "0.37.6", read: "0.13.0" };
 function localPackage(name) {
   const roots = [path.join(root, "node_modules")];
   if (path.basename(path.dirname(root)) === "@aikdna" && path.basename(path.dirname(path.dirname(root))) === "node_modules") roots.push(path.dirname(path.dirname(root)));
@@ -26,7 +26,7 @@ const cli = localPackage("cli"), core = localPackage("core"), read = localPackag
 const cliEntry = path.resolve(cli.directory, cli.value.bin?.kdna || "");
 const bindingBytes = fs.readFileSync(path.join(cli.directory, "public-contract-binding.json"));
 export const publicBinding = JSON.parse(bindingBytes);
-if (packageInfo.kdna_runtime?.cli !== versions.cli || packageInfo.kdna_runtime?.core !== versions.core || packageInfo.kdna_runtime?.read !== versions.read || createHash("sha256").update(bindingBytes).digest("hex") !== "bdc906bbfb271cc5395b6341ca2319bfb34de8907444e121c679c269d96692c7" || publicBinding.implementation?.version !== versions.cli || publicBinding.tuple?.container !== "0.6.0" || publicBinding.tuple?.read !== "kdna.read/0.7.0-candidate" || publicBinding.accepted_core?.version !== versions.core || publicBinding.accepted_read?.version !== versions.read || packageInfo.kdna_runtime?.read_contract !== "kdna.read/0.7.0-candidate" || !cliEntry.startsWith(cli.directory + path.sep) || !fs.statSync(cliEntry).isFile()) throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed native runtime contract binding is invalid.");
+if (packageInfo.kdna_runtime?.cli !== versions.cli || packageInfo.kdna_runtime?.core !== versions.core || packageInfo.kdna_runtime?.read !== versions.read || createHash("sha256").update(bindingBytes).digest("hex") !== "c4883ac7c099057ca0c465a58e3344dee217432e3e8d98825a33f3fbbe52df56" || publicBinding.implementation?.version !== versions.cli || publicBinding.tuple?.container !== "0.6.0" || publicBinding.tuple?.read !== "kdna.read/0.7.0-candidate" || publicBinding.accepted_core?.version !== versions.core || publicBinding.accepted_read?.version !== versions.read || packageInfo.kdna_runtime?.read_contract !== "kdna.read/0.7.0-candidate" || !cliEntry.startsWith(cli.directory + path.sep) || !fs.statSync(cliEntry).isFile()) throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed native runtime contract binding is invalid.");
 // Every consumer resolves the same fixed Core/Read instance; nested shadow copies are refused.
 for (const [consumer, dependency] of [[cli, core], [cli, read], [read, core]]) {
   const resolved = createRequire(path.join(consumer.directory, "package.json")).resolve(dependency.value.name + "/package.json");
@@ -42,11 +42,13 @@ export class ReadSession {
     this.binding.assertReadable();
     if (this.stopped) throw unavailable();
     if (this.child) return;
-    // The session keeps the complete official envelope, because this adapter's
-    // own machinery (handle scope, exact audit records, task presentation)
-    // reads envelope fields. What the model receives is projected later, per
-    // request, from the same official Read projection the CLI uses.
-    const child = spawn(process.execPath, [cliEntry, "read", this.binding.file, "--session", "--allow-read", "--view", "full"], { env: childEnv, stdio: ["pipe", "pipe", "pipe"], shell: false });
+    // The session keeps the raw library envelope: the complete official
+    // result with the reduction machinery intact, so this adapter's own
+    // projection can fold members and name their issued handles, and its
+    // machinery (handle scope, exact audit records, task presentation) reads
+    // the same envelope fields. What the model receives is projected later,
+    // per request, from the same official projection the CLI uses.
+    const child = spawn(process.execPath, [cliEntry, "read", this.binding.file, "--session", "--allow-read", "--view", "raw"], { env: childEnv, stdio: ["pipe", "pipe", "pipe"], shell: false });
     this.child = child; this.buffer = Buffer.alloc(0); this.stderrBytes = 0;
     this.exited = new Promise(resolve => child.once("close", (code, signal) => { this.stopped = true; this.rejectPending(unavailable()); resolve({ code, signal }); }));
     child.on("error", () => { this.rejectPending(unavailable()); void this.close(false); });

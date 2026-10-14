@@ -23,7 +23,7 @@ const ready = response => { const value = decoded(response); assert.notEqual(res
 // authored content plus one fingerprint that names the full-view recovery.
 const bodyView = response => {
   const value = decoded(response); assert.notEqual(response.result.isError, true, JSON.stringify(value));
-  assert.equal(value.view_contract, "kdna.read.model-view/0.1.0");
+  assert.equal(value.view_contract, "kdna.read.model-view/0.2.0");
   assert.equal(value.view, "body");
   assert.equal(value.status, value.fingerprint?.recovery?.mode === "catalog" ? "catalog_only" : "ready");
   assert.equal(value.fingerprint?.recovery?.view, "full");
@@ -112,7 +112,7 @@ function cliReferenceResult(fixture, selection, view) {
   return JSON.parse(response.stdout);
 }
 // The enveloped comparison reference: envelope fields asserted field by field.
-function reference(fixture, selection = null) { return cliReferenceResult(fixture, selection, "full").envelope; }
+function reference(fixture, selection = null) { return cliReferenceResult(fixture, selection, "raw").envelope; }
 // The default-surface comparison reference: exactly what this CLI prints for a
 // read with no view flag, which is the surface the adapter must deliver.
 function bodyReference(fixture, selection = null) { return cliReferenceResult(fixture, selection, null); }
@@ -256,7 +256,32 @@ test("the default presentation is the official projected body view with full rec
   for (const key of ["channel", "envelope", "contract", "receipt", "verification", "digests"]) assert.equal(Object.hasOwn(catalog, key), false, key);
   const status = decoded(await s.call("kdna.binding-status"));
   assert.equal(status.presentation_default, "body");
-  assert.equal(status.body_view_contract, "kdna.read.model-view/0.1.0");
+  assert.equal(status.body_view_contract, "kdna.read.model-view/0.2.0");
+  await s.close();
+});
+test("the projected default carries the official reduced members and their handle ids", async t => {
+  // A selection whose closure holds a non-selected judgment must deliver the
+  // 0.2.0 reduction verbatim: focus, core expression and the six markers stay,
+  // the body is deferred, and the entry names the official handle it expands
+  // through. The identical official CLI default is the comparison reference.
+  const s = launch(t, { fixture: "graph-dedup-support.kdna" }); await s.initialize();
+  const catalog = bodyView(await s.call("kdna.catalog", budget));
+  const selection = { asset_id: catalog.fingerprint.asset.asset_id, asset_version: catalog.fingerprint.asset.asset_version, judgment_id: catalog.content.catalog[0].judgment_id };
+  const selected = bodyView(await s.call("kdna.read", { ...budget, selection }));
+  const reduced = selected.content.closure.filter(entry => entry.state === "reduced");
+  assert.ok(reduced.length > 0, "this fixture closes over a non-selected member");
+  for (const entry of reduced) {
+    assert.equal(entry.role, "judgment");
+    assert.equal(entry.body_delivery, "deferred");
+    assert.equal(typeof entry.handle_id, "string");
+    assert.ok(entry.handle_id.startsWith("retained-handle:"));
+    assert.deepEqual(Object.keys(entry.value.markers).sort(), ["answer_kind", "boundaries", "exceptions", "form", "method_term", "undecided"]);
+  }
+  // Each delivery mints its own handle identifiers, exactly like the CLI's own
+  // runs do; everything else in the reduced surface must match the official
+  // default byte for byte, so only the minted identifier is normalized away.
+  const normalize = value => JSON.parse(JSON.stringify(value).replace(/"retained-handle:[0-9a-f-]{36}"/gu, '"retained-handle:<minted>"'));
+  assert.deepEqual(normalize(selected.content), normalize(bodyReference("graph-dedup-support.kdna", selection).content), "the reduced surface is exactly what the official CLI prints");
   await s.close();
 });
 
