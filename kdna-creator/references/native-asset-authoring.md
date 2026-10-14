@@ -65,10 +65,10 @@ Review these actual responsibilities:
 | --- | --- | --- |
 | Purpose and common question | Manifest title/summary; declarations.highest_question; kernel.purpose | The common question frames the work; one sentence cannot substitute for necessary shared knowledge. |
 | Common foundations and concepts | kernel.foundation_refs; materials of kind foundation/premise/definition | Explain needed concepts and distinctions, actual sources and precise applies_to. A kernel reference does not widen scope. |
-| Shared declarations | shared_declarations kind/subject/applies_to/value | Preserve a real shared statement or leave the domain empty with a reason; do not invent a stance. |
+| Shared declarations | shared_declarations kind/subject/applies_to/value | Preserve a real shared statement or leave the domain empty with a reason; do not invent a stance. When the author's words already order values, the question above is how that ordering gets recorded. |
 | Questions and formation | judgments; conditions; reasons; contracts; focus, core_expression, result or formation_rule, method and necessary references | Deliver each actual answer or formation method and referenced body, without truncating another field into a fabricated overview. |
 | Scope and limits | Payload/Judgment scope; declarations.boundaries; local boundaries, exceptions and misuse | Work-wide and local responsibilities remain distinct; unknown is not none and an unevaluated exception is not active. |
-| Organization and dependencies | relationships, dependencies, parent_ref, reading_order | Express real relations and requirements. Navigation does not replace common content or an execution plan. |
+| Organization and dependencies | relationships, dependencies, parent_ref, reading_order | Express real relations and requirements. Navigation does not replace common content or an execution plan. The relation signals worth asking about are in the section above. |
 | Examples and results | examples context/input/adopted_judgments/application/results | Explain a concrete use. Preserve illustrative/observed and expected/observed/disposition/partial identity; never invent an observation. |
 | Sources and file history | sources/source_uses; actors/attributions; Manifest identity/time/rights/lineage/history | Attribute each source's actual use. Record only real changes and authorized rights; creation identity is not human confirmation. |
 
@@ -77,6 +77,38 @@ types and references. These are content responsibilities, not additional Schema
 requirements. Check the complete readable work and its field relationships
 independently. If necessary content is unfinished, deliver an explicit draft,
 not a finished benchmark. A well-formed record can still describe poor content.
+
+## When the author's words carry a relation
+
+The payload carries the relations the interview actually produced, in the
+author's own words. An author's phrasing often already signals that a real
+relation or an ordered value exists. Ask about the signal and record the
+answer; a signal you noticed and never raised is a dropped relation, not a
+smaller one. Do not fill the shape without the answer.
+
+| Signal in the author's words | Ask | Record as |
+| --- | --- | --- |
+| "one standard", "the same rule for all of them" | Does the statement cover only the named cases or all of them? Does the author say one claim backs another? | The scoped `subject`/`applies_to` of the statement; a `support` relation when the author says one claim backs another. |
+| "these two don't fight", "they go together" | Which statement completes the other, and what does each side add? | A `complement` relation between the two judgments. |
+| "when they disagree I follow X", "X comes first" | Which two statements disagree, and which one wins in the author's practice? | A `conflict` relation between the two judgments, and the winning order in a `value_order` shared declaration. |
+| "the only exception is…" | Does the exception change when the statement applies, or does it loosen the statement itself? | A `qualify` relation; an exception or boundary at its own scope when the author limits the work itself. |
+| "this doesn't cover…", "I don't deal with…" | Is that outside the work entirely, or a limit on how far this content currently goes? | `declarations.boundaries` — `exclude` or `out_of_domain` for what the work does not claim, `limit` for the edge of what it currently asserts. |
+
+The interview can end with fewer relations than it produced signals: an answer
+of "it is the same thing, just worded twice" narrows scope instead of adding a
+relation, and a boundary the author confirms belongs in its native slot even
+when no relation is authored. Record what the answer actually was.
+
+The current contract fixes the shape: each `relationships[]` entry carries
+exactly `id`, `kind`, `direction`, two `participants`, `operator`, `effect` and
+`statement`, and the four normative tuples are `support` (supporter → claim),
+`complement` (supplement → base), `qualify` (qualifier → qualified) and
+`conflict` (side_a ↔ side_b, undirected). Read the contract supplied with the
+selected installation for the exact terms. The `statement` stays the relation
+in the author's words.
+
+A recorded answer is not a forced relation. The rule below still holds: when
+the material produces no relation, the arrays stay empty.
 
 ## When the author has not stated something
 
@@ -112,7 +144,8 @@ them is a reason to drop real content.
   that as a gap instead of blurring it.
 - **Do not force non-empty relationships.** `relationships`, `reasons` and
   every other optional collection stay empty when the content does not
-  produce them. A larger graph is not a better work.
+  produce them. A larger graph is not a better work. Asking the questions
+  above first is what keeps an authored relation honest.
 
 The complete required and optional role set for every method term is listed
 in the CLI authoring field reference (section 6), generated from the installed
