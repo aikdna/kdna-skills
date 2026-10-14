@@ -11,12 +11,15 @@ The session accepts explicit `--text`/`--interview` files and `--out NEW_DIRECTO
 | brief | title and scope |
 | propose | local judgment key and at least two alternatives |
 | revise | same local key, exact baseRevision, replacements and explanation |
+| system | declared system layer: optional `worldview`/`value_order` (`{statement,items}`), `relations` over judgment local keys, `boundaries` (named refusal until the identity-model unit) |
 | review | actual selection or final adoption reply |
 | preview | complete current pre-compiler mapping |
 | status | inspect current state |
 | export | one exclusive saved/readback/completed bundle |
 
 Alternative fields are `localKey,title,subject,scope,statement,rationale,materials`; material ordinals start at 1. The input grammar permits optional `method,formationRule,publicSources,publicNotices`, but the current Studio exporter rejects method absence with `CREATION_METHOD_REQUIRED`. Its supported export needs an explicitly complete method and required roles. Do not replace missing method or missing own arrays with null or empty arrays, or fabricate a method. Typed content comes from the sole public component descriptor. The Agent must supply the meaning; Studio does not infer or fabricate it.
+
+Review the system-layer cues the brief and materials actually carry — a stance stated across the work, an ordered value in the author's words, signals of support, complement, qualification or open disagreement — with the signal-table discipline in [native-asset-authoring.md](native-asset-authoring.md) §"When the author's words carry a relation": ask about the signal, record the actual answer, and leave silence unrecorded; do not force the layer to be non-empty. Declare it with `system`; its judgment keys are syntactic at declaration time and resolve against the selected set when the preview compiles — unknown `CREATION_SYSTEM_JUDGMENT_UNKNOWN`, proposed but unselected `CREATION_SYSTEM_JUDGMENT_UNSELECTED`. Boundary signals stay open on this surface: `boundaries` is refused by name (`CREATION_BOUNDARIES_ACTOR_REQUIRED`) until the identity-model unit, and must not be re-encoded as a worldview, an ordinary judgment or a relation to make it fit.
 
 A review emits `adoption_reply` containing actual text, the current review and `replyTo`. Send exactly one interpretation with the same ticket. Select names one current alternative per judgment; note/reject/confirm have no choices. Example:
 
