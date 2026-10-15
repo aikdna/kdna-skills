@@ -239,6 +239,38 @@ test("publish workflow is stable release-only and publishes only the verified ta
   assert.match(workflow, /publish-verified-artifact\.js/);
   assert.match(workflow, /--artifact "\$RUNNER_TEMP\/kdna-mcp-release\.tgz"/);
   assert.doesNotMatch(workflow, /npm publish --provenance/);
+  // The job-level guard chain is the whole trigger surface of this workflow.
+  // Pin the exact four conditions and evaluate them against rehearsal release
+  // events: a non-MCP coordinate (the 0.5.1 badge release) must be skipped
+  // before any step runs, the rc pre-releases stay skipped, and the intended
+  // future stable MCP release still enters the job.
+  const guard = /if: >-\n([\s\S]*?)\n    runs-on:/u.exec(workflow);
+  assert.ok(guard, "publish job condition block is missing");
+  const conditions = guard[1]
+    .trim()
+    .split(/\n\s*/u)
+    .map((line) => line.replace(/\s*&&\s*$/u, "").trim());
+  assert.deepEqual(conditions, [
+    "github.event.action == 'published'",
+    "github.event.release.draft == false",
+    "github.event.release.prerelease == false",
+    "startsWith(github.event.release.tag_name, 'kdna-mcp-server-')",
+  ]);
+  const enters = (event) =>
+    conditions.every((condition) => {
+      if (condition === "github.event.action == 'published'") return event.action === "published";
+      if (condition === "github.event.release.draft == false") return event.release.draft === false;
+      if (condition === "github.event.release.prerelease == false") return event.release.prerelease === false;
+      const prefix = /^startsWith\(github\.event\.release\.tag_name, '([^']+)'\)$/u.exec(condition);
+      assert.ok(prefix, `unrecognized publish guard condition: ${condition}`);
+      return event.release.tag_name.startsWith(prefix[1]);
+    });
+  const release = (tag, prerelease, draft = false) => ({ action: "published", release: { tag_name: tag, draft, prerelease } });
+  assert.equal(enters(release("0.5.1", false)), false, "a non-MCP release must not enter the publish job");
+  assert.equal(enters(release("kdna-mcp-server-0.8.0-rc.native-sections.3", true)), false);
+  assert.equal(enters(release("kdna-mcp-server-0.9.0", false)), true, "the intended stable MCP release must still enter");
+  assert.equal(enters(release("kdna-mcp-server-0.9.0", false, true)), false);
+  assert.equal(enters({ action: "edited", release: { tag_name: "kdna-mcp-server-0.9.0", draft: false, prerelease: false } }), false);
 });
 
 test("release context binds event, stable package, tag, ref, SHA, HEAD, clean tree, and changelog", async (t) => {

@@ -13,7 +13,8 @@ jobs:
     if: >-
       github.event.action == 'published' &&
       github.event.release.draft == false &&
-      github.event.release.prerelease == false
+      github.event.release.prerelease == false &&
+      startsWith(github.event.release.tag_name, 'kdna-mcp-server-')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
