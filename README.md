@@ -54,8 +54,8 @@ the appropriate local Node runtime and uses the exact CLI path printed by the
 script. The script does not install a global binary or configure your Agent.
 See [setup details](docs/GETTING_STARTED.md#agent-setup-checklist).
 
-The local MCP candidate is `0.8.0-rc.native-sections.2`, with CLI `0.42.0`, Core
-`0.37.6` and Read `0.13.0`. It remains `private: true`, with npm publication
+The local MCP candidate is `0.8.0-rc.native-sections.3`, with CLI `0.43.0`, Core
+`0.37.7` and Read `0.13.1`. It remains `private: true`, with npm publication
 disabled. These source coordinates do not establish registry availability.
 Same-version global or registry packages are not substitutes for the checked
 archives. Official npm packages use the `@aikdna` scope; the unscoped `kdna`

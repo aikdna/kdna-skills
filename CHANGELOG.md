@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0-rc.native-sections.3 (local release candidate)
+
+- Re-pin the fixed runtime graph to the released CLI 0.43.0 with Core 0.37.7
+  and Read 0.13.1: the checked archives, the lock, the runtime binding digest,
+  the release-contract facts and every integration guide move together in one
+  batch.
+- Record the npm coordinate's retirement in the server README: the
+  `@aikdna/kdna-mcp-server` registry entry now serves the 0.5.1 notice and is
+  not an installation path; the Git channel remains the delivery channel.
+
 ## 0.5.1 (2026-10-15)
 
 - Retire this npm coordinate: `@aikdna/kdna-mcp-server@0.5.1` carries only the

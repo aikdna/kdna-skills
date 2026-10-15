@@ -1,9 +1,12 @@
-# KDNA MCP 0.8.0-rc.native-sections.2 — local Read candidate
+# KDNA MCP 0.8.0-rc.native-sections.3 — local Read candidate
 
 **Local release candidate; npm publication is disabled by `private: true`.** This stdio adapter delegates to the exact
-CLI 0.42.0 / Core 0.37.6 / Read 0.13.0 artifacts. The Read contract is
+CLI 0.43.0 / Core 0.37.7 / Read 0.13.1 artifacts. The Read contract is
 `kdna.read/0.7.0-candidate`; package version is a separate coordinate. Historical npm
 MCP 0.5.0 and its CLI 0.36.x workspace flow are not this candidate's runtime.
+The `@aikdna/kdna-mcp-server` npm coordinate now serves a retirement notice
+(`0.5.1`) and is not an installation path; the Git channel remains the
+delivery channel for this candidate.
 
 ## Operator-controlled startup
 
@@ -232,7 +235,7 @@ format is not permission to convert it or read its raw payload.
 
 For an Agent-led task, begin with the [getting-started guide](https://github.com/aikdna/kdna-skills/blob/main/docs/GETTING_STARTED.md).
 The installer requires Node.js 22 or later, npm, `bash` and `tar`. The current
-CLI 0.42.0 / Core 0.37.6 / Read 0.13.0 graph was exercised with Node.js 22.23.1
+CLI 0.43.0 / Core 0.37.7 / Read 0.13.1 graph was exercised with Node.js 22.23.1
 and npm 11.17.0. Earlier companion graphs' runtime checks do not verify this
 one on additional Node versions. The CI matrix is a set of required checks,
 not evidence that every run has already passed. From `mcp-server/`:
@@ -282,6 +285,6 @@ establish named Host adoption, human review, authorship or Creation acceptance.
 
 ## Native section contract boundary
 
-The complete CLI public contract binding is pinned by SHA-256 `c4883ac7c099057ca0c465a58e3344dee217432e3e8d98825a33f3fbbe52df56`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+The complete CLI public contract binding is pinned by SHA-256 `d70120e9ccf002f9b77a734b45984261fa20bcd1672a1eab8a7379a639a2a5bb`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
 
 The public regression corpus is generated from synthetic authored JSON with the fixed CLI. It tests real native containers and one deliberately truncated container; no legacy component-format asset is treated as current native input.
