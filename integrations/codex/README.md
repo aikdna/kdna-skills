@@ -1,6 +1,6 @@
 # KDNA with Codex
 
-Current local candidate: MCP 0.8.0-rc.native-sections.2 / CLI 0.42.0 / Core 0.37.6 / Read 0.13.0
+Current local candidate: MCP 0.8.0-rc.native-sections.3 / CLI 0.43.0 / Core 0.37.7 / Read 0.13.1
 (contract kdna.read/0.7.0-candidate). Separate **Codex CLI 0.154.0** model turns
 have used full and task presentations to read a synthetic native public asset
 and apply its judgments. These bounded observations do not establish all Codex
