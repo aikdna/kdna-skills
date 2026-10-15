@@ -1,0 +1,1 @@
+This npm coordinate is retired. The current KDNA MCP server is delivered from the Git channel aikdna/kdna-skills and is not published to npm. The supported stable npm surface is the five stable packages (Core, Read, CLI, Studio Core, Studio CLI). This coordinate is not an install path and is not a sixth stable package.

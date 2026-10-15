@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.1 (2026-10-15)
+
+- Retire this npm coordinate: `@aikdna/kdna-mcp-server@0.5.1` carries only the
+  retirement notice — its `kdna-mcp` bin prints the notice and exits non-zero.
+  The current MCP server stays a source release candidate delivered from the
+  Git channel `aikdna/kdna-skills`; this coordinate is not an install path and
+  the supported stable npm surface stays the five stable packages.
+- Mark the historical versions `0.1.0`–`0.5.0` deprecated with the same notice
+  already carried by `0.5.0` since 2026-10-12.
+
 ## 0.8.0-rc.native-sections.2 (local release candidate)
 
 - Re-pin the fixed runtime graph to the released CLI 0.42.0 with Core 0.37.6
