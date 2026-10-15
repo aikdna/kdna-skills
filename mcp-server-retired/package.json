@@ -1,0 +1,25 @@
+{
+  "name": "@aikdna/kdna-mcp-server",
+  "version": "0.5.1",
+  "description": "Retirement notice for this npm coordinate. The current KDNA MCP server is delivered from the Git channel aikdna/kdna-skills and is not published to npm.",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aikdna/kdna-skills.git",
+    "directory": "mcp-server-retired"
+  },
+  "bin": {
+    "kdna-mcp": "bin/kdna-mcp.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/retired.test.mjs"
+  },
+  "files": [
+    "bin/",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "license": "Apache-2.0",
+  "private": false
+}
