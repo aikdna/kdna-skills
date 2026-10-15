@@ -40,6 +40,29 @@ unbound; the selected path is not opened. --allow-read without --asset is an
 argument error. Model tools cannot bind, reopen or choose a path. Legacy
 workspace/consent/password environment values do not grant permission.
 
+## Runtime model and expectations
+
+One server process serves one selected artifact for its whole lifetime.
+
+- **One process, one asset.** A launch binds the single `--asset` file together
+  with the `--allow-read` permission; `kdna.cancel` or process exit closes that
+  binding, and only a new operator-controlled launch can select again. No tool
+  call can bind, reopen or switch the file mid-process.
+- **`--allow-read` is the only read permission.** Without the operator-supplied
+  flag the server stays unbound; no tool parameter, asset instruction or
+  configuration edit establishes or widens it (see "Operator-controlled
+  startup").
+- **Reads are serialized by design.** One read/inspect presentation runs at a
+  time. A second overlapping read is refused with `MCP_READ_BUSY` ("Wait for
+  the current local read or cancel it.") instead of being queued: wait for the
+  current result, or end it through `kdna.cancel` or the client's request
+  cancellation — cancelling closes the process binding.
+- **Every read call carries its own budget.** `kdna.catalog`, `kdna.read`,
+  `kdna.expand` and `kdna.audit` each require an explicit integer
+  `budget_bytes` (0 through 1000000); there is no default budget, and a request
+  whose budget cannot hold its result is refused with a named error rather than
+  returning a partial view.
+
 ## MCP transport and tools
 
 Use newline-delimited JSON-RPC 2.0 over local stdio. Initialize with the client's
