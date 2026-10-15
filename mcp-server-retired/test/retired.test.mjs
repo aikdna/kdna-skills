@@ -31,6 +31,11 @@ test("the package identity is the retirement coordinate", () => {
   assert.equal(pkg.version, "0.5.1");
   assert.equal(pkg.private, false);
   assert.deepEqual(pkg.bin, { "kdna-mcp": "bin/kdna-mcp.mjs" });
+  // The npm page description is exactly the first two sentences of the approved
+  // text, so no sentence outside the approved notice reaches the registry page.
+  const firstTwo = "This npm coordinate is retired. The current KDNA MCP server is delivered from the Git channel aikdna/kdna-skills and is not published to npm.";
+  assert.equal(pkg.description, firstTwo);
+  assert.ok(RETIREMENT.startsWith(firstTwo + " "));
 });
 
 test("the bin keeps the retirement text source in the package", () => {
