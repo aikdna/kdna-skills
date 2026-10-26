@@ -258,8 +258,8 @@ format is not permission to convert it or read its raw payload.
 
 For an Agent-led task, begin with the [getting-started guide](https://github.com/aikdna/kdna-skills/blob/main/docs/GETTING_STARTED.md).
 The installer requires Node.js 22 or later, npm, `bash` and `tar`. The current
-CLI 0.43.2 / Core 0.37.9 / Read 0.13.3 graph was exercised with Node.js 22.23.1
-and npm 11.17.0. Earlier companion graphs' runtime checks do not verify this
+CLI 0.43.2 / Core 0.37.9 / Read 0.13.3 graph was exercised with Node.js 22.22.3
+and npm 10.9.8. Earlier companion graphs' runtime checks do not verify this
 one on additional Node versions. The CI matrix is a set of required checks,
 not evidence that every run has already passed. From `mcp-server/`:
 
