@@ -2,8 +2,8 @@
 
 ## 0.8.0-rc.native-sections.3 (local release candidate)
 
-- Re-pin the fixed runtime graph to the released CLI 0.43.0 with Core 0.37.7
-  and Read 0.13.1: the checked archives, the lock, the runtime binding digest,
+- Re-pin the fixed runtime graph to the released CLI 0.43.2 with Core 0.37.9
+  and Read 0.13.3: the checked archives, the lock, the runtime binding digest,
   the release-contract facts and every integration guide move together in one
   batch.
 - Record the npm coordinate's retirement in the server README: the

@@ -27,7 +27,7 @@ and Read `0.6.4`; public bytes need no credential pipe. Do not infer a format
 from its filename, try a private parser or convert it implicitly after rejection.
 The shared Core/Read package versions do not merge these file contracts.
 
-This candidate uses CLI 0.43.0, Core 0.37.7 and Read package 0.13.1 implementing
+This candidate uses CLI 0.43.2, Core 0.37.9 and Read package 0.13.3 implementing
 `kdna.read/0.7.0-candidate`. Resolve the accepted local installation explicitly. Do not use
 a global CLI, a same-version registry replacement, a private parser or raw
 payload fallback. This MCP/native CLI route does not accept protected browser assets or supply a browser credential channel. The separately supported protected Studio/browser route requires its own trusted Host and exact tuple; do not invent a password fallback here.

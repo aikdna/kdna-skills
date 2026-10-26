@@ -44,8 +44,8 @@ KDNA 文件格式，也不需要自己处理安装配置。
 本地 Node 运行时，随后使用脚本打印的精确 CLI 路径。脚本不安装全局命令，也不
 替你配置 Agent。具体操作见[安装核查步骤](docs/GETTING_STARTED.zh.md#agent-安装核查步骤)。
 
-当前本地 MCP 候选为 `0.8.0-rc.native-sections.3`，配套 CLI `0.43.0`、Core `0.37.7`、
-Read `0.13.1`。MCP 保持 `private: true`、禁止 npm 发布。这些源码坐标不代表相应
+当前本地 MCP 候选为 `0.8.0-rc.native-sections.3`，配套 CLI `0.43.2`、Core `0.37.9`、
+Read `0.13.3`。MCP 保持 `private: true`、禁止 npm 发布。这些源码坐标不代表相应
 registry 制品已发布；不能用同版本的全局或 registry 包替换已经核对的归档。
 官方 npm 包使用 `@aikdna` scope，未加 scope 的 `kdna` 包与本项目无关。
 

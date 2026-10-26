@@ -26,8 +26,8 @@
     "README.md",
     "LICENSE",
     "NOTICE",
-    "vendor/aikdna-kdna-core-0.37.7.tgz",
-    "vendor/aikdna-kdna-read-0.13.1.tgz",
+    "vendor/aikdna-kdna-core-0.37.9.tgz",
+    "vendor/aikdna-kdna-read-0.13.3.tgz",
     "vendor/ajv-8.20.0.tgz",
     "vendor/ajv-formats-3.0.1.tgz",
     "vendor/cbor-x-1.6.5.tgz",
@@ -37,7 +37,7 @@
     "vendor/noble-hashes-1.8.0.tgz",
     "vendor/pako-2.1.0.tgz",
     "vendor/require-from-string-2.0.2.tgz",
-    "vendor/aikdna-kdna-cli-0.43.0.tgz"
+    "vendor/aikdna-kdna-cli-0.43.2.tgz"
   ],
   "scripts": {
     "test": "node scripts/verify-runtime-candidates.mjs && node ../scripts/check-current-names.mjs && node --test test/*.test.mjs && npm run check:orphan-lockfile",
@@ -52,8 +52,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aikdna/kdna-core": "0.37.7",
-    "@aikdna/kdna-read": "0.13.1",
+    "@aikdna/kdna-core": "0.37.9",
+    "@aikdna/kdna-read": "0.13.3",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
     "cbor-x": "1.6.5",
@@ -63,12 +63,12 @@
     "@noble/hashes": "1.8.0",
     "pako": "2.1.0",
     "require-from-string": "2.0.2",
-    "@aikdna/kdna-cli": "0.43.0"
+    "@aikdna/kdna-cli": "0.43.2"
   },
   "kdna_runtime": {
-    "cli": "0.43.0",
-    "core": "0.37.7",
-    "read": "0.13.1",
+    "cli": "0.43.2",
+    "core": "0.37.9",
+    "read": "0.13.3",
     "read_contract": "kdna.read/0.7.0-candidate"
   },
   "engines": {

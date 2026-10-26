@@ -1,6 +1,6 @@
 # KDNA with OpenCode
 
-Current local candidate: MCP 0.8.0-rc.native-sections.3 / CLI 0.43.0 / Core 0.37.7 / Read 0.13.1
+Current local candidate: MCP 0.8.0-rc.native-sections.3 / CLI 0.43.2 / Core 0.37.9 / Read 0.13.3
 (contract kdna.read/0.7.0-candidate). Named Host delivery and semantic adoption are
 **NOT_RUN** for this version. A real local stdio process can be tested without
 claiming that this Host has adopted it. The command vector below is transport guidance only.
