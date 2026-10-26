@@ -12,7 +12,7 @@ assert.equal(process.argv.length,3,"usage: node scripts/generate-native-fixtures
 const cli=fs.realpathSync(process.argv[2]);
 const manifest=JSON.parse(fs.readFileSync(path.resolve(path.dirname(cli),"../package.json")));
 assert.equal(manifest.name,"@aikdna/kdna-cli");
-assert.equal(manifest.version,"0.43.0");
+assert.equal(manifest.version,"0.43.2");
 const seed=JSON.parse(fs.readFileSync(path.join(directory,"seed.authored.json")));
 const mutations={
  "graph-cross":()=>{},

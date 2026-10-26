@@ -8,7 +8,7 @@ import { AdapterError } from "./operator-binding.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const packageInfo = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-const versions = { cli: "0.43.0", core: "0.37.7", read: "0.13.1" };
+const versions = { cli: "0.43.2", core: "0.37.9", read: "0.13.3" };
 function localPackage(name) {
   const roots = [path.join(root, "node_modules")];
   if (path.basename(path.dirname(root)) === "@aikdna" && path.basename(path.dirname(path.dirname(root))) === "node_modules") roots.push(path.dirname(path.dirname(root)));
@@ -26,7 +26,7 @@ const cli = localPackage("cli"), core = localPackage("core"), read = localPackag
 const cliEntry = path.resolve(cli.directory, cli.value.bin?.kdna || "");
 const bindingBytes = fs.readFileSync(path.join(cli.directory, "public-contract-binding.json"));
 export const publicBinding = JSON.parse(bindingBytes);
-if (packageInfo.kdna_runtime?.cli !== versions.cli || packageInfo.kdna_runtime?.core !== versions.core || packageInfo.kdna_runtime?.read !== versions.read || createHash("sha256").update(bindingBytes).digest("hex") !== "d70120e9ccf002f9b77a734b45984261fa20bcd1672a1eab8a7379a639a2a5bb" || publicBinding.implementation?.version !== versions.cli || publicBinding.tuple?.container !== "0.6.0" || publicBinding.tuple?.read !== "kdna.read/0.7.0-candidate" || publicBinding.accepted_core?.version !== versions.core || publicBinding.accepted_read?.version !== versions.read || packageInfo.kdna_runtime?.read_contract !== "kdna.read/0.7.0-candidate" || !cliEntry.startsWith(cli.directory + path.sep) || !fs.statSync(cliEntry).isFile()) throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed native runtime contract binding is invalid.");
+if (packageInfo.kdna_runtime?.cli !== versions.cli || packageInfo.kdna_runtime?.core !== versions.core || packageInfo.kdna_runtime?.read !== versions.read || createHash("sha256").update(bindingBytes).digest("hex") !== "177d9c482efffc6f4aa77b173f1a433eb59f7134bbca8032f174ea33f9b581db" || publicBinding.implementation?.version !== versions.cli || publicBinding.tuple?.container !== "0.6.0" || publicBinding.tuple?.read !== "kdna.read/0.7.0-candidate" || publicBinding.accepted_core?.version !== versions.core || publicBinding.accepted_read?.version !== versions.read || packageInfo.kdna_runtime?.read_contract !== "kdna.read/0.7.0-candidate" || !cliEntry.startsWith(cli.directory + path.sep) || !fs.statSync(cliEntry).isFile()) throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed native runtime contract binding is invalid.");
 // Every consumer resolves the same fixed Core/Read instance; nested shadow copies are refused.
 for (const [consumer, dependency] of [[cli, core], [cli, read], [read, core]]) {
   const resolved = createRequire(path.join(consumer.directory, "package.json")).resolve(dependency.value.name + "/package.json");

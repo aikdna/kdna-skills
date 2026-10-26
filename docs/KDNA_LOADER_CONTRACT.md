@@ -1,8 +1,8 @@
 # Local Loader adapter contract
 
 This file describes the repository's consumer adapter, not a second public KDNA
-protocol. This local source candidate binds the exact CLI 0.43.0/Core 0.37.7/Read 0.13.1 tuple and
-retained archive digests. Registry publication is recorded separately. Read package 0.13.1 implements kdna.read/0.7.0-candidate.
+protocol. This local source candidate binds the exact CLI 0.43.2/Core 0.37.9/Read 0.13.3 tuple and
+retained archive digests. Registry publication is recorded separately. Read package 0.13.3 implements kdna.read/0.7.0-candidate.
 
 The executable user workflow is [kdna-loader](../kdna-loader/SKILL.md).
 The concrete process/stdio boundary is [MCP README](../mcp-server/README.md).
