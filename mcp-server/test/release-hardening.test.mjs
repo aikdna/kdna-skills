@@ -212,7 +212,7 @@ test("source Runtime candidate binds private local CLI Core and Read", () => {
   }
   assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-core"],"0.37.9");
   assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"],"0.13.3");
-  assert.equal(lock.packages["node_modules/fast-uri"].version,"3.1.8");
+  assert.equal(lock.packages["node_modules/fast-uri"].version,"3.1.9");
 });
 
 test("publish workflow is stable release-only and publishes only the verified tarball", () => {

@@ -31,7 +31,7 @@ test("local installer uses fixed offline bytes and rejects changed dependencies 
  assert.equal(fs.existsSync(path.join(copy,"mcp-server/node_modules")),false);
  pkg.dependencies["@aikdna/kdna-cli"]="0.43.2";
  fs.writeFileSync(file,JSON.stringify(pkg));
- fs.unlinkSync(path.join(copy,"mcp-server/vendor/fast-uri-3.1.8.tgz"));
+ fs.unlinkSync(path.join(copy,"mcp-server/vendor/fast-uri-3.1.9.tgz"));
  const missing=run();assert.equal(missing.status,1);assert.match(missing.stderr,/ENOENT/);
  assert.equal(fs.existsSync(path.join(copy,"mcp-server/node_modules")),false);
 });
