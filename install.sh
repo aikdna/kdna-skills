@@ -28,8 +28,8 @@ Install the thin fallback Skill for exactly one explicitly selected Host:
   --help       Show this message
 
 This installer does not detect Hosts, install into every Host, discover KDNA
-assets, or create workspace attachments. MCP is preferred where the selected
-Host supports it.
+assets, or create workspace attachments. The direct official CLI is the primary
+reading route. MCP is an optional source preview for an operator-bound Host.
 EOF
 }
 
@@ -80,8 +80,10 @@ cat <<'EOF'
 The Skill file is now installed for the selected Host. Skill placement does not
 activate the Host or grant permission to read an asset.
 
-Use the current local installation documented in mcp-server/README.md. The
-operator selects one .kdna file and grants read permission at process startup.
-Read the complete catalog before making an exact selection; cancel closes the
-binding. The adapter does not discover or modify workspace attachments.
+Use the direct official CLI as the default reading route. If this task
+specifically needs MCP, use the source-only installation documented in
+mcp-server/README.md. The operator selects one .kdna file and grants read
+permission at process startup. Read the complete catalog before making an
+exact selection; cancel closes the binding. The adapter does not discover or
+modify workspace attachments.
 EOF

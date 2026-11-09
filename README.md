@@ -37,7 +37,7 @@ as a specific missing capability, with the working route kept available.
 | Your task | Agent entry point |
 | --- | --- |
 | Create or revise a judgment system | [`kdna-creator`](kdna-creator/SKILL.md) and its [native authoring guide](kdna-creator/references/native-asset-authoring.md) |
-| Read an asset for a question | [`kdna-loader`](kdna-loader/SKILL.md), through the direct official CLI or a configured local MCP connection |
+| Read an asset for a question | [`kdna-loader`](kdna-loader/SKILL.md), through the direct official CLI; MCP is optional only for an operator-bound source preview |
 | Integrate asset reading into an application | [Developer setup and boundaries](docs/GETTING_STARTED.md#for-application-developers) and [Loader contract](docs/KDNA_LOADER_CONTRACT.md) |
 | Use the separate Studio creation or protected-file route | [Studio session](kdna-creator/references/terminal-session.md) and [protection Host](kdna-creator/references/studio-protected-host.md) |
 
@@ -61,11 +61,13 @@ Same-version global or registry packages are not substitutes for the checked
 archives. Official npm packages use the `@aikdna` scope; the unscoped `kdna`
 package is not affiliated.
 
-MCP supplies read tools for one file selected by the operator or trusted
-launcher. The Agent can prepare a reviewable configuration; the Host must keep
-the launch binding outside model-controlled MCP parameters. Creation and
-revision use the separately authorized native CLI. A Skill's presence or an MCP
-configuration file does not establish Host activation or permission.
+The direct official CLI is the primary route for an Agent that can run local
+tools. MCP is an optional source-preview adapter for one file selected by the
+operator or trusted launcher. The Agent can prepare a reviewable configuration;
+the Host must keep the launch binding outside model-controlled MCP parameters.
+Creation and revision use the separately authorized native CLI. A Skill's
+presence or an MCP configuration file does not establish Host activation or
+permission.
 
 ## Evidence and current limits
 

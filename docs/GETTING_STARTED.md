@@ -47,8 +47,9 @@ become permission to revise, publish, call another provider or act on advice.
    creation and direct reading are available through that CLI. Read the
    appropriate Skill and its relative references from the checkout; permanent
    Skill placement is optional for a one-off task.
-5. If this task needs an MCP connection, prepare the Host-specific configuration
-   for the selected file and purpose. Use the [Host guide list](agent-support-matrix.json).
+5. Use the printed direct CLI route as the default. Only if this task
+   specifically needs MCP, prepare the Host-specific configuration for the
+   selected file and purpose. Use the [Host guide list](agent-support-matrix.json).
    The user/operator or trusted launcher must own the actual startup binding;
    the model cannot grant permission through tool arguments or enlarge the
    file selection. Verify the named Host's connection and actual tool result.
@@ -74,7 +75,7 @@ Use the asset's declared format and producing route to select its reader:
 
 | Saved asset | Matching reader | Permission and credentials |
 | --- | --- | --- |
-| Public native container `0.6.0` | Official native CLI or the local MCP route, Read `0.7.0-candidate` | Selected file and explicit Read permission |
+| Public native container `0.6.0` | Official native CLI (primary), or the optional local MCP preview, Read `0.7.0-candidate` | Selected file and explicit Read permission |
 | Public Studio container `0.5.0` | [Studio Host](../kdna-creator/references/studio-protected-host.md), Read `0.6.4` | Trusted file/read binding; omit password and recovery options |
 | Protected Studio container `0.5.0` | The same [Studio Host](../kdna-creator/references/studio-protected-host.md) | Trusted read binding plus a separate credential pipe; Source/revision needs separate permission |
 

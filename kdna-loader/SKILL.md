@@ -1,6 +1,6 @@
 ---
 name: kdna-loader
-description: Read a user-selected local .kdna asset through the exact official CLI/Core/Read or an operator-bound local MCP process. Never discover assets or treat model-supplied paths as permission.
+description: Read a user-selected local .kdna asset through the exact official CLI/Core/Read; operator-bound MCP is an optional source preview. Never discover assets or treat model-supplied paths as permission.
 ---
 
 # KDNA Loader
@@ -32,7 +32,24 @@ This candidate uses CLI 0.43.2, Core 0.37.9 and Read package 0.13.3 implementing
 a global CLI, a same-version registry replacement, a private parser or raw
 payload fallback. This MCP/native CLI route does not accept protected browser assets or supply a browser credential channel. The separately supported protected Studio/browser route requires its own trusted Host and exact tuple; do not invent a password fallback here.
 
-## Preferred operator-bound MCP flow
+## Preferred route: direct official CLI
+
+When the Host can run local tools, use the official CLI for one explicit file
+and task. This is the default route; MCP is not required. Technical inspection
+and validation do not disclose a judgment or grant read/action permission.
+
+```sh
+node /accepted/local/cli/src/cli.js validate /absolute/selected.kdna --system
+node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog --budget 1000000 --allow-read
+node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --asset-id <catalog-asset-id> --asset-version <catalog-version> --judgment-id <catalog-judgment-id> --budget 1000000 --allow-read
+```
+
+Use one-shot reads for a bounded question. For progressive consumption, use the
+session route in [Direct official CLI details](#direct-official-cli-details).
+Keep every handle in the same process and preserve the selected judgment's
+mandatory context and limits.
+
+## Optional MCP source preview
 
 The local operator or trusted launcher starts the installed candidate with
 `--asset /absolute/selected.kdna --allow-read` in **OS process argv**. This
@@ -138,7 +155,7 @@ cancel it. EOF completes an accepted request and closes the session. Cancellatio
 does not retract text already delivered or prove that a syscall never ran.
 `kdna.inspect` is optional technical inspection, not a required extra approval.
 
-## Direct official CLI flow
+## Direct official CLI details
 
 The Host may run the accepted CLI directly for the same explicitly authorized
 file. `inspect` and `validate` report technical admission; they do not disclose a
