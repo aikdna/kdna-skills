@@ -36,9 +36,10 @@ Agent 应复用对话中已经明确的选择，只在缺少实质信息时用�
 4. 用同一 Node 解释器调用脚本打印的精确 CLI 路径。原生创作和直接读取都可
    通过该 CLI 完成。从检出目录阅读相应 Skill 及相对引用；一次任务不必先把
    Skill 永久放入 Agent 配置目录。
-5. 需要 MCP 连接时，按[具名 Host 指南](agent-support-matrix.json)为已选文件和
-   用途准备配置。实际启动绑定由用户、操作者或可信启动器掌握；模型不能靠
-   工具参数自授权限或扩大文件范围。核查该 Agent 软件的真实连接和工具结果。
+5. 默认使用脚本打印的直接 CLI 路径。只有本次任务确实需要 MCP 时，才按
+   [具名 Host 指南](agent-support-matrix.json)为已选文件和用途准备配置。
+   实际启动绑定由用户、操作者或可信启动器掌握；模型不能靠工具参数自授权限
+   或扩大文件范围。核查该 Agent 软件的真实连接和工具结果。
 
 仓库中的 `install.sh` 可按一个明确选择的 Host 放置 `kdna-loader`，支持
 `--codex`、`--claude`、`--opencode`、`--cursor`、`--copilot`。它拒绝覆盖不同的
@@ -57,7 +58,7 @@ Agent 应复用对话中已经明确的选择，只在缺少实质信息时用�
 
 | 已保存资产 | 读取入口 | 权限与凭据 |
 | --- | --- | --- |
-| 原生公开容器 `0.6.0` | 官方原生 CLI 或本地 MCP，Read `0.7.0-candidate` | 选定文件及明确读取许可 |
+| 原生公开容器 `0.6.0` | 官方原生 CLI（优先），或可选的本地 MCP 源码预览，Read `0.7.0-candidate` | 选定文件及明确读取许可 |
 | Studio 公开容器 `0.5.0` | [Studio Host](../kdna-creator/references/studio-protected-host.md)，Read `0.6.4` | 可信启动器绑定文件与读取许可；省略密码和恢复选项 |
 | Studio 受保护容器 `0.5.0` | 同一 [Studio Host](../kdna-creator/references/studio-protected-host.md) | 可信读取绑定与独立凭据管道；Source／修改另需许可 |
 

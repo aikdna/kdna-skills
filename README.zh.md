@@ -30,7 +30,7 @@ KDNA 文件格式，也不需要自己处理安装配置。
 | 你的任务 | Agent 使用的入口 |
 | --- | --- |
 | 创建或修改领域判断系统 | [`kdna-creator`](kdna-creator/SKILL.md) 和[原生创作说明](kdna-creator/references/native-asset-authoring.md) |
-| 用已有资产回答问题 | [`kdna-loader`](kdna-loader/SKILL.md)，通过官方 CLI 或已配置的本地 MCP 连接 |
+| 用已有资产回答问题 | [`kdna-loader`](kdna-loader/SKILL.md)，优先通过官方 CLI；MCP 仅作为可选的 operator 绑定源码预览 |
 | 在应用中接入资产读取 | [开发者说明](docs/GETTING_STARTED.zh.md#应用开发者)和[Loader 合同](docs/KDNA_LOADER_CONTRACT.md) |
 | 使用独立的 Studio 创作或受保护文件流程 | [Studio session](kdna-creator/references/terminal-session.md) 和[保护 Host](kdna-creator/references/studio-protected-host.md) |
 
@@ -49,10 +49,11 @@ Read `0.13.3`。MCP 保持 `private: true`、禁止 npm 发布。这些源码坐
 registry 制品已发布；不能用同版本的全局或 registry 包替换已经核对的归档。
 官方 npm 包使用 `@aikdna` scope，未加 scope 的 `kdna` 包与本项目无关。
 
-MCP 提供读取工具，每个进程只使用操作者或可信启动器选定的一个文件。Agent 可以
-准备便于核对的配置；实际 Host 必须保证启动绑定不受模型的 MCP 参数控制。创建
-和修改通过另外获准的原生 CLI 完成。Skill 已放置或配置文件已写入，都不等于
-Host 已启用或已取得读取许可。
+能运行本地工具的 Agent 应优先使用官方 CLI。MCP 是可选的源码预览适配器，
+每个进程只使用操作者或可信启动器选定的一个文件。Agent 可以准备便于核对的
+配置；实际 Host 必须保证启动绑定不受模型的 MCP 参数控制。创建和修改通过
+另外获准的原生 CLI 完成。Skill 已放置或配置文件已写入，都不等于 Host 已启用
+或已取得读取许可。
 
 ## 已验范围与当前限制
 
