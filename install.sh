@@ -199,5 +199,5 @@ cat <<'EOF'
 
 Skill placement does not activate the Host or grant permission to read or create
 an asset. Use the direct official CLI (run `bash install-cli.sh` in this checkout
-for an offline local CLI, or `@aikdna/kdna-cli@0.43.3`) as the primary route.
+for an offline local CLI, or `@aikdna/kdna-cli@0.43.4`) as the primary route.
 EOF

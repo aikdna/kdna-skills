@@ -1,6 +1,6 @@
 # Human + Agent Co-Creation Craft Playbook (Native `0.6.0` Assets)
 
-This reference defines the five-stage co-creation workflow for turning lived human expertise, authored works, or compared research into high-signal native `0.6.0` `.kdna` judgment assets using `@aikdna/kdna-cli@0.43.3` (or the Host-selected local CLI checkout). It adds editorial craft and interaction discipline without weakening Core's structural authority or introducing numerical quality scores.
+This reference defines the five-stage co-creation workflow for turning lived human expertise, authored works, or compared research into high-signal native `0.6.0` `.kdna` judgment assets using `@aikdna/kdna-cli@0.43.4` (or the Host-selected local CLI checkout). It adds editorial craft and interaction discipline without weakening Core's structural authority or introducing numerical quality scores.
 
 ---
 
