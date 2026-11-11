@@ -58,3 +58,13 @@ test("source verification rejects actual manifest, lock and archive tampering", 
   } finally {fs.rmSync(scratch,{recursive:true,force:true});}
  });
 });
+
+test("creator and loader separate published 0.43.2 from upcoming authoring and protection commands",()=>{
+  const ref=fs.readFileSync(path.join(root,"kdna-creator/references/upcoming-authoring-protection.md"),"utf8");
+  const loader=fs.readFileSync(path.join(root,"kdna-loader/SKILL.md"),"utf8");
+  const creator=fs.readFileSync(path.join(root,"kdna-creator/SKILL.md"),"utf8");
+  assert.ok(creator.includes("upcoming-authoring-protection.md"));
+  for (const t of ["not in 0.43.2","--password-fd","--password-file","Never put a password in argv","validate-input","--compact","--format human","diff","judgment_ids"]) assert.ok(ref.includes(t)||loader.includes(t),t);
+  assert.ok(loader.includes("Upcoming / not in 0.43.2"));
+  assert.doesNotMatch(ref+loader,/--password[ =]\S/);
+});

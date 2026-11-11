@@ -204,3 +204,21 @@ human review and publication. No Host brand is automatically certified.
 ## Current component interpretation boundary
 
 The exact component definition is `sha256:37e857cc4e43f7283a51ee6abe1f6e8401803902e8dc47f6d14d712aa7d7b089`. Public Core interprets taxonomy, candidate-set and discriminator-set components; authorized public Read returns their method-scoped interpretations and mandatory closure. Preserve the returned states, component failure, diagnostics, absent declarations and explicit empty conditions. A technically valid but interpretation-blocked result is rejected disclosure, not an empty ready result. Do not reconstruct component meaning from raw extensions or add a second parser. Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+
+## Multi-judgment reading, protected and compared assets
+
+Works with published `@aikdna/kdna-cli@0.43.2`: run `inspect --json`, then a
+catalog read, then one `read --session --allow-read` whose second JSONL request
+is `exact_selection` with `selection.judgment_ids` containing only the ids the
+task needs (several ids go in that one array, not one session each). Never copy
+every catalog id by default. Keep the session open to expand handles; a handle
+is invalid after the session closes. Full 2-line template: `docs/agent-entry.md`
+in the aikdna/kdna repository.
+
+Upcoming / not in 0.43.2 (not installable today; use only if the installed CLI
+lists them): repeated `--judgment-id`, `read --compact`, `--format human`,
+`diff` for comparing two assets, and `protect` for local password protection.
+A protected asset is opened only with a password supplied by the user through
+`--password-fd` or `--password-file`; never place a password in argv or chat,
+and never guess one. No account is involved. See
+[the creator reference](https://github.com/aikdna/kdna-skills/blob/main/kdna-creator/references/upcoming-authoring-protection.md).
