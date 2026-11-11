@@ -1,6 +1,6 @@
 # KDNA with Your Agent (`kdna-skills`)
 
-English | [简体中文](./README.zh.md) · [Website](https://aikdna.com) · [KDNA Reader](https://aikdna.com/en/reader) · [Integration Guide](https://aikdna.com/en/docs/integrations)
+English | [简体中文](./README.zh.md) · [Website](https://aikdna.com) · [KDNA Reader](https://aikdna.com/reader/) · [Integration Guide](https://aikdna.com/en/docs/integrations)
 
 **Agent Skills (`kdna-creator`, `kdna-loader`) and local MCP server for co-creating, reading, and revising `.kdna` judgment works.**
 

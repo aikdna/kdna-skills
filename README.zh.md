@@ -1,6 +1,6 @@
 # 让你的 Agent 读懂并共创 KDNA（`kdna-skills`）
 
-[English](./README.md) | 简体中文 · [官方网站](https://aikdna.com/zh) · [KDNA Reader](https://aikdna.com/zh/reader) · [集成指南](https://aikdna.com/zh/docs/integrations)
+[English](./README.md) | 简体中文 · [官方网站](https://aikdna.com/zh) · [KDNA Reader](https://aikdna.com/reader/) · [集成指南](https://aikdna.com/zh/docs/integrations)
 
 **面向 `.kdna` 判断作品共创、按需读取与版本修订的 Agent 技能包（`kdna-creator`、`kdna-loader`）及本地 MCP 服务。**
 
