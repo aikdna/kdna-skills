@@ -41,11 +41,13 @@ Agent 应复用对话中已经明确的选择，只在缺少实质信息时用�
    实际启动绑定由用户、操作者或可信启动器掌握；模型不能靠工具参数自授权限
    或扩大文件范围。核查该 Agent 软件的真实连接和工具结果。
 
-仓库中的 `install.sh` 可按一个明确选择的 Host 放置 `kdna-loader`，支持
-`--codex`、`--claude`、`--opencode`、`--cursor`、`--copilot`。它拒绝覆盖不同的
-既有内容，也不启用 MCP。只在本次确实需要永久安装时使用。Creator 没有对应
-安装脚本；可以直接使用检出目录中的 Skill，或在获准安装时保留它的完整目录，
-包括 `references/` 和 `scripts/`。
+仓库中的 `install.sh` 可按一个明确选择的 Host 同时安装 `kdna-loader` 与完整的
+`kdna-creator` 目录（含 `SKILL.md`、`agents/`、`references/`、`scripts/`），支持
+`--codex`、`--claude`、`--opencode`、`--cursor`、`--copilot`、`--antigravity`
+以及 `--dir <skills-root>`（可选 `--only loader|creator` 与 `--force`）。未传入
+`--force` 时，若目标文件与当前检出不同会返回退出码 `2` 并提示 `diff -u`，绝不静默
+覆盖，也不启用 MCP 或授予资产读取许可。一次性的本地任务可直接阅读检出目录中的
+Skill。
 
 安装失败时，指出实际缺失的输入或未通过的检查。缺归档就取得该 revision 的
 完整源码，字节不符就核对可信来源，Host 无连接就确认它实际支持的入口。不要
@@ -66,11 +68,13 @@ Studio 指南给出了普通和受保护文件的精确安装组合及子进程�
 文件送入原生 MCP，也不要从 `.kdna` 后缀推断格式。配套包版本相同不代表两条
 文件路径可互换；输入不支持时不能自动转码或绕过工具读取原始 payload。
 
-创建时，按 [`kdna-creator`](../kdna-creator/SKILL.md) 和
-[原生创作说明](../kdna-creator/references/native-asset-authoring.md)操作。先整理
-真实问题、判断、理由、例子和必要的共同概念，再编码保存。和用户核对来源、
-适用范围，区分作者判断、推断和构造例子。用官方 CLI 保存草稿，重新打开实际
-文件，逐项核对完整内容是否忠实保留，再通过官方运行时用于一个具体任务。
+创建时，按 [`kdna-creator`](../kdna-creator/SKILL.md)、
+[人机共创方法手册](../kdna-creator/references/co-creation-craft.md)和
+[原生创作说明](../kdna-creator/references/native-asset-authoring.md)操作。先过克制门，
+再按情境选择访谈追问、既有作品提炼或调研对比加真人拍板三种路径；在编码前用精简审阅表
+请作者逐条选择“采纳 / 改写 / 剔除”，区分作者判断、推断和构造例子；在 `@aikdna/kdna-cli@0.43.3`
+下先运行 `validate-input` 检查字段与工艺提示，再用官方 CLI 保存新文件、冷重开核对，
+并通过官方运行时用于一个具体任务。
 
 创建失败时，按[完整诊断路径](../kdna-creator/references/native-asset-authoring.md#read-the-whole-diagnostic)
 呈现问题：CLI 输入错误可能在顶层给出 `code` 和 `diagnostic.field`；Core 错误

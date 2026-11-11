@@ -7,6 +7,9 @@ not establish same bytes. This reference neither installs packages nor grants
 permission to read materials, use providers, adopt content or publish.
 
 Start from the intended reader, task, authorized materials and actual questions.
+For the five-stage Human + Agent discovery, anti-platitude, and review-table
+workflow (`init --mode minimal|interview|works|research` and `validate-input`),
+read [co-creation-craft.md](co-creation-craft.md) alongside this guide.
 A short, self-contained judgment may need little shared material. A larger work
 may need common concepts, foundations and limits. An empty input may require an
 interview; do not manufacture judgments to meet a count. There is no file-count,
@@ -166,7 +169,8 @@ complete result available to the authorized task:
 | Result shape | Fields to show |
 | --- | --- |
 | CLI argument or authored-input rejection | Top-level `status` and `code`; when supplied, `diagnostic.field`, `diagnostic.reason` and `diagnostic.expected` |
-| `core_rejected` | Top-level `status` and `stage`, `core.reason`, and every item in `core.diagnostics`, including its `code`, `stage`, `severity`, `subject` and `field` |
+| `validate-input` result (`0.43.3+`) | `status` (`valid` or `invalid`), `diagnostics[]` (`field`, `code`, `message`, `hint`, plus `duplicate_roles` / `fix_hint` on repeated method roles), and non-blocking `advisories[]` (`code`, `path`, `message`) |
+| `core_rejected` | Top-level `status` and `stage`, `core.reason`, every item in `core.diagnostics` (`code`, `stage`, `severity`, `subject`, `field`), plus `guidance[]` (`duplicate_roles`, `invalid_roles`, `missing`, `fix_hint`) when present |
 | Source-route failure carrying `diagnostic` | The original `diagnostic.code` and `diagnostic.stage`, plus any other fields actually present |
 
 For example, `members: null` produces `KDNA_AUTHORED_INPUT_INVALID` with
