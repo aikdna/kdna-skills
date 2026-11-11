@@ -93,7 +93,7 @@ and the [native authoring guide](../kdna-creator/references/native-asset-authori
 Start with the restraint gate, pick the matching discovery mode (Socratic
 interview, authored works distillation, or research plus human choice), present
 a concise review table (`Adopt / Revise / Reject`) before compiling, run
-`validate-input` when using `@aikdna/kdna-cli@0.43.3`, save to a new `.kdna`
+`validate-input` when using `@aikdna/kdna-cli@0.43.4`, save to a new `.kdna`
 file, cold-reopen it, and verify it through the official runtime on a concrete
 task.
 
