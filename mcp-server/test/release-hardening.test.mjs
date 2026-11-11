@@ -199,7 +199,7 @@ test("source Runtime candidate binds private local CLI Core and Read", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"));
   const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, "package-lock.json"), "utf8"));
   assert.equal(pkg.version, "0.8.0-rc.native-sections.3"); assert.equal(pkg.private, true);
-  const versions = {cli:"0.43.2",core:"0.37.9",read:"0.13.3"};
+  const versions = {cli:"0.43.4",core:"0.37.9",read:"0.13.3"};
   const expected = Object.fromEntries(Object.entries(versions).map(([name,version]) => ["@aikdna/kdna-"+name, version]));
   for (const [name,spec] of Object.entries(expected)) assert.equal(pkg.dependencies[name],spec); assert.equal(Object.keys(pkg.dependencies).length,12); assert.deepEqual(lock.packages[""].dependencies,pkg.dependencies);
   for (const [name,version] of Object.entries(versions)) {
