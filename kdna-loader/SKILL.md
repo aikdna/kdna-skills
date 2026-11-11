@@ -27,13 +27,13 @@ and Read `0.6.4`; public bytes need no credential pipe. Do not infer a format
 from its filename, try a private parser or convert it implicitly after rejection.
 The shared Core/Read package versions do not merge these file contracts.
 
-This route pairs `@aikdna/kdna-cli@0.43.3` (with `0.43.2` session compatibility),
+This route pairs `@aikdna/kdna-cli@0.43.4` (with `0.43.3` and `0.43.2` compatibility),
 Core `0.37.9` and Read `0.13.3` implementing `kdna.read/0.7.0-candidate`. Resolve
-the accepted local installation explicitly. Do not use a global CLI, a same-version
+the accepted local installation explicitly. Do not use an unverified CLI, a same-version
 registry replacement, a private parser or raw payload fallback. Native `0.6.0`
-password-protected assets are unlocked locally via `--password-file` or
-`--password-fd` on the direct CLI; the MCP preview remains public-only and does
-not accept browser or Studio credentials.
+password-protected assets are permanently account-free and unlocked locally via
+`--password-file` or `--password-fd` on the direct CLI; the MCP preview remains
+public-only and does not accept browser or Studio credentials.
 
 ## Four-step real-work consumption and evolution loop
 
@@ -53,14 +53,17 @@ not accept browser or Studio credentials.
    task without contaminating the work with unrelated rules.
 3. **Step 3 — Batched `exact_selection` & hard boundary/conflict brakes**: Fetch
    the needed IDs together in one batched call (`--mode exact_selection
-   --judgment-id id1,id2 --allow-read --compact` on `0.43.3`, or one `read
-   --session --allow-read` `exact_selection` request with `judgment_ids` when
-   retaining expansion handles or running `0.43.2`). Preserve every selected
-   judgment's mandatory closure (`scope`, `boundaries`, `exceptions`, `misuse`,
-   `value_order` and `conflict` relations). When the current case hits a stated
-   `boundary`, matches `misuse`, or triggers two conflicting judgments with no
-   governing `value_order`, **brake and surface that limit or conflict to the
-   user** instead of extrapolating past it.
+   --judgment-id id1,id2 --allow-read --compact` on `0.43.4`, where `--compact`
+   preserves full `scope`, `boundaries`, `exceptions`, `misuse`, `closure`
+   support/qualifying/governing context, `omissions`, and `diagnostics` while
+   trimming repeated receipt metadata; or one `read --session --allow-read`
+   `exact_selection` request with `judgment_ids` when retaining expansion handles
+   or running `0.43.2`). Preserve every selected judgment's mandatory closure
+   (`scope`, `boundaries`, `exceptions`, `misuse`, `value_order` and `conflict`
+   relations). When the current case hits a stated `boundary`, matches `misuse`,
+   or triggers two conflicting judgments with no governing `value_order`,
+   **brake and surface that limit or conflict to the user** instead of
+   extrapolating past it.
 4. **Step 4 — Visible attribution, three-way feedback triage & `diff` upgrade
    consent**: Cite the asset (`asset_id`, `version`, digest) and exact judgment
    IDs that shaped the result (`action_authorization` remains `not_evaluated`).
@@ -252,14 +255,18 @@ The exact component definition is `sha256:37e857cc4e43f7283a51ee6abe1f6e84018039
 
 Check `kdna --help` on the Host-selected CLI entry:
 
-- **Upcoming / not in 0.43.2 (`@aikdna/kdna-cli@0.43.3` candidate — use when `kdna --help` lists them)**: batch selected IDs via repeated
-  `--judgment-id` or comma-separated `--judgment-id id1,id2`, pass `--compact`
-  for a lean model-ready projection (or `--format human` for terminal reading),
-  unlock password-protected `0.6.0` files via `--password-file` /
-  `--password-fd` (Never put a password in argv or chat), and compare old vs revised `.kdna`
-  versions via `kdna diff <old.kdna> <revised.kdna> --format human` before
-  switching an active workflow to a newer asset revision.
-- **With `@aikdna/kdna-cli@0.43.2` (or whenever retaining handles to `expand`
+- **With `@aikdna/kdna-cli@0.43.4` (and `0.43.3`, not in 0.43.2)**: batch selected IDs via repeated
+  `--judgment-id` or comma-separated `--judgment-id id1,id2` (`--budget` defaults
+  to `4194304` bytes on `0.43.4` so `--budget` may be omitted unless tightening),
+  pass `--compact` on `0.43.4` for a closure-preserving model-ready projection
+  (retaining `scope`, `boundaries`, `exceptions`, `misuse`, `closure`,
+  `omissions`, and `diagnostics`; or `--format human` for terminal reading),
+  unlock permanently account-free password-protected `0.6.0` files via
+  `--password-file` / `--password-fd` (Never put a password in argv or chat), and
+  compare old vs revised `.kdna` versions via
+  `kdna diff <old.kdna> <revised.kdna> --format human` before switching an active
+  workflow to a newer asset revision.
+- **With older `@aikdna/kdna-cli@0.43.2` checkouts (or whenever retaining handles to `expand`
   deferred content)**: run `inspect --json`, read `catalog`, then run one
   `read --session --allow-read` whose second JSONL request is `exact_selection`
   with `selection.judgment_ids` listing only the needed IDs (`docs/agent-entry.md`

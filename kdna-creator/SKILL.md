@@ -10,7 +10,7 @@ Choose the creation route from the Host's exact installed contract. For native `
 ## Native Five-Stage Co-Creation Workflow
 
 1. **Stage 0 — Restraint Gate**: Create a `.kdna` asset only for recurring, contested judgment calls where goals collide and explicit stop-boundaries help future work. Keep one-off lookups, meeting logs, deterministic scripts, secrets, and static reference tables as plain Markdown or code. Never manufacture extra judgments to pad a count.
-2. **Stage 1 — Pick the Matching Entry Mode** (check `kdna --help` for `0.43.3` `init --mode` support):
+2. **Stage 1 — Pick the Matching Entry Mode** (`@aikdna/kdna-cli@0.43.4` supports `init --mode minimal|interview|works|research [--lang en|zh] [--example]`):
    - **Socratic Interview (`--mode interview`)**: When tacit rules live in the author's head, ask 1–2 concrete scenario dilemmas per turn (*"When X and Y collide under pressure, which wins first and where does that flip?"*). Never ask humans to write protocol IDs, hashes, or role schemas.
    - **Works + Targeted Interview (`--mode works`)**: Read only explicitly authorized files, extract recurring questions, conclusions, verbatim `reasons`, and concrete `example` cases, then interview only on unresolved collisions or missing boundaries.
    - **Research + Human Choice (`--mode research`)**: Present competing evidence (`evidence_analysis`) and require an explicit human adoption choice; keep unchosen options as `discuss` materials or open `answer_kind: "other"` items.
@@ -18,13 +18,13 @@ Choose the creation route from the Host's exact installed contract. For native `
    - Frame `focus` as a contested recurring question, not a vague topic label.
    - Reject truisms nobody could disagree with; state the concrete priority and accepted cost without repeating `focus` in `statement` or repeating `statement` in `method`.
    - Ensure each role in `method.components` appears at most once per judgment (merge multiple points sharing a role in order into one component statement).
-   - Specify concrete `applies_when` (`scope.statement`), explicit stop-limits (`boundaries`), and — in full `0.6.0` input — `exceptions` and foreseeable `misuse`.
+   - Specify concrete `applies_when` (`scope.statement`), explicit stop-limits (`boundaries`), and — in `0.43.4` drafts or full `0.6.0` input — `exceptions` and foreseeable `misuse`.
 4. **Stage 3 — Three-Choice Human Review Table & Honest Provenance**:
    - Present a concise review table (`ID | Contested Question | Conclusion & Cost | Applies When | Stops When | Adopt / Revise / Reject`) before saving.
    - Never pass Agent synthesis off as human-authored conviction. Preserve undecided domain questions via `answer_kind: "other"` and unstated methods via `method.method.term: "other"`.
 5. **Stage 4 — Validate, Build, Cold-Reopen, Diff & Protect**:
-   - Run `validate-input --format human` when available in `@aikdna/kdna-cli@0.43.3`, resolve all blocking diagnostics, and review non-blocking structural advisories (`tautological_statement`, `method_repeats_statement`, `unbounded_judgment`, `overbroad_scope`, `duplicate_focus`, `uniform_default_method`) without treating them as numerical scores.
-   - Save to a new file (`create --draft` or `create`), cold-reopen with `inspect`, `validate --system`, and `read --mode catalog --allow-read`, preserve prior versions on revision (`source-open` / `source-pack` + `diff --format human`), and use `protect` only with `--password-file` (mode `0600`) or `--password-fd` (never put passwords in `argv` or chat).
+   - Run `validate-input --format human` (`@aikdna/kdna-cli@0.43.4`), resolve all blocking diagnostics, and review non-blocking structural advisories (`tautological_statement`, `method_repeats_statement`, `unbounded_judgment`, `overbroad_scope`, `duplicate_focus`, `uniform_default_method`) without treating them as numerical scores.
+   - Save to a new file (`compile` + `create`, `create --draft`, or `create`), cold-reopen with `inspect`, `validate --system`, and `read --mode catalog --allow-read`, preserve prior versions on revision (`source-open` / `source-pack` + `diff --format human`), and use permanently account-free offline `protect` only with `--password-file` (mode `0600`) or `--password-fd` (never put passwords in `argv` or chat).
 
 ## Matched Studio Session & Provenance Boundaries
 
