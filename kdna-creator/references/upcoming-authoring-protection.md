@@ -1,59 +1,40 @@
 # Authoring, reading, diffing and local protection (0.6.0 assets)
 
-## Availability: read this first
+## CLI surface matrix (`0.43.3` vs `0.43.2` checkouts)
 
-| Capability | `@aikdna/kdna-cli@0.43.2` (published) | Upcoming / not in 0.43.2 |
+Always inspect `kdna --help` on the Host-selected CLI entry so you use the exact commands installed in that environment (`0.43.3` candidate commands are not in 0.43.2):
+
+| Capability | `@aikdna/kdna-cli@0.43.3` (not in 0.43.2) | `@aikdna/kdna-cli@0.43.2` (published) |
 | --- | --- | --- |
-| Author a 0.6.0 asset | `create <input.json> --output <f>.kdna --allow-create` | `init`, `compile`, `create --draft`, `validate-input` |
-| Inspect / validate | `inspect --json`, `validate --system --json` | – |
-| Reopen and revise | `source-open`, `source-pack` | – |
-| Read several judgments | `read --session --allow-read` with an `exact_selection` JSONL request listing several `judgment_ids` | repeated `--judgment-id`, `read --compact`, `--format human` |
-| Local password protection | not available | `protect` with `--password-fd` / `--password-file` |
-| Compare two assets | not available | `diff` |
+| Scaffold a draft | `init [--mode minimal\|interview\|works\|research] [--output draft.json]` | Author full `{manifest, payload, members}` JSON directly |
+| Pre-flight input & craft check | `validate-input <draft-or-authored.json> [--format json\|human]` | Validate via `create` diagnostics and `scripts/native-asset-review.mjs` |
+| Build a `0.6.0` asset | `create --draft draft.json --output first.kdna --allow-create` or `compile` + `create` | `create authored.json --output first.kdna --allow-create` |
+| Inspect / validate | `inspect [--format json\|human]`, `validate [--system] [--format json\|human]` | `inspect --json`, `validate --system --json` |
+| Reopen and revise | `source-open`, `source-pack` | `source-open`, `source-pack` |
+| Read selected judgments | `read --mode exact_selection --judgment-id id1,id2 --allow-read --compact [--format human]` or `--session` | `read --session --allow-read` with `selection.judgment_ids` |
+| Local password protection | `protect <in.kdna> --output <locked.kdna> (--password-fd <n> \| --password-file <path>)` | Not present in `0.43.2` |
+| Compare two revisions | `diff <first.kdna> <revised.kdna> [--format json\|human]` | Compare `source-open` JSON payloads |
 
-The "upcoming" column is being developed on an unmerged CLI branch. Those
-commands are not installable from npm today. Do not tell a user to run them,
-do not claim they are released, and do not invent flags. Check
-`kdna --help` of the installed CLI (or run `npm view @aikdna/kdna-cli version`)
-and use an upcoming command only if the installed CLI actually lists it.
+## Create or revise a `0.6.0` asset (`0.43.3` workflow)
 
-## Create or revise a 0.6.0 asset
+Follow [co-creation-craft.md](co-creation-craft.md) for discovery and human review, and [native-asset-authoring.md](native-asset-authoring.md) for full-payload domain coverage:
 
-Works today (0.43.2). Follow [native-asset-authoring.md](native-asset-authoring.md)
-for content and field coverage.
+1. Scaffold the matching draft mode (`init --mode interview`, `works`, `research`, or default `minimal`) — or prepare full `0.6.0` authored JSON when encoding cross-judgment relationships, shared declarations, exceptions, misuse, or attachments.
+2. Run `validate-input draft.json --format human`. Resolve every blocking diagnostic (`missing_field`, `unknown_field`, `placeholder_not_replaced`, `duplicate_method_roles`) and review any non-blocking structural craft advisories (`tautological_statement`, `method_repeats_statement`, `unbounded_judgment`, `overbroad_scope`, `duplicate_focus`, `uniform_default_method`) with the author.
+3. Produce the asset without replacing existing files: `create --draft draft.json --output first.kdna --allow-create` (or `create authored.json --output first.kdna --allow-create`).
+4. Verify in a separate invocation: `inspect first.kdna --format human`, `validate first.kdna --system --format human`, and `read first.kdna --mode catalog --allow-read --format human`.
+5. Revise without overwriting: `source-open first.kdna --expected-a sha256:<file-sha256> --allow-source`, apply the confirmed edits, save `revised.kdna` with `source-pack`, and verify the exact delta via `diff first.kdna revised.kdna --format human`.
 
-1. Write the author input JSON from the user's authorized materials.
-2. `create authored.json --output first.kdna --allow-create`.
-3. `inspect first.kdna --json` and `validate first.kdna --system --json`.
-4. Revise: `source-open first.kdna --expected-a sha256:<file sha> --allow-source`,
-   edit, then `source-pack first.kdna --edits revised-edits.json --expected-a sha256:<file sha> --output revised.kdna --allow-source`.
-   Never overwrite the original; keep both versions.
+## Local password protection (offline, no account)
 
-Upcoming / not in 0.43.2 (use only when the installed CLI lists them):
-`init` (scaffold input), `validate-input` (check input before compiling),
-`compile` / `create --draft` (build from a draft). Run `validate-input`
-before `compile` or `create`; fix every reported field rather than guessing.
+`protect` encrypts a native `0.6.0` payload locally into an AEAD envelope (`password` entitlement). No account, server, or network request is involved.
 
-## Local password protection (no account)
-
-Upcoming / not in 0.43.2. `protect` encrypts a local asset with a password.
-No account, service or network is involved, and nothing is uploaded.
-
-- Supply the password only through `--password-fd <n>` or
-  `--password-file <path>`. Never put a password in argv, a command line,
-  shell history, an environment variable echoed to logs, or the chat.
-- The user types or supplies the password; do not invent, store or reuse one.
-  A password file must be private (mode 0600) and removed by the user when done.
-- Keep the original public file; write the protected copy to a new output path.
-- Losing the password means the content cannot be recovered. Say so.
-- Protection is local confidentiality, not identity, publication approval or
-  action authorization.
+- Supply the password **only** through `--password-fd <n>` (`n >= 3`) or `--password-file <path>`. Never put a password in argv, a command line, shell history, echoed environment variables, or chat text.
+- Only the user chooses or supplies the passphrase; never invent, log, or reuse one on their behalf. Keep any password file mode `0600` and remind the user to remove temporary password files when finished.
+- Always write to a new output path (`locked.kdna`) while keeping the original file until the user chooses how to store each copy.
+- State clearly that losing the password makes the protected payload unrecoverable.
+- Pass the same `--password-file` or `--password-fd` to `inspect`, `validate`, `read`, or `diff` when working with a protected `.kdna` file. Local confidentiality is not identity verification, editorial endorsement, or action authorization.
 
 ## Diff two assets
 
-Upcoming / not in 0.43.2. `diff <a.kdna> <b.kdna>` compares two assets
-(typically an old and a revised version). Both files must be user-selected.
-Use `--format human` for a reader-facing summary. Report added, removed and
-changed judgments from the output; do not infer unreported differences. Until
-`diff` is installed, compare via `source-open` payloads as described in
-native-asset-authoring.md.
+`diff <first.kdna> <revised.kdna> [--format json|human]` compares two user-selected `.kdna` revisions at judgment granularity (identity, digests, added/removed/changed judgments, conditions, and relations). Report only the observed differences and ask for user confirmation before adopting changed judgments into an active workflow.

@@ -54,13 +54,15 @@ become permission to revise, publish, call another provider or act on advice.
    the model cannot grant permission through tool arguments or enlarge the
    file selection. Verify the named Host's connection and actual tool result.
 
-The repository's `install.sh` optionally places only `kdna-loader` for one
-explicitly selected Host (`--codex`, `--claude`, `--opencode`, `--cursor` or
-`--copilot`). It refuses to overwrite different existing content and does not
-activate MCP. Use it only when persistent placement is part of the requested
-setup. Creator has no matching installer: use it in the checkout or preserve
-its entire directory, including `references/` and `scripts/`, when arranging
-an authorized installation.
+The repository's `install.sh` optionally places **both** `kdna-loader` and the
+complete `kdna-creator` directory (`SKILL.md`, `agents/`, `references/` and
+`scripts/`) for one explicitly selected Host (`--codex`, `--claude`,
+`--opencode`, `--cursor`, `--copilot`, `--antigravity` or `--dir <skills-root>`,
+with optional `--only loader|creator` and `--force`). Without `--force`, any
+modified destination file returns exit `2` with a `diff -u` hint rather than
+being overwritten, and Skill placement never activates MCP or grants asset
+permission. Use `install.sh` when persistent placement is part of the requested
+setup; for a one-off task the Agent can read the Skills directly in the checkout.
 
 If setup fails, name the actual missing input or failed check. A missing archive
 needs the complete selected source; a byte mismatch needs a verified source;
@@ -85,13 +87,15 @@ or infer its format from the `.kdna` suffix. Shared package versions do not
 make these routes interchangeable, and an unsupported input must not trigger
 implicit conversion or raw-payload reading.
 
-For creation, follow [`kdna-creator`](../kdna-creator/SKILL.md) and the
-[native authoring guide](../kdna-creator/references/native-asset-authoring.md).
-Organize the real questions, judgments, reasons, examples and necessary shared
-concepts before encoding. Review sources and scope with the user; distinguish
-authored judgment, inference and constructed examples. Save a draft with the
-official CLI, reopen the saved file, and compare its complete content with the
-authored input. Read it through the official runtime for a concrete task.
+For creation, follow [`kdna-creator`](../kdna-creator/SKILL.md), the
+[co-creation craft playbook](../kdna-creator/references/co-creation-craft.md),
+and the [native authoring guide](../kdna-creator/references/native-asset-authoring.md).
+Start with the restraint gate, pick the matching discovery mode (Socratic
+interview, authored works distillation, or research plus human choice), present
+a concise review table (`Adopt / Revise / Reject`) before compiling, run
+`validate-input` when using `@aikdna/kdna-cli@0.43.3`, save to a new `.kdna`
+file, cold-reopen it, and verify it through the official runtime on a concrete
+task.
 
 When creation fails, show the [complete diagnostic paths](../kdna-creator/references/native-asset-authoring.md#read-the-whole-diagnostic).
 CLI input failures can report top-level `code` and `diagnostic.field`; Core

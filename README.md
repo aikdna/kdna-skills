@@ -1,44 +1,56 @@
 # KDNA with your Agent
 
-## 10-second install (copy and paste)
+## 60-second setup (copy and paste)
 
 From a complete checkout of this repository (Node.js 22+ and npm required):
 
 ```sh
 git clone https://github.com/aikdna/kdna-skills && cd kdna-skills
-bash install-cli.sh        # fixed local CLI, offline, no global binary
-bash install.sh --claude   # or --codex | --cursor  (exactly one Host)
+bash install-cli.sh           # offline local CLI in this checkout (no global binary)
+bash install.sh --claude      # or --codex | --cursor | --opencode | --copilot | --antigravity | --dir <skills-root>
 ```
 
-| Host | What the repo supports |
+| Host | Command (`install.sh` places both `kdna-loader` and full `kdna-creator`) |
 | --- | --- |
-| Claude Code | `install.sh --claude` places `kdna-loader` in `~/.claude/skills/` |
-| Codex | `install.sh --codex` places `kdna-loader` in `~/.codex/skills/` |
-| Cursor | `install.sh --cursor` places `kdna-loader` in `~/.cursor/skills/` |
-| Antigravity | No installer or documented route in this repo. Open the checkout in the Agent and have it read [`kdna-loader/SKILL.md`](kdna-loader/SKILL.md) or [`kdna-creator/SKILL.md`](kdna-creator/SKILL.md) directly |
+| Claude Code | `bash install.sh --claude` (`~/.claude/skills/`) |
+| Codex | `bash install.sh --codex` (`~/.codex/skills/`) |
+| Cursor | `bash install.sh --cursor` (`~/.cursor/skills/`) |
+| OpenCode / Copilot | `bash install.sh --opencode` or `--copilot` (`~/.agents/skills/`) |
+| Antigravity | `bash install.sh --antigravity` (`~/.gemini/antigravity/skills/`) |
+| Custom directory | `bash install.sh --dir /path/to/skills` |
 
-`install.sh` installs only `kdna-loader`, refuses to overwrite different
-content, and does not activate the Host or grant read permission. `kdna-creator`
-has no installer: work in the checkout, or copy its whole directory (including
-`references/` and `scripts/`). Published `@aikdna/kdna-cli@0.43.2` supports
-`create`, `inspect`, `validate`, `read` and `source-*`. `init`, `compile`,
-`create --draft`, `validate-input`, repeated `--judgment-id`, `--compact`,
-`protect` and `diff` are **upcoming** and not in 0.43.2; use them only if the
-installed CLI lists them.
+`install.sh` installs **both** [`kdna-loader`](kdna-loader/SKILL.md) and
+[`kdna-creator`](kdna-creator/SKILL.md) (including `agents/`, `references/` and
+`scripts/`) for one explicitly chosen Host. Re-running with identical files exits
+`0`; modified local files return exit `2` with a `diff -u` command unless
+`--force` is passed (`--only loader|creator` is also supported). Skill placement
+does not activate a Host or grant permission to read an asset.
+
+`@aikdna/kdna-cli@0.43.3` adds `init [--mode minimal|interview|works|research]`,
+`validate-input [--format human]`, `compile`, `create --draft`, repeated
+`--judgment-id`, `read --compact`, `--format human`, offline `protect`, and
+`diff` on top of the `0.43.2` `create / inspect / validate / read / source-*`
+surface (check `kdna --help` on the selected CLI entry). To inspect a real 45-judgment
+domain work right away, see **《KDNA白皮书》 (`1.0.0`, CC-BY-4.0)** in
+[`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets) or open it in the
+[KDNA Web Reader](https://aikdna.com/reader/?sample=kdna-whitepaper).
 
 ### Three starter prompts
 
-1. **Use an asset:** "Use the `.kdna` file at `/absolute/path/x.kdna` for this
-   task: `<task>`. Run `inspect`/`validate`, read the catalog first, then read
-   only the judgments the task needs. Tell me which judgments you used and any
-   limits."
-2. **Create one:** "Create a `.kdna` from my notes at `<paths>` about `<topic>`
-   for `<reader>`. Draft the judgments with alternatives, save to `<new folder>`
-   with the 0.43.2 `create` command, check it with `inspect`/`validate`, and
-   keep every version."
-3. **Compare versions:** "Compare `old.kdna` and `new.kdna`. Use `source-open` on
-   both and report added, removed and changed judgments. Do not report
-   differences you did not see. (The `diff` command is upcoming.)"
+1. **Use an asset in real work (anti-pollution read):** "Use the `.kdna` file at
+   `/absolute/path/selected.kdna` for this task: `<task>`. Read `catalog` first,
+   select only the judgment IDs relevant to this task (or zero if none apply),
+   apply them with their scope and boundaries, and tell me which judgments shaped
+   the output."
+2. **Co-create a judgment system (interview, works, or research):** "Help me
+   co-create a `.kdna` judgment system about `<topic>` using `kdna-creator`.
+   Interview me on 1–2 concrete tradeoffs at a time (or distill `<authorized-files>`),
+   show a review table (`Adopt / Revise / Reject`) before compiling, run
+   `validate-input`, and save to `<new-folder>/first.kdna`."
+3. **Compare revisions & evolve safely:** "Compare `first.kdna` and
+   `revised.kdna` with `kdna diff --format human` (or `source-open` on `0.43.2`),
+   explain the added, removed, and changed judgments, and wait for my approval
+   before switching to the revised file."
 
 
 Build, use and improve a judgment system for your work with a tool-capable
@@ -77,7 +89,7 @@ as a specific missing capability, with the working route kept available.
 
 | Your task | Agent entry point |
 | --- | --- |
-| Create or revise a judgment system | [`kdna-creator`](kdna-creator/SKILL.md) and its [native authoring guide](kdna-creator/references/native-asset-authoring.md) |
+| Create or revise a judgment system | [`kdna-creator`](kdna-creator/SKILL.md), [co-creation craft playbook](kdna-creator/references/co-creation-craft.md), and [native authoring guide](kdna-creator/references/native-asset-authoring.md) |
 | Read an asset for a question | [`kdna-loader`](kdna-loader/SKILL.md), through the direct official CLI; MCP is optional only for an operator-bound source preview |
 | Integrate asset reading into an application | [Developer setup and boundaries](docs/GETTING_STARTED.md#for-application-developers) and [Loader contract](docs/KDNA_LOADER_CONTRACT.md) |
 | Use the separate Studio creation or protected-file route | [Studio session](kdna-creator/references/terminal-session.md) and [protection Host](kdna-creator/references/studio-protected-host.md) |

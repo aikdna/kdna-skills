@@ -8,6 +8,27 @@
 开发者。一个人可以有多个不同领域的系统。集成应用中的普通用户不需要学习
 KDNA 文件格式，也不需要自己处理安装配置。
 
+## 60 秒快速安装（复制即用）
+
+在完整检出目录中（需 Node.js 22+ 与 npm）：
+
+```sh
+git clone https://github.com/aikdna/kdna-skills && cd kdna-skills
+bash install-cli.sh           # 检出目录内离线安装固定本地 CLI（不装全局命令）
+bash install.sh --claude      # 或 --codex | --cursor | --opencode | --copilot | --antigravity | --dir <skills-root>
+```
+
+`install.sh` 会为明确选定的单一 Host 同时安装 [`kdna-loader`](kdna-loader/SKILL.md)
+与完整的 [`kdna-creator`](kdna-creator/SKILL.md)（含 `agents/`、`references/`、
+`scripts/`）；文件一致时幂等退出 `0`，本地有改动时返回退出码 `2` 并给出 `diff -u`
+提示，显式传入 `--force` 才会更新（亦支持 `--only loader|creator`）。`@aikdna/kdna-cli@0.43.3`
+在 `0.43.2` 基础上提供 `init [--mode minimal|interview|works|research]`、
+`validate-input [--format human]`、`compile`、`create --draft`、`read --compact`、
+离线密码保护 `protect` 与版本对比 `diff`。想直接体验真实领域作品，可查看
+[`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets) 中的旗舰公开样本
+**《KDNA白皮书》（`1.0.0`，45 条判断，CC-BY-4.0）** 或打开
+[KDNA 在线阅读器](https://aikdna.com/reader/?sample=kdna-whitepaper)。
+
 ## 从一个请求开始
 
 把[上手指南](docs/GETTING_STARTED.zh.md)、本仓库和你的任务交给 Agent，例如：
@@ -29,7 +50,7 @@ KDNA 文件格式，也不需要自己处理安装配置。
 
 | 你的任务 | Agent 使用的入口 |
 | --- | --- |
-| 创建或修改领域判断系统 | [`kdna-creator`](kdna-creator/SKILL.md) 和[原生创作说明](kdna-creator/references/native-asset-authoring.md) |
+| 创建或修改领域判断系统 | [`kdna-creator`](kdna-creator/SKILL.md)、[人机共创方法手册](kdna-creator/references/co-creation-craft.md)和[原生创作说明](kdna-creator/references/native-asset-authoring.md) |
 | 用已有资产回答问题 | [`kdna-loader`](kdna-loader/SKILL.md)，优先通过官方 CLI；MCP 仅作为可选的 operator 绑定源码预览 |
 | 在应用中接入资产读取 | [开发者说明](docs/GETTING_STARTED.zh.md#应用开发者)和[Loader 合同](docs/KDNA_LOADER_CONTRACT.md) |
 | 使用独立的 Studio 创作或受保护文件流程 | [Studio session](kdna-creator/references/terminal-session.md) 和[保护 Host](kdna-creator/references/studio-protected-host.md) |
