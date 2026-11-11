@@ -1,5 +1,46 @@
 # KDNA with your Agent
 
+## 10-second install (copy and paste)
+
+From a complete checkout of this repository (Node.js 22+ and npm required):
+
+```sh
+git clone https://github.com/aikdna/kdna-skills && cd kdna-skills
+bash install-cli.sh        # fixed local CLI, offline, no global binary
+bash install.sh --claude   # or --codex | --cursor  (exactly one Host)
+```
+
+| Host | What the repo supports |
+| --- | --- |
+| Claude Code | `install.sh --claude` places `kdna-loader` in `~/.claude/skills/` |
+| Codex | `install.sh --codex` places `kdna-loader` in `~/.codex/skills/` |
+| Cursor | `install.sh --cursor` places `kdna-loader` in `~/.cursor/skills/` |
+| Antigravity | No installer or documented route in this repo. Open the checkout in the Agent and have it read [`kdna-loader/SKILL.md`](kdna-loader/SKILL.md) or [`kdna-creator/SKILL.md`](kdna-creator/SKILL.md) directly |
+
+`install.sh` installs only `kdna-loader`, refuses to overwrite different
+content, and does not activate the Host or grant read permission. `kdna-creator`
+has no installer: work in the checkout, or copy its whole directory (including
+`references/` and `scripts/`). Published `@aikdna/kdna-cli@0.43.2` supports
+`create`, `inspect`, `validate`, `read` and `source-*`. `init`, `compile`,
+`create --draft`, `validate-input`, repeated `--judgment-id`, `--compact`,
+`protect` and `diff` are **upcoming** and not in 0.43.2; use them only if the
+installed CLI lists them.
+
+### Three starter prompts
+
+1. **Use an asset:** "Use the `.kdna` file at `/absolute/path/x.kdna` for this
+   task: `<task>`. Run `inspect`/`validate`, read the catalog first, then read
+   only the judgments the task needs. Tell me which judgments you used and any
+   limits."
+2. **Create one:** "Create a `.kdna` from my notes at `<paths>` about `<topic>`
+   for `<reader>`. Draft the judgments with alternatives, save to `<new folder>`
+   with the 0.43.2 `create` command, check it with `inspect`/`validate`, and
+   keep every version."
+3. **Compare versions:** "Compare `old.kdna` and `new.kdna`. Use `source-open` on
+   both and report added, removed and changed judgments. Do not report
+   differences you did not see. (The `diff` command is upcoming.)"
+
+
 Build, use and improve a judgment system for your work with a tool-capable
 Agent. Bring your material, the questions you want it to help with and the
 intended reader. Your Agent can organize the content, create a `.kdna` asset,
