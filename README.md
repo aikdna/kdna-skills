@@ -32,15 +32,17 @@ bash install.sh --claude      # or: --codex | --cursor | --opencode | --copilot 
 
 ---
 
-## Three Starter Prompts
+## Starter Prompts (Copy & Paste to Your Agent)
 
-Once installed, try any of these directly in your agent session (you can also download or inspect **KDNA Whitepaper v1.0.0**—*《KDNA白皮书》* by Zhang Ling / 张零, `CC BY 4.0`, `45` judgments—via [KDNA Reader](https://aikdna.com/reader/?sample=kdna-whitepaper) or [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets)):
+Try these directly in Claude Code, Cursor, Codex, OpenCode, Copilot, or Antigravity (requires **Node.js `>=22`**). You can also browse **KDNA Whitepaper `v1.0.1`** (*《KDNA白皮书》* by Zhang Ling / 张零, `CC BY 4.0`, `45` judgments) in [KDNA Reader (English)](https://aikdna.com/reader/?sample=kdna-whitepaper-en), [KDNA Reader (Chinese)](https://aikdna.com/reader/?sample=kdna-whitepaper), or [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets):
 
-1. **Apply a `.kdna` work to a real task (without judgment pollution):**
-   > *"Use `kdna-loader` with the `.kdna` file at `/absolute/path/work.kdna` for this task: `<your task>`. Read `catalog` first, select only the judgment IDs relevant to this task (or none if none fit), apply them with their conditions and stop boundaries, and tell me which judgments shaped your answer."*
-2. **Co-create a new `.kdna` judgment work (interview, existing works, or research):**
-   > *"Help me co-create a `.kdna` judgment work on `<topic>` using `kdna-creator`. Interview me on 1–2 concrete trade-offs at a time (or distill `<my-notes.md>`), show me a clear review table (`Adopt / Revise / Reject`) before compiling, run `validate-input`, and save the result to `<folder>/first.kdna`."*
-3. **Compare two versions before adopting an update:**
+1. **Direct-read the official *KDNA Whitepaper* `v1.0.1` with your Agent (zero repo setup needed):**
+   > *"Download `kdna-whitepaper-1.0.1.en.kdna` from `https://aikdna.com/reader/samples/kdna-whitepaper-en.kdna`, run `npx -y @aikdna/kdna-cli@0.43.4 read kdna-whitepaper-1.0.1.en.kdna --mode catalog --format human --allow-read` to inspect the 45-question catalog, and then read the relevant judgments for my question via `--mode exact_selection --judgment-id <id1,id2> --format human --allow-read` (always pass `--format human` or `--compact` to keep context lean; never call `--mode whole_asset` expecting judgment prose)."*
+2. **Apply any local `.kdna` work to a real task (without judgment pollution):**
+   > *"Use `kdna-loader` with the `.kdna` file at `/absolute/path/work.kdna` for this task: `<your task>`. Read `--mode catalog --format human --allow-read` first, select only the 1–5 judgment IDs relevant to this task via `--mode exact_selection --format human` (or none if none fit; do not use `whole_asset`), apply them with their conditions and stop boundaries, and tell me which judgments shaped your answer."*
+3. **Co-create a new `.kdna` judgment work (interview, existing works, or reference synthesis):**
+   > *"Clone `https://github.com/aikdna/kdna-skills`, run `bash install-cli.sh` and `bash install.sh --claude` (or your Host flag), read `kdna-creator/SKILL.md`, and help me turn my experience, existing works, or trusted reference materials on `<topic>` into a validated `0.6.0` `.kdna` work via the `kdna.draft/1` workflow (show me an `Adopt / Revise / Reject` review table before compiling to `<folder>/first.kdna`)."*
+4. **Compare two versions before adopting an update:**
    > *"Compare `first.kdna` and `revised.kdna` with `kdna diff --format human`, explain which judgments or boundaries were added, removed, or tightened, and wait for my confirmation before switching to the revised file."*
 
 ---

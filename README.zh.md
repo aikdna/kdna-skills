@@ -32,15 +32,17 @@ bash install.sh --claude      # 或选择：--codex | --cursor | --opencode | --
 
 ---
 
-## 三句开箱即用的协作提示词
+## 开箱即用的 Agent 协作提示词（一键复制）
 
-安装完成后，你可以直接对 Agent 说（也可以先在 [KDNA Reader](https://aikdna.com/reader/?sample=kdna-whitepaper) 或 [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets) 获取首部公开判断作品 **《KDNA 白皮书》v1.0.0**，张零 · `CC BY 4.0` · `45` 题）：
+在 Claude Code、Cursor、Codex、OpenCode、Copilot 或 Antigravity 中直接粘贴即可使用（需 **Node.js `>=22`**）。你也可以在 [KDNA Reader（中文版）](https://aikdna.com/reader/?sample=kdna-whitepaper)、[KDNA Reader（英文版）](https://aikdna.com/reader/?sample=kdna-whitepaper-en) 或 [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets) 在线阅读首部公开判断作品 **《KDNA 白皮书》`v1.0.1`**（张零 / Zhang Ling · `CC BY 4.0` · `45` 题）：
 
-1. **在真实任务中采用一份判断作品（拒绝“判断污染”）：**
-   > *“请使用 `kdna-loader` 读取 `/绝对路径/work.kdna` 来协助完成这项任务：`<你的任务>`。请先读取 `catalog` 目录，只选取与当前任务真正相关的判断 ID（若都不适用则一条也不选），严格带着它们的适用条件与边界来工作，并在最后告诉我本次采用了哪几条判断。”*
-2. **与 AI 共创一份 `.kdna` 判断作品（访谈、文稿萃取或专题研究）：**
-   > *“请使用 `kdna-creator` 帮我围绕 `<主题>` 共创一份 `.kdna` 判断作品。每次只追问我 1–2 个具体的两难取舍（或从 `<我的文稿路径>` 提炼），在打包前先列出审阅表供我逐条确认（采用 / 修改 / 舍弃），通过 `validate-input` 校验后保存到 `<新目录>/first.kdna`。”*
-3. **升级版本前先看清改了什么：**
+1. **免配置直接让 Agent 精读《KDNA 白皮书》`v1.0.1`：**
+   > *“请先下载首份公开 `.kdna` 作品《KDNA白皮书》（`curl -fsSLo kdna-whitepaper-1.0.1.zh-CN.kdna https://aikdna.cn/reader/samples/kdna-whitepaper.kdna`；英文版可用 `https://aikdna.com/reader/samples/kdna-whitepaper-en.kdna`），用 `npx -y @aikdna/kdna-cli@0.43.4 read kdna-whitepaper-1.0.1.zh-CN.kdna --mode catalog --format human --allow-read` 查看全部 45 个议题目录；再根据我想讨论的问题，用 `--mode exact_selection --judgment-id <id1,id2> --format human --allow-read` 按需精读对应判断（切勿用 `whole_asset` 读正文，也不要不加 `--compact` / `--format human` 裸读大体积 JSON）。”*
+2. **在真实任务中采用本地 `.kdna` 判断作品（拒绝“判断污染”）：**
+   > *“请使用 `kdna-loader` 读取 `/绝对路径/work.kdna` 来协助完成这项任务：`<你的任务>`。请先用 `--mode catalog --format human --allow-read` 读取目录，只选取与当前任务真正相关的 1–5 条判断 ID（若都不适用则一条也不选；切勿调用 `whole_asset`），用 `--mode exact_selection --format human --allow-read` 精读并严格带着适用条件与停手边界工作，最后告诉我本次采用了哪几条判断。”*
+3. **与 AI 共创你的第一份 `.kdna` 判断作品（访谈、文稿萃取或可信资料整编）：**
+   > *“请克隆 `https://github.com/aikdna/kdna-skills` 并运行 `bash install-cli.sh` 与 `bash install.sh --claude`（或对应宿主参数），阅读 `kdna-creator/SKILL.md`；围绕我接下来提供的真实经验、既有文稿或可信参考资料，通过 `kdna init --mode interview`（或 `works` / `research`）与 `kdna.draft/1` 工作流帮我整理、列出审阅表供我确认（采用 / 修改 / 舍弃），校验通过后打包生成 `0.6.0` `.kdna` 判断作品。”*
+4. **升级版本前先看清改了什么：**
    > *“请用 `kdna diff --format human` 对比 `first.kdna` 与 `revised.kdna`，向我说明新增、删减或收紧了哪些判断与边界，等我确认后再切换到新版本。”*
 
 ---
