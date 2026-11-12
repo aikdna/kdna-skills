@@ -43,18 +43,25 @@ public-only and does not accept browser or Studio credentials.
    `--password-file <0600-path>` or `--password-fd <n>` (`n >= 3`) — never put a
    password in `argv` or chat, and never guess one.
 2. **Step 2 — `catalog` first & anti-pollution filter (`0` is valid)**: Read
-   `catalog` before reading any body. Select **only** the judgment IDs whose
-   question directly governs the current task (or when the user pastes a KDNA
-   Reader copied reference `<asset_id>@<version> · <judgment_id> — <question>`,
-   verify that `<judgment_id>` in `catalog` and select it directly). Never copy
-   all catalog IDs by default on a multi-judgment asset. If **zero** catalog
-   entries apply to this task, **read zero judgment bodies**, report briefly that
-   `catalog` was checked and none of its scoped judgments apply, and complete the
-   task without contaminating the work with unrelated rules.
-3. **Step 3 — Batched `exact_selection` & hard boundary/conflict brakes**: Fetch
-   the needed IDs together in one batched call (`--mode exact_selection
-   --judgment-id id1,id2 --allow-read --compact` on `0.43.4`, where `--compact`
-   preserves full `scope`, `boundaries`, `exceptions`, `misuse`, `closure`
+   `catalog` before reading any body (`--mode catalog --format human --allow-read`
+   or `--compact`). **Never call `--mode whole_asset` expecting judgment prose
+   inline** (`whole_asset` returns governance/catalog metadata and deferred
+   handles with zero judgment bodies). Select **only** the judgment IDs (typically
+   1–5 task-relevant judgments on a multi-judgment work) whose question directly
+   governs the current task (or when the user pastes a KDNA Reader copied
+   reference `<asset_id>@<version> · <judgment_id> — <question>`, verify that
+   `<judgment_id>` in `catalog` and select it directly). Never copy all catalog
+   IDs by default on a multi-judgment asset. If **zero** catalog entries apply to
+   this task, **read zero judgment bodies**, report briefly that `catalog` was
+   checked and none of its scoped judgments apply, and complete the task without
+   contaminating the work with unrelated rules.
+3. **Step 3 — Batched `exact_selection` with `--format human` / `--compact` & hard boundary/conflict brakes**:
+   Fetch the needed IDs together in one batched call (`--mode exact_selection
+   --judgment-id id1,id2 --allow-read --format human` or `--compact` on `0.43.4` —
+   **always pass `--format human` or `--compact` on multi-judgment works** such as
+   the 45-judgment *KDNA Whitepaper* so output stays ~1k–3k tokens instead of
+   exceeding Host ~25k-token tool limits; `--format human` and `--compact`
+   preserve full `scope`, `boundaries`, `exceptions`, `misuse`, `closure`
    support/qualifying/governing context, `omissions`, and `diagnostics` while
    trimming repeated receipt metadata; or one `read --session --allow-read`
    `exact_selection` request with `judgment_ids` when retaining expansion handles
@@ -85,9 +92,10 @@ and task. This is the default route; MCP is not required. Technical inspection
 and validation do not disclose a judgment or grant read/action permission.
 
 ```sh
-node /accepted/local/cli/src/cli.js validate /absolute/selected.kdna --system
-node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog --budget 1000000 --allow-read
-node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --judgment-id <id-1>,<id-2> --budget 1000000 --allow-read --compact
+node /accepted/local/cli/src/cli.js validate /absolute/selected.kdna --system --format human
+node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog --allow-read --format human
+node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --judgment-id <id-1>,<id-2> --allow-read --format human
+# (or pass --compact instead of --format human when structured JSON is required)
 ```
 
 Use one-shot reads for a bounded question. For progressive consumption, use the
@@ -208,9 +216,11 @@ file. `inspect` and `validate` report technical admission; they do not disclose 
 judgment or grant read/action permission. A simple read is:
 
 ```sh
-node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog --budget 1000000 --allow-read
-node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --asset-id <catalog-asset-id> --asset-version <catalog-version> --judgment-id <catalog-judgment-id> --budget 1000000 --allow-read
+node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog --budget 1000000 --allow-read --format human
+node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --asset-id <catalog-asset-id> --asset-version <catalog-version> --judgment-id <catalog-judgment-id> --budget 1000000 --allow-read --compact
 ```
+
+> **Large-work guardrail (`0.43.4`):** On multi-judgment works (for example *KDNA Whitepaper* `v1.0.1`), select 1–5 relevant judgments per `exact_selection` call and **always pass `--format human` or `--compact`** so output stays well within ~25k-token Host tool output windows. **Never use `--mode whole_asset` to read judgment bodies**—it returns catalog/governance metadata and deferred handles, not judgment prose.
 
 These are independent one-shot snapshots. For progressive consumption start
 `node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --session --allow-read`
