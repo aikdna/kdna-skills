@@ -73,19 +73,14 @@ the file and processing purpose.
 
 ## Create, use and improve
 
-Use the asset's declared format and producing route to select its reader:
+Use the asset's declared format and entitlement state to select its reader:
 
 | Saved asset | Matching reader | Permission and credentials |
 | --- | --- | --- |
-| Public native container `0.6.0` | Official native CLI (primary), or the optional local MCP preview, Read `0.7.0-candidate` | Selected file and explicit Read permission |
-| Public Studio container `0.5.0` | [Studio Host](../kdna-creator/references/studio-protected-host.md), Read `0.6.4` | Trusted file/read binding; omit password and recovery options |
-| Protected Studio container `0.5.0` | The same [Studio Host](../kdna-creator/references/studio-protected-host.md) | Trusted read binding plus a separate credential pipe; Source/revision needs separate permission |
+| Public native container `0.6.0` | Official native CLI (primary), or the optional local MCP preview, Read `0.7.0-candidate` | Selected file and explicit Read permission (`--allow-read`) |
+| Password-protected native container `0.6.0` | Official native CLI (primary), or the optional local MCP preview, Read `0.7.0-candidate` | Selected file, `--allow-read`, and `--password-file <0600-path>` or `--password-fd <n>` (`n >= 3`) |
 
-The Studio guide supplies the exact installation and child-process arguments
-for both public and protected bytes. Do not send a Studio file to native MCP
-or infer its format from the `.kdna` suffix. Shared package versions do not
-make these routes interchangeable, and an unsupported input must not trigger
-implicit conversion or raw-payload reading.
+Do not infer a file's format from the `.kdna` suffix, and never fall back to unzipping or raw-payload reading when an input is rejected.
 
 For creation, follow [`kdna-creator`](../kdna-creator/SKILL.md), the
 [co-creation craft playbook](../kdna-creator/references/co-creation-craft.md),
@@ -93,7 +88,7 @@ and the [native authoring guide](../kdna-creator/references/native-asset-authori
 Start with the restraint gate, pick the matching discovery mode (Socratic
 interview, authored works distillation, or research plus human choice), present
 a concise review table (`Adopt / Revise / Reject`) before compiling, run
-`validate-input` when using `@aikdna/kdna-cli@0.43.4`, save to a new `.kdna`
+`validate-input` when using `@aikdna/kdna-cli@0.43.5`, save to a new `.kdna`
 file, cold-reopen it, and verify it through the official runtime on a concrete
 task.
 
@@ -208,9 +203,10 @@ not a second authoring format. Reconstruct them before interpreting content.
 authorization. Do not treat adapter unavailability, expired references or
 capacity/budget failures as an official denial or a successful empty read.
 
-Studio's interview, terminal-session and protected-file routes have their own
-[Creator references](../kdna-creator/SKILL.md). They are optional and use a
-different container contract; do not send protected Studio bytes to the native
-MCP adapter or infer that one route's acceptance applies to another.
+When using `kdna protect` for local password protection, always retain the
+unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext
+`.kdna` source file alongside the protected `.kdna` envelope; revisions
+(`source-open` / `source-pack` or `create --draft`) operate on plaintext source
+rather than encrypted `.kdna` envelopes.
 
 [中文](GETTING_STARTED.zh.md)

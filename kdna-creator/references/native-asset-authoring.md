@@ -154,9 +154,9 @@ them is a reason to drop real content.
 The complete required and optional role set for every method term is listed
 in the CLI authoring field reference (section 6), generated from the installed
 contract; read it before authoring a method instead of discovering it through
-rejections. The Studio export route separately rejects a method-absent
-proposal, so a stated absence belongs on this native route; never invent a
-method to satisfy the exporter. When the current contract cannot carry
+rejections. When a judgment's method is genuinely unstated, record that absence
+explicitly via `method.method.term: "other"` rather than inventing a method.
+When the current contract cannot carry
 something at all, keep the draft and the review record's remaining action
 rather than filling a field with invented content.
 
@@ -232,13 +232,3 @@ official reads. Record content review, no-loss saving, runtime supply, Reader
 observation and actual human/task outcomes separately. Fixtures for unusual
 field branches are engineering inputs with explicit expected results; they do
 not establish a normal work's quality or actual business observations.
-
-A delivered Studio session bundle is not input to this native authoring route:
-it is container `0.5`, and its sealed asset and evidence stay as delivered. To
-bring its already-adopted content into container `0.6`, use the explicit
-conversion step in
-[terminal-session.md](terminal-session.md) §"Bringing a delivered bundle into
-0.6": the published native CLI's `convert` runs on the bundle, refusals are
-named, and the new `0.6` file is written beside the original. Conversion is not
-authoring — this guide's create and source-revision flow applies to natively
-authored assets, and revision of converted bytes is not established here.

@@ -56,23 +56,20 @@ Skill。
 
 ## 创建、使用、再修改
 
-先根据文件实际声明的格式及创作路径，选择匹配的读取入口：
+先根据文件实际声明的容器格式及加密状态，选择匹配的读取入口：
 
 | 已保存资产 | 读取入口 | 权限与凭据 |
 | --- | --- | --- |
-| 原生公开容器 `0.6.0` | 官方原生 CLI（优先），或可选的本地 MCP 源码预览，Read `0.7.0-candidate` | 选定文件及明确读取许可 |
-| Studio 公开容器 `0.5.0` | [Studio Host](../kdna-creator/references/studio-protected-host.md)，Read `0.6.4` | 可信启动器绑定文件与读取许可；省略密码和恢复选项 |
-| Studio 受保护容器 `0.5.0` | 同一 [Studio Host](../kdna-creator/references/studio-protected-host.md) | 可信读取绑定与独立凭据管道；Source／修改另需许可 |
+| 原生公开容器 `0.6.0` | 官方原生 CLI（优先），或可选的本地 MCP 源码预览，Read `0.7.0-candidate` | 选定文件及明确读取许可（`--allow-read`） |
+| 原生口令保护容器 `0.6.0` | 官方原生 CLI（优先），或可选的本地 MCP 源码预览，Read `0.7.0-candidate` | 选定文件、`--allow-read` 以及 `--password-file <0600路径>` 或 `--password-fd <n>`（`n >= 3`） |
 
-Studio 指南给出了普通和受保护文件的精确安装组合及子进程参数。不要把 Studio
-文件送入原生 MCP，也不要从 `.kdna` 后缀推断格式。配套包版本相同不代表两条
-文件路径可互换；输入不支持时不能自动转码或绕过工具读取原始 payload。
+不要从 `.kdna` 后缀推断格式；输入不支持或未提供口令时，绝不能自动转码或绕过工具解压读取原始 payload。
 
 创建时，按 [`kdna-creator`](../kdna-creator/SKILL.md)、
 [人机共创方法手册](../kdna-creator/references/co-creation-craft.md)和
 [原生创作说明](../kdna-creator/references/native-asset-authoring.md)操作。先过克制门，
 再按情境选择访谈追问、既有作品提炼或调研对比加真人拍板三种路径；在编码前用精简审阅表
-请作者逐条选择“采纳 / 改写 / 剔除”，区分作者判断、推断和构造例子；在 `@aikdna/kdna-cli@0.43.4`
+请作者逐条选择“采纳 / 改写 / 剔除”，区分作者判断、推断和构造例子；在 `@aikdna/kdna-cli@0.43.5`
 下先运行 `validate-input` 检查字段与工艺提示，再用官方 CLI 保存新文件、冷重开核对，
 并通过官方运行时用于一个具体任务。
 
@@ -161,8 +158,9 @@ Agent、真实材料和一次修改，验证自己的实际链路：进程测试
 还原完整结构。`kdna.audit` 只是可选的原次结果取回，不续授权限。不能把适配器
 不可用、引用过期或容量／预算失败当成官方拒绝，也不能当成成功读到空正文。
 
-Studio 访谈、终端 session 和受保护文件有各自的
-[Creator 说明](../kdna-creator/SKILL.md)。它们是使用不同容器合同的可选路径。
-不能把受保护的 Studio 文件发给原生 MCP，也不能把一条路径的验收挪给另一条。
+使用 `kdna protect` 为作品添加本地口令保护时，请务必同时妥善保留未加密的创作草稿
+（`draft.json` / `authored.json`）与明文 `.kdna` 源文件；后续修订（`source-open` /
+`source-pack` 或 `create --draft`）均基于明文源数据进行，而非直接修改加密后的
+`.kdna` 封装文件。
 
 [English](GETTING_STARTED.md)

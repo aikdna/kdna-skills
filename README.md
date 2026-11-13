@@ -1,6 +1,6 @@
 # KDNA with Your Agent (`kdna-skills`)
 
-English | [简体中文](./README.zh.md) · [Website](https://aikdna.com) · [KDNA Reader](https://aikdna.com/reader/) · [Integration Guide](https://aikdna.com/en/docs/integrations)
+English | [简体中文](./README.zh.md) · [Website](https://aikdna.com) · [KDNA Reader (macOS)](https://aikdna.com/en/downloads) · [Integration Guide](https://aikdna.com/en/docs/integrations)
 
 **Agent Skills (`kdna-creator`, `kdna-loader`) and local MCP server for co-creating, reading, and revising `.kdna` judgment works.**
 
@@ -28,16 +28,16 @@ bash install.sh --claude      # or: --codex | --cursor | --opencode | --copilot 
 | Custom directory | `bash install.sh --dir /path/to/skills` |
 
 - `install.sh` installs **both** [`kdna-loader`](./kdna-loader/SKILL.md) (task-scoped selective reading) and [`kdna-creator`](./kdna-creator/SKILL.md) (guided interviews, distillation from existing works, research synthesis, and revisions) for the host you choose. Re-running with identical files exits `0`; modified local files exit `2` with a `diff -u` hint unless `--force` is passed (`--only loader|creator` is also supported).
-- Prefer a global CLI install? Run `npm install -g @aikdna/kdna-cli@0.43.4` (`init`, `validate-input`, `compile`, `create --draft`, `protect`, `validate`, `read`, `diff`).
+- Prefer a global CLI install? Run `npm install -g @aikdna/kdna-cli@0.43.5` (`init`, `validate-input`, `compile`, `create --draft`, `protect`, `validate`, `read`, `diff`).
 
 ---
 
 ## Starter Prompts (Copy & Paste to Your Agent)
 
-Try these directly in Claude Code, Cursor, Codex, OpenCode, Copilot, or Antigravity (requires **Node.js `>=22`**). You can also browse **KDNA Whitepaper `v1.0.1`** (*《KDNA白皮书》* by Zhang Ling / 张零, `CC BY 4.0`, `45` judgments) in [KDNA Reader (English)](https://aikdna.com/reader/?sample=kdna-whitepaper-en), [KDNA Reader (Chinese)](https://aikdna.com/reader/?sample=kdna-whitepaper), or [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets):
+Try these directly in Claude Code, Cursor, Codex, OpenCode, Copilot, or Antigravity (requires **Node.js `>=22`**). For human reading on macOS, download **KDNA Reader (macOS Desktop)** at [`aikdna.com/en/downloads`](https://aikdna.com/en/downloads), or download **KDNA Whitepaper `v1.0.1`** (*《KDNA白皮书》* by Zhang Ling / 张零, `CC BY 4.0`, `45` judgments) directly in [English (`.kdna`)](https://aikdna.com/downloads/whitepaper/v1.0.1/kdna-whitepaper-1.0.1.en.kdna), [Chinese (`.kdna`)](https://aikdna.com/downloads/whitepaper/v1.0.1/kdna-whitepaper-1.0.1.zh-CN.kdna), or [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets):
 
 1. **Direct-read the official *KDNA Whitepaper* `v1.0.1` with your Agent (zero repo setup needed):**
-   > *"Download `kdna-whitepaper-1.0.1.en.kdna` from `https://aikdna.com/reader/samples/kdna-whitepaper-en.kdna`, run `npx -y @aikdna/kdna-cli@0.43.4 read kdna-whitepaper-1.0.1.en.kdna --mode catalog --format human --allow-read` to inspect the 45-question catalog, and then read the relevant judgments for my question via `--mode exact_selection --judgment-id <id1,id2> --format human --allow-read` (always pass `--format human` or `--compact` to keep context lean; never call `--mode whole_asset` expecting judgment prose)."*
+   > *"Download `kdna-whitepaper-1.0.1.en.kdna` from `https://aikdna.com/downloads/whitepaper/v1.0.1/kdna-whitepaper-1.0.1.en.kdna`, run `npx -y @aikdna/kdna-cli@0.43.5 read kdna-whitepaper-1.0.1.en.kdna --mode catalog --format human --allow-read` to inspect the 45-question catalog, and then read the relevant judgments for my question via `--mode exact_selection --judgment-id <id1,id2> --format human --allow-read` (always pass `--format human` or `--compact` to keep context lean; never call `--mode whole_asset` expecting judgment prose)."*
 2. **Apply any local `.kdna` work to a real task (without judgment pollution):**
    > *"Use `kdna-loader` with the `.kdna` file at `/absolute/path/work.kdna` for this task: `<your task>`. Read `--mode catalog --format human --allow-read` first, select only the 1–5 judgment IDs relevant to this task via `--mode exact_selection --format human` (or none if none fit; do not use `whole_asset`), apply them with their conditions and stop boundaries, and tell me which judgments shaped your answer."*
 3. **Co-create a new `.kdna` judgment work (interview, existing works, or reference synthesis):**

@@ -113,20 +113,20 @@ collect_loader_files() {
 }
 
 collect_creator_files() {
-  if [ ! -f "$SCRIPT_DIR/kdna-creator/SKILL.md" ]; then
-    err "Missing source file: kdna-creator/SKILL.md"
-    err "Run this installer from a complete kdna-skills checkout."
-    exit 1
-  fi
-  REL_FILES+=("kdna-creator/SKILL.md")
-  local subdir file rel
-  for subdir in agents references scripts; do
-    if [ -d "$SCRIPT_DIR/kdna-creator/$subdir" ]; then
-      while IFS= read -r -d '' file; do
-        rel="${file#"$SCRIPT_DIR/"}"
-        REL_FILES+=("$rel")
-      done < <(find "$SCRIPT_DIR/kdna-creator/$subdir" -type f -print0 | LC_ALL=C sort -z)
+  local rel
+  for rel in \
+    "kdna-creator/SKILL.md" \
+    "kdna-creator/agents/openai.yaml" \
+    "kdna-creator/references/authoring-and-protection.md" \
+    "kdna-creator/references/co-creation-craft.md" \
+    "kdna-creator/references/native-asset-authoring.md" \
+    "kdna-creator/scripts/native-asset-review.mjs"; do
+    if [ ! -f "$SCRIPT_DIR/$rel" ]; then
+      err "Missing source file: $rel"
+      err "Run this installer from a complete kdna-skills checkout."
+      exit 1
     fi
+    REL_FILES+=("$rel")
   done
 }
 
@@ -199,5 +199,5 @@ cat <<'EOF'
 
 Skill placement does not activate the Host or grant permission to read or create
 an asset. Use the direct official CLI (run `bash install-cli.sh` in this checkout
-for an offline local CLI, or `@aikdna/kdna-cli@0.43.4`) as the primary route.
+for an offline local CLI, or `@aikdna/kdna-cli@0.43.5`) as the primary route.
 EOF
