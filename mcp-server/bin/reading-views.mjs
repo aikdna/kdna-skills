@@ -95,7 +95,7 @@ export class ReadingViews {
     // They never issue an audit reference or disguise a refusal as a read.
     const byteRejected = byteAdmissionRejection(value);
     if (object(value) && (value.contract?.id === "kdna.section-bytes-node" || Object.hasOwn(value, "input_observation")) && !byteRejected) unavailable();
-    if (byteRejected || (value?.channel === "no_body_control") || (value?.status === "rejected" && value.body === null && value.body_bytes === 0) || (value?.channel === "read_envelope" && value.envelope?.status === "rejected" && value.envelope.content === null)) {
+    if (byteRejected || (value?.channel === "no_body_control") || (value?.status === "rejected" && value.body === null && value.body_bytes === 0) || (value?.status === "rejected" && typeof value?.code === "string" && (value.code.startsWith("KDNA_") || value.code.startsWith("PROTECTION_"))) || (value?.channel === "read_envelope" && value.envelope?.status === "rejected" && value.envelope.content === null)) {
       const model = { contract: { id: "kdna.mcp.task-presentation", version: "0.1.0" }, status: "rejected", official_result: value, authorization: { action_authorized: false }, audit: null, budget: { view_limit_bytes: viewBudget } };
       if (bytes(model) > viewBudget) fail("MCP_TASK_VIEW_BUDGET_EXCEEDED", "The complete refusal view requires " + bytes(model) + " UTF-8 bytes; no partial result was delivered.");
       return model;

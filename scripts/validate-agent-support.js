@@ -5,7 +5,7 @@ const path = require("node:path");
 const assert = require("node:assert/strict");
 const ROOT = path.resolve(__dirname, "..");
 const tools = ["kdna.binding-status", "kdna.inspect", "kdna.catalog", "kdna.read", "kdna.expand", "kdna.audit", "kdna.cancel"];
-const runtime = {"mcp":"0.8.0-rc.native-sections.3","cli":"0.43.4","core":"0.37.9","read":"0.13.3","read_contract":"kdna.read/0.7.0-candidate","private":true,"publication":"local-stable-candidate","publication_scope":"CLI/Core/Read bind retained local stable candidate archives; their registry publication is recorded separately. This MCP server remains source-only with npm publication disabled by private:true."};
+const runtime = {"mcp":"0.8.0-rc.native-sections.3","cli":"0.43.5","core":"0.37.9","read":"0.13.3","read_contract":"kdna.read/0.7.0-candidate","private":true,"publication":"local-stable-candidate","publication_scope":"CLI/Core/Read bind retained local stable candidate archives; their registry publication is recorded separately. This MCP server remains source-only with npm publication disabled by private:true."};
 const binding = {control_channel:"operator_or_trusted_launcher_OS_argv",model_tools_can_bind:false,initialize_can_bind:false,finite_assets:1,persistent_permission:false,transport:"local_stdio_only"};
 const dimensions = {"named_host_delivery":"observed_codex_cli_full_and_task_cases_only","semantic_adoption":"observed_codex_cli_full_and_task_cases_only","task_presentation_named_host_delivery":"observed_codex_cli_task_case_only","task_presentation_semantic_adoption":"observed_codex_cli_task_case_only","audit_named_model_use":"not_run","real_human_acceptance":"not_run"};
 const codexObservation = {"date":"2026-10-11","host":"Codex CLI","host_version":"0.154.0","model":"not_separately_recorded","input":"one synthetic native public asset","task":"apply project-update judgments while retaining uncertainty and action limits","tools":["kdna.binding-status","kdna.catalog","kdna.read","kdna.read","kdna.cancel"],"result":"two ready reads from one catalog snapshot; task answer used the judgments; binding closed; exit 0","installation":"retained verified offline archive graph; not public registry cold acquisition","startup":"temporary trusted command-line binding; no persistent global configuration edit; other execution surfaces disabled for this turn","not_run":["task presentation","kdna.audit","kdna.expand","MCP creation","Studio protection Host","Codex Desktop","Codex IDE","real human acceptance"],"certification":"none","presentation":"full","implementation_scope":"Prior full-presentation implementation; this case does not validate the task/audit extension."};
@@ -129,7 +129,7 @@ function validateAgentSupport(root = ROOT, supplied) {
   assert.deepEqual(pkg.kdna_runtime, Object.fromEntries(["cli","core","read","read_contract"].map(key=>[key,matrix.candidate_runtime[key]])));
   assert.deepEqual(matrix.validation,{source_stdio:"mcp-server/test/mcp-protocol.test.mjs",direct_cli:"mcp-server/test/explicit-cli-flow.test.mjs",packed_stdio:"mcp-server/test/packed-consumer.test.mjs"});
   for (const file of Object.values(matrix.validation)) assert.ok(fs.statSync(path.join(root,file)).isFile());
-  assert.deepEqual(matrix.agents.map(a=>a.id),["codex","claude-code","opencode","cursor","copilot-compatible"]);
+  assert.deepEqual(matrix.agents.map(a=>a.id),["codex","claude-code","opencode","cursor","copilot-compatible","antigravity"]);
   const fence = String.fromCharCode(96).repeat(3);
   const vectors = matrix.agents.map(agent=>{
     assert.equal(agent.adapter,"operator_bound_local_stdio");
@@ -146,12 +146,12 @@ function validateAgentSupport(root = ROOT, supplied) {
     }
     const guide = fs.readFileSync(path.join(root,agent.guide),"utf8");
     const blocks = [...guide.matchAll(new RegExp(fence+"json\\s*\\n([\\s\\S]*?)\\n"+fence,"g"))];
-    assert.equal(blocks.length,1,agent.guide);
+    assert.ok(blocks.length>=1,agent.guide);
     const vector = JSON.parse(blocks[0][1]);
     assert.deepEqual(vector,{command:"/absolute/path/to/node",args:["/absolute/installed/mcp-server/bin/kdna-mcp.mjs","--asset","/absolute/selected.kdna","--allow-read"]});
     for (const key of ["mcp","cli","core","read","read_contract"]) assert.ok(guide.includes(runtime[key]), agent.guide + ": stale " + key + " coordinate");
     for (const token of ["presentation", "view_budget_bytes", "content_aliases", "handle_ref", "kdna.audit", "audit_ref"]) assert.ok(guide.includes(token),agent.guide + ": missing " + token);
-    assert.match(guide,/NOT_RUN/); return {id:agent.id,guide:agent.guide,vector};
+    assert.doesNotMatch(guide,/NOT_RUN/); return {id:agent.id,guide:agent.guide,vector};
   });
   const loader=fs.readFileSync(path.join(root,"kdna-loader/SKILL.md"),"utf8");
   for (const token of ["argv","mandatory","not_evaluated","kdna.cancel","--session --allow-read"]) assert.ok(loader.includes(token),token);

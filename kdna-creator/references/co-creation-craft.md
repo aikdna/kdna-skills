@@ -1,6 +1,6 @@
 # Human + Agent Co-Creation Craft Playbook (Native `0.6.0` Assets)
 
-This reference defines the five-stage co-creation workflow for turning lived human expertise, authored works, or compared research into high-signal native `0.6.0` `.kdna` judgment assets using `@aikdna/kdna-cli@0.43.4` (or the Host-selected local CLI checkout). It adds editorial craft and interaction discipline without weakening Core's structural authority or introducing numerical quality scores.
+This reference defines the five-stage co-creation workflow for turning lived human expertise, authored works, or compared research into high-signal native `0.6.0` `.kdna` judgment assets using `@aikdna/kdna-cli@0.43.5` (or the Host-selected local CLI checkout). It adds editorial craft and interaction discipline without weakening Core's structural authority or introducing numerical quality scores.
 
 ---
 
@@ -96,7 +96,7 @@ Once the author confirms the review table:
      ```sh
      "$KDNA_NODE" "$KDNA_CLI" diff first.kdna revised.kdna --format human
      ```
-   - When the author wants offline local confidentiality (no account, no cloud upload), offer `protect` using a private mode-`0600` password file or file descriptor (`>= 3`), never command-line text:
+   - When the author wants offline local confidentiality (no account, no cloud upload), offer `protect` using a private mode-`0600` password file or file descriptor (`>= 3`), never command-line text, and always retain the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source file (`first.kdna`) for future revisions (`source-open` / `source-pack` or `create --draft` operate on plaintext source rather than encrypted `.kdna` envelopes):
      ```sh
      "$KDNA_NODE" "$KDNA_CLI" protect first.kdna --output locked.kdna --password-file ./passphrase.txt
      ```
@@ -138,10 +138,10 @@ Once the author confirms the review table:
       "method": {
         "term": "tradeoff",
         "roles": {
-          "候选方案": "Gate approval on rollback reversibility first versus gate approval on clean internal refactoring in the same change.",
-          "比较因素": "Blast-radius containment speed during partial deploy failure versus short-term code duplication.",
-          "取舍原则": "Reversibility under production failure outweighs temporary adapter duplication during a two-step migration.",
-          "不可兼得之处": "Accepts carrying temporary dual-read compatibility code across one release cycle."
+          "options": "Gate approval on rollback reversibility first versus gate approval on clean internal refactoring in the same change.",
+          "factors": "Blast-radius containment speed during partial deploy failure versus short-term code duplication.",
+          "priority_rule": "Reversibility under production failure outweighs temporary adapter duplication during a two-step migration.",
+          "accepted_cost": "Accepts carrying temporary dual-read compatibility code across one release cycle."
         }
       },
       "reasons": [

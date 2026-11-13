@@ -576,3 +576,79 @@ test("presentation and short-reference schemas match runtime refusal; the projec
   assert.equal(missing.status, "rejected"); assert.equal(missing.official_result.diagnostic.code, "READ_SELECTION_NOT_FOUND"); assert.equal(missing.audit, null);
   await s.close();
 });
+
+test("operator-bound --password-file unlocks password-protected .kdna assets across inspect, catalog, and read while rejecting missing or wrong passwords cleanly", async t => {
+  const tempRoot = makeCanonicalTempRoot("agent-stdio-protected-");
+  t.after(() => fs.rmSync(tempRoot, { recursive: true, force: true }));
+  const passFile = path.join(tempRoot, "passphrase.txt");
+  const wrongPassFile = path.join(tempRoot, "wrong-passphrase.txt");
+  const lockedFile = path.join(tempRoot, "locked.kdna");
+  fs.writeFileSync(passFile, "correct-horse-battery-staple\n", { mode: 0o600 });
+  fs.writeFileSync(wrongPassFile, "wrong-passphrase\n", { mode: 0o600 });
+
+  const protectRun = spawnSync(
+    process.execPath,
+    [cli, "protect", path.join(fixtures, "graph-cross.kdna"), "--output", lockedFile, "--password-file", passFile],
+    { encoding: "utf8" }
+  );
+  assert.equal(protectRun.status, 0, protectRun.stderr || protectRun.stdout);
+
+  // 1. Bound without --password-file: inspect and catalog report KDNA_PASSWORD_REQUIRED with --password-file guidance
+  const noPass = launch(t, { argv: ["--asset", lockedFile, "--allow-read"] });
+  await noPass.initialize();
+  const inspectLocked = decoded(await noPass.call("kdna.inspect"));
+  assert.equal(inspectLocked.status, "rejected");
+  assert.equal(inspectLocked.code, "KDNA_PASSWORD_REQUIRED");
+  assert.match(inspectLocked.next ?? inspectLocked.hint ?? "", /--password-file/);
+  const catNoPassResp = await noPass.call("kdna.catalog", budget);
+  assert.equal(catNoPassResp.result.isError, true);
+  const catNoPass = decoded(catNoPassResp);
+  assert.equal(catNoPass.code, "KDNA_PASSWORD_REQUIRED");
+  assert.match(catNoPass.next ?? catNoPass.hint ?? "", /--password-file/);
+  await noPass.close();
+
+  // 2. Bound with --password-file: inspect, catalog, and read succeed across body and full presentations
+  const withPass = launch(t, { argv: ["--asset", lockedFile, "--allow-read", "--password-file", passFile] });
+  await withPass.initialize();
+  const inspectUnlocked = decoded(await withPass.call("kdna.inspect"));
+  assert.equal(inspectUnlocked.status, "accepted");
+  assert.equal(inspectUnlocked.protection?.status ?? inspectUnlocked.states?.protection, "unlocked");
+  const catalog = bodyView(await withPass.call("kdna.catalog", budget));
+  assert.deepEqual(catalog.content, bodyReference("graph-cross.kdna").content);
+  const selection = {
+    asset_id: catalog.fingerprint.asset.asset_id,
+    asset_version: catalog.fingerprint.asset.asset_version,
+    judgment_id: catalog.content.catalog[0].judgment_id,
+  };
+  const readBody = bodyView(await withPass.call("kdna.read", { ...budget, selection }));
+  assert.deepEqual(readBody.content.selected, bodyReference("graph-cross.kdna", selection).content.selected);
+  assert.equal(readBody.content.declarations[0].value.encryption.profile, "kdna.envelope.aead");
+  assert.equal(readBody.content.declarations[0].value.entitlement.profile, "password");
+  const readFull = ready(await withPass.call("kdna.read", { ...budget, selection, presentation: "full" }));
+  assert.equal(readFull.status, "ready");
+  await withPass.close();
+
+  // 3. Bound with wrong --password-file: returns PROTECTION_AUTHENTICATION_FAILED
+  const wrongPass = launch(t, { argv: ["--asset", lockedFile, "--allow-read", "--password-file", wrongPassFile] });
+  await wrongPass.initialize();
+  const catWrongResp = await wrongPass.call("kdna.catalog", budget);
+  assert.equal(catWrongResp.result.isError, true);
+  const catWrong = decoded(catWrongResp);
+  assert.ok(
+    catWrong.code === "PROTECTION_AUTHENTICATION_FAILED" || catWrong.reason === "PROTECTION_AUTHENTICATION_FAILED",
+    JSON.stringify(catWrong)
+  );
+  await wrongPass.close();
+
+  // 4. Invalid --password-file / --password-fd startup combinations fail with exit code 2
+  for (const badArgs of [
+    ["--password-file", passFile],
+    ["--asset", lockedFile, "--allow-read", "--password-file"],
+    ["--asset", lockedFile, "--allow-read", "--password-fd", "2"],
+    ["--asset", lockedFile, "--allow-read", "--password-file", passFile, "--password-fd", "3"],
+  ]) {
+    const bad = spawnSync(process.execPath, [server, ...badArgs], { encoding: "utf8" });
+    assert.equal(bad.status, 2);
+    assert.match(bad.stderr, /MCP_ARGUMENT_INVALID/);
+  }
+});

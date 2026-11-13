@@ -5,7 +5,7 @@
   "overall_status": "local_stdio_adapter",
   "candidate_runtime": {
     "mcp": "0.8.0-rc.native-sections.3",
-    "cli": "0.43.4",
+    "cli": "0.43.5",
     "core": "0.37.9",
     "read": "0.13.3",
     "read_contract": "kdna.read/0.7.0-candidate",
@@ -165,6 +165,14 @@
       "adapter": "operator_bound_local_stdio",
       "skill_path": "~/.agents/skills/kdna-loader/",
       "guide": "integrations/copilot/README.md"
+    },
+    {
+      "id": "antigravity",
+      "name": "Antigravity",
+      "support": "unassessed",
+      "adapter": "operator_bound_local_stdio",
+      "skill_path": "~/.gemini/antigravity/skills/kdna-loader/",
+      "guide": "integrations/antigravity/README.md"
     }
   ],
   "validation": {

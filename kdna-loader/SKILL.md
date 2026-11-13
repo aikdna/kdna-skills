@@ -19,21 +19,15 @@ clear and authorized, proceed without another confirmation. Otherwise ask one
 plain-language question for the missing substantive choice. Do not ask the user
 to construct a digest, permission record, tuple, receipt or machine identifier.
 
-First select the reader that matches the asset's declared container contract.
-Native container `0.6.0` uses this CLI/MCP route. Studio container `0.5.0`,
-whether public or protected, uses the separate
-[Studio public/protected Host](https://github.com/aikdna/kdna-skills/blob/main/kdna-creator/references/studio-protected-host.md)
-and Read `0.6.4`; public bytes need no credential pipe. Do not infer a format
-from its filename, try a private parser or convert it implicitly after rejection.
-The shared Core/Read package versions do not merge these file contracts.
-
-This route pairs `@aikdna/kdna-cli@0.43.4` (with `0.43.3` and `0.43.2` compatibility),
-Core `0.37.9` and Read `0.13.3` implementing `kdna.read/0.7.0-candidate`. Resolve
+This route pairs `@aikdna/kdna-cli@0.43.5` (with `0.43.3` and `0.43.2` compatibility),
+Core `0.37.9` and Read `0.13.3` implementing `kdna.read/0.7.0-candidate` for native
+container `0.6.0` `.kdna` assets. Do not infer a format from its filename, try a
+private parser or convert an unsupported file implicitly after rejection. Resolve
 the accepted local installation explicitly. Do not use an unverified CLI, a same-version
 registry replacement, a private parser or raw payload fallback. Native `0.6.0`
 password-protected assets are permanently account-free and unlocked locally via
-`--password-file` or `--password-fd` on the direct CLI; the MCP preview remains
-public-only and does not accept browser or Studio credentials.
+`--password-file` or `--password-fd` on the direct CLI (or via operator-bound
+`--password-file` or `--password-fd` when starting `kdna-mcp.mjs`).
 
 ## Four-step real-work consumption and evolution loop
 
@@ -57,7 +51,7 @@ public-only and does not accept browser or Studio credentials.
    contaminating the work with unrelated rules.
 3. **Step 3 — Batched `exact_selection` with `--format human` / `--compact` & hard boundary/conflict brakes**:
    Fetch the needed IDs together in one batched call (`--mode exact_selection
-   --judgment-id id1,id2 --allow-read --format human` or `--compact` on `0.43.4` —
+   --judgment-id id1,id2 --allow-read --format human` or `--compact` on `0.43.5` —
    **always pass `--format human` or `--compact` on multi-judgment works** such as
    the 45-judgment *KDNA Whitepaper* so output stays ~1k–3k tokens instead of
    exceeding Host ~25k-token tool limits; `--format human` and `--compact`
@@ -201,7 +195,7 @@ representation, without a hidden full copy in structuredContent/resources.
 Task-view availability does not establish general named Host adoption or
 token/fee savings. The earlier Codex case used full presentation; a separate
 bounded Codex CLI task case used one batched ready read. Named-model audit use
-and expansion remain NOT_RUN. See the
+and expansion remain not yet evaluated in a named Host session. See the
 [separate observations](https://github.com/aikdna/kdna-skills/blob/main/integrations/codex/README.md#observed-task-presentation-case).
 
 An in-flight second read returns MCP_READ_BUSY; wait for the first response or
@@ -220,7 +214,7 @@ node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog 
 node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --asset-id <catalog-asset-id> --asset-version <catalog-version> --judgment-id <catalog-judgment-id> --budget 1000000 --allow-read --compact
 ```
 
-> **Large-work guardrail (`0.43.4`):** On multi-judgment works (for example *KDNA Whitepaper* `v1.0.1`), select 1–5 relevant judgments per `exact_selection` call and **always pass `--format human` or `--compact`** so output stays well within ~25k-token Host tool output windows. **Never use `--mode whole_asset` to read judgment bodies**—it returns catalog/governance metadata and deferred handles, not judgment prose.
+> **Large-work guardrail (`0.43.5`):** On multi-judgment works (for example *KDNA Whitepaper* `v1.0.1`), select 1–5 relevant judgments per `exact_selection` call and **always pass `--format human` or `--compact`** so output stays well within ~25k-token Host tool output windows. **Never use `--mode whole_asset` to read judgment bodies**—it returns catalog/governance metadata and deferred handles, not judgment prose.
 
 These are independent one-shot snapshots. For progressive consumption start
 `node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --session --allow-read`
@@ -265,10 +259,11 @@ The exact component definition is `sha256:37e857cc4e43f7283a51ee6abe1f6e84018039
 
 Check `kdna --help` on the Host-selected CLI entry:
 
-- **With `@aikdna/kdna-cli@0.43.4` (and `0.43.3`, not in 0.43.2)**: batch selected IDs via repeated
+- **With `@aikdna/kdna-cli@0.43.5` (and `0.43.3`, not in 0.43.2)**: batch selected IDs via repeated
   `--judgment-id` or comma-separated `--judgment-id id1,id2` (`--budget` defaults
-  to `4194304` bytes on `0.43.4` so `--budget` may be omitted unless tightening),
-  pass `--compact` on `0.43.4` for a closure-preserving model-ready projection
+  to `1000000` bytes [`1 MB`] on `catalog` and `exact_selection`, and `4000000` bytes
+  [`4 MB`] on `whole_asset`, so `--budget` may be omitted unless tightening),
+  pass `--compact` on `0.43.5` for a closure-preserving model-ready projection
   (retaining `scope`, `boundaries`, `exceptions`, `misuse`, `closure`,
   `omissions`, and `diagnostics`; or `--format human` for terminal reading),
   unlock permanently account-free password-protected `0.6.0` files via
@@ -282,4 +277,4 @@ Check `kdna --help` on the Host-selected CLI entry:
   with `selection.judgment_ids` listing only the needed IDs (`docs/agent-entry.md`
   in `aikdna/kdna`). Keep the session open to expand handles; a handle expires
   when the session closes. See
-  [the creator reference](https://github.com/aikdna/kdna-skills/blob/main/kdna-creator/references/upcoming-authoring-protection.md).
+  [the creator reference](https://github.com/aikdna/kdna-skills/blob/main/kdna-creator/references/authoring-and-protection.md).

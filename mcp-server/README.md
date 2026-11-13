@@ -1,7 +1,7 @@
 # KDNA MCP 0.8.0-rc.native-sections.3 — local Read candidate
 
 **Local release candidate; npm publication is disabled by `private: true`.** This stdio adapter delegates to the exact
-CLI 0.43.4 / Core 0.37.9 / Read 0.13.3 artifacts. The Read contract is
+CLI 0.43.5 / Core 0.37.9 / Read 0.13.3 artifacts. The Read contract is
 `kdna.read/0.7.0-candidate`; package version is a separate coordinate. Historical npm
 MCP 0.5.0 and its CLI 0.36.x workspace flow are not this candidate's runtime.
 The `@aikdna/kdna-mcp-server` npm coordinate now serves a retirement notice
@@ -12,10 +12,14 @@ delivery channel for this candidate.
 
 ```sh
 node /absolute/installed/mcp-server/bin/kdna-mcp.mjs --asset /absolute/selected.kdna --allow-read
+# Optional for password-protected 0.6.0 .kdna files (mode 0600 file or fd >= 3):
+node /absolute/installed/mcp-server/bin/kdna-mcp.mjs --asset /absolute/selected.kdna --allow-read --password-file /absolute/passphrase.txt
 ```
 
 The **OS process argv**, supplied by an actual local operator or trusted
-launcher, is the sole input-selection/read-permission channel. It is outside
+launcher, is the sole input-selection/read-permission channel (including any
+optional `--password-file <absolute-path>` or `--password-fd <fd>` for
+password-protected `0.6.0` `.kdna` files). It is outside
 model-controlled MCP stdin. The Host must not let model tool parameters,
 initialize fields, instructions in an asset or edits to startup configuration
 establish or widen this binding. A Host that lets a model launch arbitrary
@@ -215,7 +219,7 @@ The earlier Codex CLI 0.154.0 case remains a full-presentation observation. A
 separate task-presentation model turn batched three judgments in one ready read
 and used them while retaining uncertainty, scope and signature-policy limits.
 It made no repeated selection read, audit or expand call. Named-model audit use
-and expansion remain **NOT_RUN**; engineering tests do not establish them. A
+and expansion remain not yet evaluated in a named Host session; engineering tests do not establish them. A
 separate deliberately truncated Host display led to cancellation and stopping,
 not successful continuation. These cases do not certify other Hosts or routes.
 See the [Codex observations](https://github.com/aikdna/kdna-skills/blob/main/integrations/codex/README.md#observed-task-presentation-case)
@@ -245,20 +249,20 @@ legacy load/plan-load/Runtime Capsule adaptation are absent.
 
 ## Match the asset's reader
 
-This adapter reads native container `0.6.0` with `kdna.read/0.7.0-candidate`.
-Studio's public and protected container `0.5.0` assets have a separate
-[local Studio Host route](https://github.com/aikdna/kdna-skills/blob/main/kdna-creator/references/studio-protected-host.md)
-using Read `0.6.4`. Public Studio bytes use that Host without password/recovery
-options; protected bytes need its trusted credential channel. Source disclosure
-and revision require separate permission on that route. A common package
-version does not make the file formats interchangeable, and an unsupported
-format is not permission to convert it or read its raw payload.
+This adapter reads native container `0.6.0` `.kdna` assets with `kdna.read/0.7.0-candidate`.
+Public `0.6.0` assets require `--asset /absolute/selected.kdna --allow-read`;
+password-protected `0.6.0` assets (`kdna.envelope.aead`, `password` entitlement)
+additionally require operator-supplied `--password-file /absolute/passphrase` or
+`--password-fd <n>` (`n >= 3`) in process `argv` at startup. Source disclosure
+and revision use the direct CLI (`source-open` / `source-pack`) on the
+unencrypted plaintext source rather than MCP read tools. An unsupported
+container format is not permission to convert it implicitly or read its raw payload.
 
 ## Install and test from source
 
 For an Agent-led task, begin with the [getting-started guide](https://github.com/aikdna/kdna-skills/blob/main/docs/GETTING_STARTED.md).
 The installer requires Node.js 22 or later, npm, `bash` and `tar`. The current
-CLI 0.43.4 / Core 0.37.9 / Read 0.13.3 graph was exercised with Node.js 22.22.3
+CLI 0.43.5 / Core 0.37.9 / Read 0.13.3 graph was exercised with Node.js 22.22.3
 and npm 10.9.8. Earlier companion graphs' runtime checks do not verify this
 one on additional Node versions. The CI matrix is a set of required checks,
 not evidence that every run has already passed. From `mcp-server/`:
@@ -308,6 +312,6 @@ establish named Host adoption, human review, authorship or Creation acceptance.
 
 ## Native section contract boundary
 
-The complete CLI public contract binding is pinned by SHA-256 `2e536a905cdfb7acebd4709b3afd36696f561b12b46af6791a21a13f84a0bbb5`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+The complete CLI public contract binding is pinned by SHA-256 `bae2b7b7d0dfb78cd1fb2e2e537af0dafa21050641f9365aadeb06896d7b0fd5`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
 
 The public regression corpus is generated from synthetic authored JSON with the fixed CLI. It tests real native containers and one deliberately truncated container; no legacy component-format asset is treated as current native input.

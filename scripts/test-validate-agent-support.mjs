@@ -8,7 +8,7 @@ import validation from "./validate-agent-support.js";
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const original=JSON.parse(fs.readFileSync(path.join(root,"docs/agent-support-matrix.json"),"utf8"));
 test("seven-tool guide structure separates frozen full, bounded task and truncation-stop observations",()=>{
-  assert.equal(validation.validateAgentSupport(root).guide_vectors.length,5);
+  assert.equal(validation.validateAgentSupport(root).guide_vectors.length,6);
 });
 test("support guide validator rejects authority or delivery escalation",async t=>{
   const cases=[
@@ -59,12 +59,12 @@ test("source verification rejects actual manifest, lock and archive tampering", 
  });
 });
 
-test("creator and loader document 0.43.4 authoring/protection/closure-safe compact commands while separating older 0.43.2 checkouts",()=>{
-  const ref=fs.readFileSync(path.join(root,"kdna-creator/references/upcoming-authoring-protection.md"),"utf8");
+test("creator and loader document 0.43.5 authoring/protection/closure-safe compact commands while separating older 0.43.2 checkouts",()=>{
+  const ref=fs.readFileSync(path.join(root,"kdna-creator/references/authoring-and-protection.md"),"utf8");
   const loader=fs.readFileSync(path.join(root,"kdna-loader/SKILL.md"),"utf8");
   const creator=fs.readFileSync(path.join(root,"kdna-creator/SKILL.md"),"utf8");
-  assert.ok(creator.includes("upcoming-authoring-protection.md"));
-  for (const t of ["@aikdna/kdna-cli@0.43.4","not in 0.43.2","--password-fd","--password-file","Never put a password in argv","validate-input","--compact","--format human","diff","judgment_ids"]) assert.ok(ref.includes(t)||loader.includes(t),t);
-  assert.ok(loader.includes("@aikdna/kdna-cli@0.43.4"));
+  assert.ok(creator.includes("authoring-and-protection.md"));
+  for (const t of ["@aikdna/kdna-cli@0.43.5","not in 0.43.2","--password-fd","--password-file","Never put a password in argv","validate-input","--compact","--format human","diff","judgment_ids"]) assert.ok(ref.includes(t)||loader.includes(t),t);
+  assert.ok(loader.includes("@aikdna/kdna-cli@0.43.5"));
   assert.doesNotMatch(ref+loader,/--password[ =]\S/);
 });

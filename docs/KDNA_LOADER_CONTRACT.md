@@ -1,7 +1,7 @@
 # Local Loader adapter contract
 
 This file describes the repository's consumer adapter, not a second public KDNA
-protocol. This local source candidate binds the exact CLI 0.43.4/Core 0.37.9/Read 0.13.3 tuple and
+protocol. This local source candidate binds the exact CLI 0.43.5/Core 0.37.9/Read 0.13.3 tuple and
 retained archive digests. Registry publication is recorded separately. Read package 0.13.3 implements kdna.read/0.7.0-candidate.
 
 The executable user workflow is [kdna-loader](../kdna-loader/SKILL.md).
@@ -81,14 +81,14 @@ structuredContent and resource fields do not carry a duplicate full body.
 The earlier named Codex CLI case still covers full presentation only. A
 [separate task case](../integrations/codex/README.md#observed-task-presentation-case)
 records one batched ready read and bounded task use. Named-model audit use and
-expansion remain NOT_RUN. A forced Host-display truncation case records
+expansion remain not yet evaluated in a named Host session. A forced Host-display truncation case records
 cancellation and stopping, without establishing successful continuation.
 
-Native container `0.6.0` is this MCP route. Both public and protected Studio
-container `0.5.0` use the [separate Studio Host](../kdna-creator/references/studio-protected-host.md)
-with Read `0.6.4`; public bytes omit credential options. Source and revision
-remain separately authorized. Shared package versions are not shared file
-identities, and this adapter supplies no implicit conversion.
+Native container `0.6.0` is this MCP route (supporting public `.kdna` files and
+password-protected `0.6.0` `.kdna` files when the operator supplies
+`--password-file` or `--password-fd` in startup `argv`). Source and revision
+remain separately authorized via the direct CLI (`source-open` / `source-pack`),
+and this adapter supplies no implicit format conversion.
 
 ## Current component interpretation boundary
 
