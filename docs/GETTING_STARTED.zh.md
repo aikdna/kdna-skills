@@ -69,7 +69,7 @@ Skill。
 [人机共创方法手册](../kdna-creator/references/co-creation-craft.md)和
 [原生创作说明](../kdna-creator/references/native-asset-authoring.md)操作。先过克制门，
 再按情境选择访谈追问、既有作品提炼或调研对比加真人拍板三种路径；在编码前用精简审阅表
-请作者逐条选择“采纳 / 改写 / 剔除”，区分作者判断、推断和构造例子；在 `@aikdna/kdna-cli@0.43.5`
+请作者逐条选择“采纳 / 改写 / 剔除”，区分作者判断、推断和构造例子；在 `@aikdna/kdna-cli@0.44.0`
 下先运行 `validate-input` 检查字段与工艺提示，再用官方 CLI 保存新文件、冷重开核对，
 并通过官方运行时用于一个具体任务。
 

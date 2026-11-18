@@ -4,14 +4,14 @@
   "mcp_server": "mcp-server/",
   "overall_status": "local_stdio_adapter",
   "candidate_runtime": {
-    "mcp": "0.8.0-rc.native-sections.3",
-    "cli": "0.43.5",
-    "core": "0.37.9",
-    "read": "0.13.3",
+    "mcp": "0.8.0",
+    "cli": "0.44.0",
+    "core": "0.37.11",
+    "read": "0.13.5",
     "read_contract": "kdna.read/0.7.0-candidate",
-    "private": true,
-    "publication": "local-stable-candidate",
-    "publication_scope": "CLI/Core/Read bind retained local stable candidate archives; their registry publication is recorded separately. This MCP server remains source-only with npm publication disabled by private:true."
+    "private": false,
+    "publication": "release-ready",
+    "publication_scope": "CLI/Core/Read/MCP bind verified exact release archives; canonical npm publication executes via GitHub Release OIDC workflows in sequence (Core 0.37.11 -> Read 0.13.5 -> CLI 0.44.0 -> MCP 0.8.0)."
   },
   "tool_surface": [
     "kdna.binding-status",
@@ -280,5 +280,24 @@
       "audit_named_model_use": "not_run",
       "expand_named_model_use": "not_run"
     }
+  },
+  "local_stdio_cli_verification": {
+    "date": "2026-11-18",
+    "node_version": "22.22.3",
+    "mcp_version": "0.8.0",
+    "cli_version": "0.44.0",
+    "assets_exercised": [
+      "kdna-whitepaper-1.0.2.en.kdna",
+      "kdna-whitepaper-1.0.2.zh-CN.kdna"
+    ],
+    "stdio_tools_verified": [
+      "kdna.binding-status",
+      "kdna.inspect",
+      "kdna.catalog",
+      "kdna.read",
+      "kdna.cancel"
+    ],
+    "skill_installer_verified": true,
+    "scope": "Local stdio MCP server, direct CLI 0.44.0 read/inspect/validate, and install.sh skill placement verified; named interactive Host UI behavior remains governed by separate Host observations."
   }
 }

@@ -1,6 +1,6 @@
 # KDNA with OpenCode
 
-Current local runtime coordinates: MCP 0.8.0-rc.native-sections.3 / CLI 0.43.5 / Core 0.37.9 / Read 0.13.3
+Current local runtime coordinates: MCP 0.8.0 / CLI 0.44.0 / Core 0.37.11 / Read 0.13.5
 (contract kdna.read/0.7.0-candidate).
 
 ## 1. Install Both KDNA Skills (`kdna-loader` + `kdna-creator`)
@@ -21,9 +21,9 @@ Requires **Node.js >= 22**. Choose either the npm package or the checkout's offl
 
 ```sh
 # Option A — Run or install from npm
-npx -y @aikdna/kdna-cli@0.43.5 --help
+npx -y @aikdna/kdna-cli@0.44.0 --help
 # or install globally:
-npm install -g @aikdna/kdna-cli@0.43.5
+npm install -g @aikdna/kdna-cli@0.44.0
 
 # Option B — Offline verified local CLI inside this kdna-skills checkout
 bash install-cli.sh
@@ -43,7 +43,7 @@ kdna read /absolute/selected.kdna --mode exact_selection --judgment-id <id-1>,<i
 ```
 
 - Always read `catalog` first and select only the 1–5 judgment IDs relevant to the current task (`0` is valid when none apply).
-- Pass `--format human` or `--compact` on multi-judgment works (such as the *KDNA Whitepaper* `v1.0.1`) so output stays compact while preserving full `scope`, `boundaries`, `exceptions`, `misuse`, and `closure`.
+- Pass `--format human` or `--compact` on multi-judgment works (such as the *KDNA Whitepaper* `v1.0.2`) so output stays compact while preserving full `scope`, `boundaries`, `exceptions`, `misuse`, and `closure`.
 - For password-protected `0.6.0` assets, pass `--password-file /path/to/0600-passphrase.txt` or `--password-fd <n>` (`n >= 3`) — never pass a password in `argv` or chat.
 
 ### Co-Creating, Revising, and Protecting a `.kdna` Asset (`kdna-creator`)

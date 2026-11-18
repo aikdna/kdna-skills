@@ -4,7 +4,7 @@ const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 const { validateReleaseEvidence } = require('./release-evidence');
-const { validateReleaseContext } = require('./release-policy');
+const { isAcceptedReleaseTag, validateReleaseContext } = require('./release-policy');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -26,7 +26,7 @@ function readCurrentReleaseBinding({ root, evidence, env = process.env }) {
   }
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'mcp-server', 'package.json'), 'utf8'));
   const changelog = fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8');
-  const tag = pkg.version;
+  const tag = isAcceptedReleaseTag(env.RELEASE_TAG_NAME, pkg.version) ? env.RELEASE_TAG_NAME : pkg.version;
   return validateCurrentReleaseBinding({
     evidence,
     pkg,

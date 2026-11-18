@@ -10,12 +10,22 @@ const ROOT = path.resolve(__dirname, "..");
 const PACKAGE_ROOT = path.join(ROOT, "mcp-server");
 const CLI = "@aikdna/kdna-cli";
 const CORE = "@aikdna/kdna-core";
+const READ = "@aikdna/kdna-read";
 const CBOR = "cbor-x";
 const REGISTRY = "https://registry.npmjs.org/";
 const REQUIRED = Object.freeze({
-  [CLI]: "0.36.1",
-  [CORE]: "0.21.0",
-  [CBOR]: "1.6.4",
+  [CORE]: "0.37.11",
+  [READ]: "0.13.5",
+  "ajv": "8.20.0",
+  "ajv-formats": "3.0.1",
+  [CBOR]: "1.6.5",
+  "fast-deep-equal": "3.1.3",
+  "fast-uri": "3.1.9",
+  "json-schema-traverse": "1.0.0",
+  "@noble/hashes": "1.8.0",
+  "pako": "2.1.0",
+  "require-from-string": "2.0.2",
+  [CLI]: "0.44.0",
 });
 
 function officialTarball(packageName, version) {
@@ -23,25 +33,37 @@ function officialTarball(packageName, version) {
   return `${REGISTRY}${packageName}/-/${leaf}-${version}.tgz`;
 }
 
-function validateLocalReleaseDependencies({ packageJson, lock }) {
-  assert.deepEqual(packageJson.dependencies, { [CLI]: REQUIRED[CLI] });
-  assert.deepEqual(lock.packages?.[""]?.dependencies, { [CLI]: REQUIRED[CLI] });
+function packedVendorTarball(packageName, version) {
+  const slug = packageName.startsWith("@")
+    ? packageName.slice(1).replace("/", "-")
+    : packageName;
+  return `file:vendor/${slug}-${version}.tgz`;
+}
 
+function validateLocalReleaseDependencies({ packageJson, lock }) {
+  assert.deepEqual(packageJson.dependencies, REQUIRED);
+  assert.deepEqual(lock.packages?.[""]?.dependencies, REQUIRED);
+
+  const packedSet = new Set(Array.isArray(packageJson.files) ? packageJson.files : []);
   const cli = lock.packages?.[`node_modules/${CLI}`];
   assert.equal(cli?.version, REQUIRED[CLI]);
   assert.deepEqual(cli?.dependencies, {
     [CORE]: REQUIRED[CORE],
-    [CBOR]: REQUIRED[CBOR],
+    [READ]: REQUIRED[READ],
   });
 
-  const packages = [CLI, CORE, CBOR].map((packageName) => {
+  const packages = [CLI, CORE, READ, CBOR].map((packageName) => {
     const locked = lock.packages?.[`node_modules/${packageName}`];
     const version = REQUIRED[packageName];
     assert.equal(locked?.version, version);
-    assert.equal(
-      locked?.resolved,
-      officialTarball(packageName, version),
-      `${packageName} must resolve to the official registry`,
+    const expectedRegistry = officialTarball(packageName, version);
+    const expectedPackedVendor = packedVendorTarball(packageName, version);
+    const isPackedVendor =
+      locked?.resolved === expectedPackedVendor &&
+      packedSet.has(expectedPackedVendor.slice("file:".length));
+    assert.ok(
+      locked?.resolved === expectedRegistry || isPackedVendor,
+      `${packageName} must resolve to the official registry or exact packed vendor tarball`,
     );
     assert.match(locked?.integrity || "", /^sha512-[A-Za-z0-9+/]+={0,2}$/u);
     const copies = Object.keys(lock.packages || {}).filter((entry) =>
@@ -57,9 +79,13 @@ function validateLocalReleaseDependencies({ packageJson, lock }) {
 
   for (const [entry, locked] of Object.entries(lock.packages || {})) {
     if (entry === "" || !locked?.resolved) continue;
+    const okRegistry = locked.resolved.startsWith(REGISTRY);
+    const okVendor =
+      locked.resolved.startsWith("file:vendor/") &&
+      packedSet.has(locked.resolved.slice("file:".length));
     assert.ok(
-      locked.resolved.startsWith(REGISTRY),
-      `release lock contains a non-registry resolution: ${entry}`,
+      okRegistry || okVendor,
+      `release lock contains an unverified resolution: ${entry}`,
     );
   }
   return packages;
@@ -150,10 +176,12 @@ module.exports = {
   CBOR,
   CLI,
   CORE,
+  READ,
   REGISTRY,
   REQUIRED,
   guardReleaseDependency,
   officialTarball,
+  packedVendorTarball,
   registryLookup,
   validateLocalReleaseDependencies,
   validateRegistryDependency,

@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 const path = require('node:path');
 const zlib = require('node:zlib');
-const { COMMIT_RE, EXPECTED_PACKAGE_NAME, STABLE_VERSION_RE } = require('./release-policy');
+const { COMMIT_RE, EXPECTED_PACKAGE_NAME, STABLE_VERSION_RE, isAcceptedReleaseTag } = require('./release-policy');
 
 const EVIDENCE_SCHEMA = 'kdna.mcp.release-evidence';
 
@@ -175,7 +175,7 @@ function validateFiles(files) {
 function validatePackReport({ reportText, tarball, pkg, source }) {
   assert(pkg.name === EXPECTED_PACKAGE_NAME, `package name must be ${EXPECTED_PACKAGE_NAME}`);
   assert(STABLE_VERSION_RE.test(pkg.version), 'package version must be stable canonical SemVer');
-  assert(source.ref === `refs/tags/${pkg.version}`, 'source ref must be the canonical version tag');
+  assert(typeof source.ref === 'string' && source.ref.startsWith('refs/tags/') && isAcceptedReleaseTag(source.ref.slice('refs/tags/'.length), pkg.version), 'source ref must be the canonical version tag');
   assert(COMMIT_RE.test(source.commit || ''), 'source commit must be full lowercase hex');
   const reports = parseJsonDocument(reportText, 'npm pack output');
   assert(Array.isArray(reports) && reports.length === 1, 'npm pack must report exactly one artifact');
@@ -224,7 +224,7 @@ function validateReleaseEvidence(evidence) {
   assert(evidence.schema === EVIDENCE_SCHEMA && evidence.version === '1.0', 'release evidence schema mismatch');
   assert(evidence.package && evidence.package.name === EXPECTED_PACKAGE_NAME, 'release evidence package mismatch');
   assert(STABLE_VERSION_RE.test(evidence.package.version || ''), 'release evidence version is invalid');
-  assert(evidence.source && evidence.source.ref === `refs/tags/${evidence.package.version}`, 'release evidence ref mismatch');
+  assert(evidence.source && typeof evidence.source.ref === 'string' && evidence.source.ref.startsWith('refs/tags/') && isAcceptedReleaseTag(evidence.source.ref.slice('refs/tags/'.length), evidence.package.version), 'release evidence ref mismatch');
   assert(COMMIT_RE.test(evidence.source.commit || ''), 'release evidence commit is invalid');
   const artifact = evidence.artifact;
   assert(

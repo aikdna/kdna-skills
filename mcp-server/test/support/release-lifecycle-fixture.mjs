@@ -31,7 +31,7 @@ export function runReleaseLifecycleFixture({ wrongTag }) {
     const emptyConfig = path.join(temporary, "empty-config");
     fs.writeFileSync(emptyConfig, "");
     const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"));
-    assert.equal(pkg.private, true, "this fixture covers the unpublished source adapter");
+    assert.equal(pkg.private, undefined, "public release manifest must not set private");
     assert.equal(pkg.scripts.prepublishOnly, lifecycle);
     assert.equal(pkg.scripts["release:check"], "node ../scripts/release-check.js");
     assert.equal(pkg.scripts["release:dependency-guard"], "node ../scripts/release-dependency-guard.js");

@@ -1,4 +1,4 @@
-# Reopen and revise a public or protected Studio asset
+# Reopen and revise a public or protected Studio asset [Legacy pre-0.6.0 / P5-deferred]
 
 Use this source-only Host with the current local stable candidate and exact [Studio archive binding](current-studio-binding.json): StudioCLI `0.13.0`, StudioCore `4.0.0`, Core `0.37.2` and Read `0.11.3`. It consumes container `0.5.0` through Read `0.6.4`. The native CLI and MCP use container `0.6`; they do not decrypt or revise this Studio output.
 

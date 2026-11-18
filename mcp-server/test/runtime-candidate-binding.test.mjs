@@ -16,11 +16,11 @@ test("private local candidate binds exact twelve artifacts and complete installe
  const result=validateCandidateFacts(facts());
  assert.equal(result.fixedArtifacts,12); assert.equal(result.lockedRequiredPackages,12);
  assert.equal(result.installedRequiredPackages,12); assert.equal(result.optionalOmitted,9);
- assert.equal(result.packedFileCount,22); assert.equal(result.status,"LOCAL_RC_ONLY_UNPUBLISHED");
+ assert.equal(result.packedFileCount,22); assert.equal(result.status,"STABLE_RELEASE_READY");
 });
 test("runtime binding rejects candidate, graph, dependency and package drift",async t=>{
  const mutations=[
-   f=>f.packageJson.private=false,f=>f.packageJson.kdna_runtime.cli="0.36.1",
+   f=>f.packageJson.private=true,f=>f.packageJson.kdna_runtime.cli="0.36.1",
    f=>f.packageJson.dependencies["@aikdna/kdna-cli"]="0.37.3",
    f=>f.lock.packages["node_modules/@aikdna/kdna-cli"].integrity="sha512-drift",
    f=>f.lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"]="0.1.0",

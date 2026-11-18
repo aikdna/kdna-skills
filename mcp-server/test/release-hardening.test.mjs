@@ -195,11 +195,11 @@ function registryMetadata(candidate = evidence(), overrides = {}) {
   });
 }
 
-test("source Runtime candidate binds private local CLI Core and Read", () => {
+test("source Runtime 0.8.0 binds release-ready CLI Core and Read", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"));
   const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, "package-lock.json"), "utf8"));
-  assert.equal(pkg.version, "0.8.0-rc.native-sections.3"); assert.equal(pkg.private, true);
-  const versions = {cli:"0.43.5",core:"0.37.9",read:"0.13.3"};
+  assert.equal(pkg.version, "0.8.0"); assert.equal(pkg.private, undefined);
+  const versions = {cli:"0.44.0",core:"0.37.11",read:"0.13.5"};
   const expected = Object.fromEntries(Object.entries(versions).map(([name,version]) => ["@aikdna/kdna-"+name, version]));
   for (const [name,spec] of Object.entries(expected)) assert.equal(pkg.dependencies[name],spec); assert.equal(Object.keys(pkg.dependencies).length,12); assert.deepEqual(lock.packages[""].dependencies,pkg.dependencies);
   for (const [name,version] of Object.entries(versions)) {
@@ -210,8 +210,8 @@ test("source Runtime candidate binds private local CLI Core and Read", () => {
     assert.equal(installed.version,version);
     assert.deepEqual(Object.keys(lock.packages).filter(k=>k.endsWith(key)),[key]);
   }
-  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-core"],"0.37.9");
-  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"],"0.13.3");
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-core"],"0.37.11");
+  assert.equal(lock.packages["node_modules/@aikdna/kdna-cli"].dependencies["@aikdna/kdna-read"],"0.13.5");
   assert.equal(lock.packages["node_modules/fast-uri"].version,"3.1.9");
 });
 
@@ -300,11 +300,25 @@ test("release context binds event, stable package, tag, ref, SHA, HEAD, clean tr
     );
 });
 
-test("current private candidate is not a finalizable release coordinate", () => {
+test("current 0.8.0 release coordinate satisfies release context for both plain and workflow-prefixed tags", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot,"package.json"),"utf8"));
   const changelog = fs.readFileSync(path.join(root,"CHANGELOG.md"),"utf8");
-  assert.equal(pkg.private,true); assert.equal(pkg.version,"0.8.0-rc.native-sections.3");
-  assert.throws(()=>validateReleaseContext(releaseInput({pkg,changelog})),/CHANGELOG|version|stable|release/i);
+  assert.equal(pkg.private, undefined); assert.equal(pkg.version, "0.8.0");
+  assert.equal(validateReleaseContext(releaseInput({ pkg, changelog })).version, "0.8.0");
+  assert.equal(
+    validateReleaseContext(
+      releaseInput({
+        pkg,
+        changelog,
+        env: {
+          RELEASE_TAG_NAME: "kdna-mcp-server-0.8.0",
+          GITHUB_REF: "refs/tags/kdna-mcp-server-0.8.0",
+        },
+      }),
+    ).tag,
+    "kdna-mcp-server-0.8.0",
+  );
+  assert.throws(() => validateReleaseContext(releaseInput({ pkg: { ...pkg, private: true }, changelog })), /private/i);
 });
 
 test("independent tar parser supports strict PAX paths and GNU long names", () => {
