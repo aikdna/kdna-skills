@@ -21,10 +21,10 @@ const packageRoot = path.resolve(
   "..",
 );
 const INTEGRITIES = Object.freeze({
-  [CLI]: "sha512-tOTDb0jK" + "umtewwRV5e3Fxcxeg/2ZDIGXD5apNDri85gZDKoPExwCMM+vCawtzOXR/sKoAu7Nx0qimAD4b78WHg==",
-  [CORE]: "sha512-NypR168n" + "Q60kScljeCP3JwjhZDqL4w1iwxwbpr7M8og4U3p+N8y5eWYjyFKnGhn8ROTX1q1B+39iG2DHBvX0Qg==",
-  [READ]: "sha512-tP8VTCLm" + "7UBwqAV2WMbiLF/y3c+F64Xm9zbbTS7YOs8mkFk715yZl2cgM9P2pzpnPO3v+/fhAHSLWpasgFcCtw==",
-  [CBOR]: "sha512-wbTmofex" + "rQJf8xrss5pez0r5rSeuM8bEenYnudE6FPspJugREVxqhy+huaP7RGxBn+ise/OjpnJ2E5JOaApGXQ==",
+  [CLI]: "sha512-QxiMvDx2" + "DEMEIOpZjzUlzVXBWKpP5DW8yTHopeprobil+1nkgU1T7aSDjAF6Jq2xE1cf0akWNlLh6QC/Yma25Q==",
+  [CORE]: "sha512-HVXILcxX" + "W2qaSUm6MatgrFMjUhUynqlmHHdsPo8yBbHT3kuvucdp4te06Spawa4oOpWsN+059jw07IGsbfIq8A==",
+  [READ]: "sha512-HQXjkjYL" + "l20LnBn8ykjTgyAtZRZffrzuQEtruyKwG7iGKtgpIFexiFevp3yLM2vHpUEfUBoo5DupDpQgPfPa1g==",
+  [CBOR]: "sha512-TCT9XHLb" + "4iPGQ99fpQjcTRncbus6cXHvSD/RY+bPrDACBCJKiQLmAM6r7/BgQcI5i+8h4gwp4vjfb6S6T8bPGw==",
 });
 const SHASUM = "a".repeat(40);
 
