@@ -4,7 +4,7 @@
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
-const { validateReleaseContext } = require('./release-policy');
+const { isAcceptedReleaseTag, validateReleaseContext } = require('./release-policy');
 
 const root = path.resolve(__dirname, '..');
 const packageRoot = path.join(root, 'mcp-server');
@@ -20,7 +20,9 @@ function git(args) {
 }
 
 try {
-  const tag = pkg.version;
+  const candidateTag = isAcceptedReleaseTag(process.env.RELEASE_TAG_NAME, pkg.version)
+    ? process.env.RELEASE_TAG_NAME
+    : pkg.version;
   const context = validateReleaseContext({
     pkg,
     changelog,
@@ -28,7 +30,7 @@ try {
     git: {
       status: git(['status', '--porcelain=v1', '--untracked-files=all']),
       head: git(['rev-parse', 'HEAD']),
-      tagCommit: git(['rev-parse', `${tag}^{commit}`]),
+      tagCommit: (() => { try { return git(['rev-parse', `${candidateTag}^{commit}`]); } catch { return ''; } })(),
     },
   });
   console.log(`Release context verified: ${context.name}@${context.version} ${context.commit}`);

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.0 (2026-11-18)
+
+- Promote `@aikdna/kdna-mcp-server` to stable release coordinate `0.8.0` aligned
+  with `@aikdna/kdna-cli@0.44.0`, `@aikdna/kdna-core@0.37.11`, and
+  `@aikdna/kdna-read@0.13.5` (`kdna.read/0.7.0-candidate`) on native container
+  `0.6.0`.
+- Align GitHub Release tag verification (`kdna-mcp-server-0.8.0`), pack evidence
+  validation, and registry dependency integrity guards across all twelve pinned
+  runtime packages.
+- Update `kdna-creator`, `kdna-loader`, Host integration guides, and
+  `docs/agent-support-matrix.json` for `@aikdna/kdna-cli@0.44.0` (`unprotect`,
+  `source-open --output`, ASCII `method_roles`, default `other` method
+  preservation) and *KDNA Whitepaper* `1.0.2`.
+
 ## 0.8.0-rc.native-sections.3 (local release candidate)
 
 - Re-pin the fixed runtime graph to the released CLI 0.43.2 with Core 0.37.9

@@ -1,12 +1,6 @@
-# KDNA MCP 0.8.0-rc.native-sections.3 — local Read candidate
+# KDNA MCP 0.8.0 — local stdio Read adapter
 
-**Local release candidate; npm publication is disabled by `private: true`.** This stdio adapter delegates to the exact
-CLI 0.43.5 / Core 0.37.9 / Read 0.13.3 artifacts. The Read contract is
-`kdna.read/0.7.0-candidate`; package version is a separate coordinate. Historical npm
-MCP 0.5.0 and its CLI 0.36.x workspace flow are not this candidate's runtime.
-The `@aikdna/kdna-mcp-server` npm coordinate now serves a retirement notice
-(`0.5.1`) and is not an installation path; the Git channel remains the
-delivery channel for this candidate.
+This local stdio MCP server (`@aikdna/kdna-mcp-server@0.8.0`) delegates native container `0.6.0` admission and scoped Read operations to the exact CLI `0.44.0` / Core `0.37.11` / Read `0.13.5` graph (`kdna.read/0.7.0-candidate`). Historical MCP `0.5.0`–`0.5.1` and CLI `0.36.x` workspace flows are superseded by this operator-bound single-asset native `0.6.0` adapter.
 
 ## Operator-controlled startup
 
@@ -262,7 +256,7 @@ container format is not permission to convert it implicitly or read its raw payl
 
 For an Agent-led task, begin with the [getting-started guide](https://github.com/aikdna/kdna-skills/blob/main/docs/GETTING_STARTED.md).
 The installer requires Node.js 22 or later, npm, `bash` and `tar`. The current
-CLI 0.43.5 / Core 0.37.9 / Read 0.13.3 graph was exercised with Node.js 22.22.3
+CLI 0.44.0 / Core 0.37.11 / Read 0.13.5 graph was exercised with Node.js 22.22.3
 and npm 10.9.8. Earlier companion graphs' runtime checks do not verify this
 one on additional Node versions. The CI matrix is a set of required checks,
 not evidence that every run has already passed. From `mcp-server/`:
@@ -306,12 +300,11 @@ package-lock.json are excluded. The companion consumer lock is generated from
 the checked source graph. The packed-consumer test installs with an empty npm
 cache, then runs the same real stdio boundary suite against the installed bin.
 
-This package remains a local RC. Registry publication is disabled and stable
-release/dependency guards reject it. A source prerelease uses this complete checkout and its offline installer; it is a separate delivery channel and does not bypass npm stable publication guards. Source and installed process tests do not
+Canonical npm publication of `@aikdna/kdna-mcp-server@0.8.0` runs exclusively via the GitHub Release workflow (`kdna-mcp-server-0.8.0`) after companion packages (`@aikdna/kdna-core@0.37.11`, `@aikdna/kdna-read@0.13.5`, `@aikdna/kdna-cli@0.44.0`) are published on the official registry. Source and installed process tests do not
 establish named Host adoption, human review, authorship or Creation acceptance.
 
 ## Native section contract boundary
 
-The complete CLI public contract binding is pinned by SHA-256 `bae2b7b7d0dfb78cd1fb2e2e537af0dafa21050641f9365aadeb06896d7b0fd5`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+The complete CLI public contract binding is pinned by SHA-256 `6c91bc8b10abdb1a0cfa23cae3904a11075200b03011d8a7e3772ea9a40ae6c8`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
 
 The public regression corpus is generated from synthetic authored JSON with the fixed CLI. It tests real native containers and one deliberately truncated container; no legacy component-format asset is treated as current native input.

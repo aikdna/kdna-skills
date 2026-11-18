@@ -1,4 +1,4 @@
-# Typed authoring through current Studio
+# Typed authoring through Studio [Legacy pre-0.6.0 / P5-deferred]
 
 A judgment group has an ASCII local key and at least two substantive alternatives. Local keys match `^[a-z][a-z0-9-]{0,63}$`; they are authoring references, not protocol IDs. Studio deterministically materializes owner-qualified IDs under `kdna.studio-materialization/2` and binds the full asset/version/context before Compiler. Do not generate native IDs or digests in the Agent adapter.
 

@@ -12,17 +12,22 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function isAcceptedReleaseTag(tag, version) {
+  return tag === version || tag === `kdna-mcp-server-${version}`;
+}
+
 function validateReleaseContext({ pkg, changelog, env, git }) {
   assert(pkg && typeof pkg === 'object' && !Array.isArray(pkg), 'package.json must be an object');
   assert(pkg.name === EXPECTED_PACKAGE_NAME, `package name must be ${EXPECTED_PACKAGE_NAME}`);
   assert(STABLE_VERSION_RE.test(pkg.version), 'package version must be stable canonical SemVer');
+  assert(pkg.private === undefined, 'public release manifest must not set private');
 
   const version = pkg.version;
-  const tag = version;
-  const expectedRef = `refs/tags/${tag}`;
   assert(env.GITHUB_EVENT_NAME === 'release', 'GITHUB_EVENT_NAME must be release');
   assert(env.RELEASE_EVENT_ACTION === 'published', 'release action must be published');
-  assert(env.RELEASE_TAG_NAME === tag, `release tag must be exactly ${tag}`);
+  assert(isAcceptedReleaseTag(env.RELEASE_TAG_NAME, version), `release tag must be exactly ${version}`);
+  const tag = env.RELEASE_TAG_NAME;
+  const expectedRef = `refs/tags/${tag}`;
   assert(env.RELEASE_IS_DRAFT === 'false', 'draft releases cannot publish');
   assert(env.RELEASE_IS_PRERELEASE === 'false', 'prereleases cannot publish');
   assert(env.GITHUB_REF === expectedRef, `GITHUB_REF must be exactly ${expectedRef}`);
@@ -42,4 +47,4 @@ function validateReleaseContext({ pkg, changelog, env, git }) {
   return Object.freeze({ name: pkg.name, version, tag, ref: expectedRef, commit: git.head });
 }
 
-module.exports = { COMMIT_RE, EXPECTED_PACKAGE_NAME, STABLE_VERSION_RE, validateReleaseContext };
+module.exports = { COMMIT_RE, EXPECTED_PACKAGE_NAME, STABLE_VERSION_RE, isAcceptedReleaseTag, validateReleaseContext };

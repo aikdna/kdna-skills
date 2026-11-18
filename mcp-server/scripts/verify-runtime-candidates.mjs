@@ -8,9 +8,9 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const EXPECTED_GRAPH = {
   "node_modules/@aikdna/kdna-core": {
-    "version": "0.37.9",
-    "resolved": "file:vendor/aikdna-kdna-core-0.37.9.tgz",
-    "integrity": "sha512-vDjxO7Q10JyNIbBGfeGFKMbu+vbA7me3KXB8S38HbHXNpaq56gqnAd/XJwUjiyCFSmLB6DH3bLguEHatFSj1dA==",
+    "version": "0.37.11",
+    "resolved": "file:vendor/aikdna-kdna-core-0.37.11.tgz",
+    "integrity": "sha512-NypR168n" + "Q60kScljeCP3JwjhZDqL4w1iwxwbpr7M8og4U3p+N8y5eWYjyFKnGhn8ROTX1q1B+39iG2DHBvX0Qg==",
     "license": "Apache-2.0",
     "dependencies": {
       "ajv": "8.20.0",
@@ -24,15 +24,15 @@ export const EXPECTED_GRAPH = {
     }
   },
   "node_modules/@aikdna/kdna-read": {
-    "version": "0.13.3",
-    "resolved": "file:vendor/aikdna-kdna-read-0.13.3.tgz",
-    "integrity": "sha512-8ursWqUqM7cEJz5ja8GNVZ11xrsK3f2bGCpEISJPEORXrX2Y5jz8paNu8NPZv2gDObFwHkT2b7PY1f1W5ppJjQ==",
+    "version": "0.13.5",
+    "resolved": "file:vendor/aikdna-kdna-read-0.13.5.tgz",
+    "integrity": "sha512-tP8VTCLm" + "7UBwqAV2WMbiLF/y3c+F64Xm9zbbTS7YOs8mkFk715yZl2cgM9P2pzpnPO3v+/fhAHSLWpasgFcCtw==",
     "license": "Apache-2.0",
     "dependencies": {
       "ajv": "8.20.0"
     },
     "peerDependencies": {
-      "@aikdna/kdna-core": "0.37.9"
+      "@aikdna/kdna-core": "0.37.11"
     },
     "engines": {
       "node": ">=20"
@@ -263,13 +263,13 @@ export const EXPECTED_GRAPH = {
     }
   },
   "node_modules/@aikdna/kdna-cli": {
-    "version": "0.43.5",
-    "resolved": "file:vendor/aikdna-kdna-cli-0.43.5.tgz",
-    "integrity": "sha512-" + "FtBPMdt+CFmioJVsLF1IbGhqdWsZKKm7wFtUnT7ZHBAkqHf1GfbWmwWtJon6zE6bvpRklkI7SzfRqEGHzKlW5w==",
+    "version": "0.44.0",
+    "resolved": "file:vendor/aikdna-kdna-cli-0.44.0.tgz",
+    "integrity": "sha512-tOTDb0jK" + "umtewwRV5e3Fxcxeg/2ZDIGXD5apNDri85gZDKoPExwCMM+vCawtzOXR/sKoAu7Nx0qimAD4b78WHg==",
     "license": "Apache-2.0",
     "dependencies": {
-      "@aikdna/kdna-core": "0.37.9",
-      "@aikdna/kdna-read": "0.13.3"
+      "@aikdna/kdna-core": "0.37.11",
+      "@aikdna/kdna-read": "0.13.5"
     },
     "engines": {
       "node": ">=22"
@@ -283,17 +283,17 @@ export const EXPECTED_GRAPH = {
 export const ARTIFACTS = [
   {
     "name": "@aikdna/kdna-core",
-    "version": "0.37.9",
-    "sha256": "084afc94fb808a4327995d6d47be8262d53e339e415db2879ff334d5d742362b",
-    "integrity": "sha512-vDjxO7Q10JyNIbBGfeGFKMbu+vbA7me3KXB8S38HbHXNpaq56gqnAd/XJwUjiyCFSmLB6DH3bLguEHatFSj1dA==",
-    "file": "vendor/aikdna-kdna-core-0.37.9.tgz"
+    "version": "0.37.11",
+    "sha256": "48626d4e26cb0bc47ce89a6694647b696c6dd241a0f3e3e84d4b7bdada8d83f4",
+    "integrity": "sha512-NypR168n" + "Q60kScljeCP3JwjhZDqL4w1iwxwbpr7M8og4U3p+N8y5eWYjyFKnGhn8ROTX1q1B+39iG2DHBvX0Qg==",
+    "file": "vendor/aikdna-kdna-core-0.37.11.tgz"
   },
   {
     "name": "@aikdna/kdna-read",
-    "version": "0.13.3",
-    "sha256": "52f5b05f4565e623af6e7a381d90ae2c75ef04edc82e2db2b88f7aa8d6ac0f50",
-    "integrity": "sha512-8ursWqUqM7cEJz5ja8GNVZ11xrsK3f2bGCpEISJPEORXrX2Y5jz8paNu8NPZv2gDObFwHkT2b7PY1f1W5ppJjQ==",
-    "file": "vendor/aikdna-kdna-read-0.13.3.tgz"
+    "version": "0.13.5",
+    "sha256": "8444d65417188a225903c2357bcd144a557d646f438db1d356d4073506c3fc58",
+    "integrity": "sha512-tP8VTCLm" + "7UBwqAV2WMbiLF/y3c+F64Xm9zbbTS7YOs8mkFk715yZl2cgM9P2pzpnPO3v+/fhAHSLWpasgFcCtw==",
+    "file": "vendor/aikdna-kdna-read-0.13.5.tgz"
   },
   {
     "name": "ajv",
@@ -360,21 +360,21 @@ export const ARTIFACTS = [
   },
   {
     "name": "@aikdna/kdna-cli",
-    "version": "0.43.5",
-    "sha256": "12c0745c6f055e36d32207604958e337c8d34b5c054bdae7a37b90917833e784",
-    "integrity": "sha512-" + "FtBPMdt+CFmioJVsLF1IbGhqdWsZKKm7wFtUnT7ZHBAkqHf1GfbWmwWtJon6zE6bvpRklkI7SzfRqEGHzKlW5w==",
-    "file": "vendor/aikdna-kdna-cli-0.43.5.tgz"
+    "version": "0.44.0",
+    "sha256": "d5df53fd9545d8d0ac70ac2d740415bed4c80e1832bfb6032f6d2070c7405167",
+    "integrity": "sha512-tOTDb0jK" + "umtewwRV5e3Fxcxeg/2ZDIGXD5apNDri85gZDKoPExwCMM+vCawtzOXR/sKoAu7Nx0qimAD4b78WHg==",
+    "file": "vendor/aikdna-kdna-cli-0.44.0.tgz"
   }
 ];
-export const PACKED_FILES = ["LICENSE","NOTICE","README.md","bin/kdna-mcp.mjs","bin/model-view.mjs","bin/operator-binding.mjs","bin/read-session.mjs","bin/reading-views.mjs","bin/task-content.mjs","package.json","vendor/aikdna-kdna-cli-0.43.5.tgz","vendor/aikdna-kdna-core-0.37.9.tgz","vendor/aikdna-kdna-read-0.13.3.tgz","vendor/ajv-8.20.0.tgz","vendor/ajv-formats-3.0.1.tgz","vendor/cbor-x-1.6.5.tgz","vendor/fast-deep-equal-3.1.3.tgz","vendor/fast-uri-3.1.9.tgz","vendor/json-schema-traverse-1.0.0.tgz","vendor/noble-hashes-1.8.0.tgz","vendor/pako-2.1.0.tgz","vendor/require-from-string-2.0.2.tgz"];
+export const PACKED_FILES = ["LICENSE","NOTICE","README.md","bin/kdna-mcp.mjs","bin/model-view.mjs","bin/operator-binding.mjs","bin/read-session.mjs","bin/reading-views.mjs","bin/task-content.mjs","package.json","vendor/aikdna-kdna-cli-0.44.0.tgz","vendor/aikdna-kdna-core-0.37.11.tgz","vendor/aikdna-kdna-read-0.13.5.tgz","vendor/ajv-8.20.0.tgz","vendor/ajv-formats-3.0.1.tgz","vendor/cbor-x-1.6.5.tgz","vendor/fast-deep-equal-3.1.3.tgz","vendor/fast-uri-3.1.9.tgz","vendor/json-schema-traverse-1.0.0.tgz","vendor/noble-hashes-1.8.0.tgz","vendor/pako-2.1.0.tgz","vendor/require-from-string-2.0.2.tgz"];
 const read = (root, name) => JSON.parse(fs.readFileSync(path.join(root, name), "utf8"));
 export function validateSourceFacts({ packageJson, lock, root }) {
   assert.equal(packageJson.name, "@aikdna/kdna-mcp-server");
-  assert.equal(packageJson.version, "0.8.0-rc.native-sections.3");
-  assert.equal(packageJson.private, true, "candidate must remain private");
+  assert.equal(packageJson.version, "0.8.0");
+  assert.equal(packageJson.private, undefined, "public release manifest must not set private");
   const dependencies = Object.fromEntries(ARTIFACTS.map(item => [item.name, item.version]));
   assert.deepEqual(packageJson.dependencies, dependencies);
-  assert.deepEqual(packageJson.kdna_runtime, { cli: "0.43.5", core: "0.37.9", read: "0.13.3", read_contract: "kdna.read/0.7.0-candidate" });
+  assert.deepEqual(packageJson.kdna_runtime, { cli: "0.44.0", core: "0.37.11", read: "0.13.5", read_contract: "kdna.read/0.7.0-candidate" });
   assert.deepEqual(packageJson.overrides, { "fast-uri": "$fast-uri", "@aikdna/kdna-core": "$@aikdna/kdna-core", "@aikdna/kdna-read": "$@aikdna/kdna-read" });
   assert.equal(lock.name, packageJson.name); assert.equal(lock.version, packageJson.version);
   assert.equal(lock.lockfileVersion, 3); assert.deepEqual(lock.packages[""].dependencies, dependencies);
@@ -403,7 +403,7 @@ export function validateCandidateFacts({ packageJson, lock, installed, packedFil
   // not from whether this machine happens to have installed them.
   return { fixedArtifacts: 12, lockedRequiredPackages: 12, installedRequiredPackages: 12,
     optionalOmitted: Object.values(EXPECTED_GRAPH).filter((value) => value.optional).length,
-    packedFileCount: 22, status: "LOCAL_RC_ONLY_UNPUBLISHED" };
+    packedFileCount: 22, status: "STABLE_RELEASE_READY" };
 }
 export function verifyRuntime(root = ROOT) {
   const installed = {};
@@ -421,9 +421,9 @@ export function verifyRuntime(root = ROOT) {
   assert.equal(packed.status, 0, packed.stderr);
   const result = validateCandidateFacts({ packageJson: read(root, "package.json"), lock: read(root, "package-lock.json"), installed, packedFiles: JSON.parse(packed.stdout)[0].files, root });
   const bindingBytes = fs.readFileSync(path.join(root, "node_modules/@aikdna/kdna-cli/public-contract-binding.json"));
-  assert.equal(crypto.createHash("sha256").update(bindingBytes).digest("hex"), "bae2b7b7d0dfb78cd1fb2e2e537af0dafa21050641f9365aadeb06896d7b0fd5", "the entire native CLI route binding must stay exact");
+  assert.equal(crypto.createHash("sha256").update(bindingBytes).digest("hex"), "6c91bc8b10abdb1a0cfa23cae3904a11075200b03011d8a7e3772ea9a40ae6c8", "the entire native CLI route binding must stay exact");
   const cliBinding = JSON.parse(bindingBytes);
-  assert.equal(cliBinding.implementation.version, "0.43.5");
+  assert.equal(cliBinding.implementation.version, "0.44.0");
   assert.equal(cliBinding.tuple.container, "0.6.0");
   assert.equal(cliBinding.tuple.read, "kdna.read/0.7.0-candidate");
   for (const name of ["core", "read"]) {

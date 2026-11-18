@@ -14,7 +14,7 @@ test("support guide validator rejects authority or delivery escalation",async t=
   const cases=[
     m=>m.binding.model_tools_can_bind=true,m=>m.binding.initialize_can_bind=true,
     m=>m.binding.finite_assets=2,m=>m.binding.transport="remote",
-    m=>m.candidate_runtime.publication="released",m=>m.candidate_runtime.cli="0.36.0",
+    m=>m.candidate_runtime.publication="certified",m=>m.candidate_runtime.cli="0.36.0",
     m=>m.agents[0].support="verified",m=>m.evidence_dimensions.real_human_acceptance="passed",
     m=>m.agents[1].support="verified",m=>m.agents[1].observation=structuredClone(m.agents[0].observation),
     m=>m.agents[0].observation.host="Codex Desktop",m=>m.agents[0].observation.tools.push("kdna.expand"),
@@ -59,12 +59,12 @@ test("source verification rejects actual manifest, lock and archive tampering", 
  });
 });
 
-test("creator and loader document 0.43.5 authoring/protection/closure-safe compact commands while separating older 0.43.2 checkouts",()=>{
+test("creator and loader document 0.44.0 authoring/protection/closure-safe compact commands while separating older 0.43.2 checkouts",()=>{
   const ref=fs.readFileSync(path.join(root,"kdna-creator/references/authoring-and-protection.md"),"utf8");
   const loader=fs.readFileSync(path.join(root,"kdna-loader/SKILL.md"),"utf8");
   const creator=fs.readFileSync(path.join(root,"kdna-creator/SKILL.md"),"utf8");
   assert.ok(creator.includes("authoring-and-protection.md"));
-  for (const t of ["@aikdna/kdna-cli@0.43.5","not in 0.43.2","--password-fd","--password-file","Never put a password in argv","validate-input","--compact","--format human","diff","judgment_ids"]) assert.ok(ref.includes(t)||loader.includes(t),t);
-  assert.ok(loader.includes("@aikdna/kdna-cli@0.43.5"));
+  for (const t of ["@aikdna/kdna-cli@0.44.0","not in 0.43.2","--password-fd","--password-file","Never put a password in argv","validate-input","--compact","--format human","diff","judgment_ids"]) assert.ok(ref.includes(t)||loader.includes(t),t);
+  assert.ok(loader.includes("@aikdna/kdna-cli@0.44.0"));
   assert.doesNotMatch(ref+loader,/--password[ =]\S/);
 });

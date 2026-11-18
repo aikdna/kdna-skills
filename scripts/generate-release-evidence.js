@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { validatePackReport } = require('./release-evidence');
+const { isAcceptedReleaseTag } = require('./release-policy');
 
 const root = path.resolve(__dirname, '..');
 const packageRoot = path.join(root, 'mcp-server');
@@ -51,7 +52,8 @@ function main() {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
   const source = { ref: process.env.GITHUB_REF, commit: run('git', ['rev-parse', 'HEAD']).trim() };
   if (process.env.GITHUB_SHA !== source.commit) fail('GITHUB_SHA must equal the packed commit');
-  if (run('git', ['rev-parse', `${pkg.version}^{commit}`]).trim() !== source.commit) fail('the package version tag must resolve to the packed commit');
+  const tag = isAcceptedReleaseTag(process.env.RELEASE_TAG_NAME, pkg.version) ? process.env.RELEASE_TAG_NAME : pkg.version;
+  if (run('git', ['rev-parse', `${tag}^{commit}`]).trim() !== source.commit) fail('the package version tag must resolve to the packed commit');
 
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-mcp-release-pack-'));
   let complete = false;
