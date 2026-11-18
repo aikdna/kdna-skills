@@ -138,9 +138,9 @@ export const EXPECTED_GRAPH = {
     }
   },
   "node_modules/@cbor-extract/cbor-extract-darwin-arm64": {
-    "version": "2.2.2",
-    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-darwin-arm64/-/cbor-extract-darwin-arm64-2.2.2.tgz",
-    "integrity": "sha512-ZKZ/F8US7JR92J4DMct6cLW/Y66o2K576+zjlEN/MevH70bFIsB10wkZEQPLzl2oNh2SMGy55xpJ9JoBRl5DOA==",
+    "version": "2.2.3",
+    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-darwin-arm64/-/cbor-extract-darwin-arm64-2.2.3.tgz",
+    "integrity": "sha512-qpUy9Yoisi6a7QHOVa+AlnqfN7eVstSRhpLwiLnwi6i3SNLkM5D2Z7MXl4LC5nUGA77mZEt479cPH3u8GD163Q==",
     "cpu": [
       "arm64"
     ],
@@ -151,9 +151,9 @@ export const EXPECTED_GRAPH = {
     ]
   },
   "node_modules/@cbor-extract/cbor-extract-darwin-x64": {
-    "version": "2.2.2",
-    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-darwin-x64/-/cbor-extract-darwin-x64-2.2.2.tgz",
-    "integrity": "sha512-32b1mgc+P61Js+KW9VZv/c+xRw5EfmOcPx990JbCBSkYJFY0l25VinvyyWfl+3KjibQmAcYwmyzKF9J4DyKP/Q==",
+    "version": "2.2.3",
+    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-darwin-x64/-/cbor-extract-darwin-x64-2.2.3.tgz",
+    "integrity": "sha512-6bZbK7dyKn8BUNmG3UfzSnM4L/OzJ8xGAtBHYycprl+bgvtZmZoQC7CucWXuF/oHJP5skzqkqFr6BLSSGIkoWw==",
     "cpu": [
       "x64"
     ],
@@ -164,9 +164,9 @@ export const EXPECTED_GRAPH = {
     ]
   },
   "node_modules/@cbor-extract/cbor-extract-linux-arm": {
-    "version": "2.2.2",
-    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-linux-arm/-/cbor-extract-linux-arm-2.2.2.tgz",
-    "integrity": "sha512-tNg0za41TpQfkhWjptD+0gSD2fggMiDCSacuIeELyb2xZhr7PrhPe5h66Jc67B/5dmpIhI2QOUtv4SBsricyYQ==",
+    "version": "2.2.3",
+    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-linux-arm/-/cbor-extract-linux-arm-2.2.3.tgz",
+    "integrity": "sha512-joCovTc7uEYCL9XxdAJJpGIH7Vvc31Fi7vh3HnlY5zgkLSU/64WxYl5iUi/puE21qT3bmxMfOZEZUbnqVKeJTQ==",
     "cpu": [
       "arm"
     ],
@@ -177,9 +177,9 @@ export const EXPECTED_GRAPH = {
     ]
   },
   "node_modules/@cbor-extract/cbor-extract-linux-arm64": {
-    "version": "2.2.2",
-    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-linux-arm64/-/cbor-extract-linux-arm64-2.2.2.tgz",
-    "integrity": "sha512-wfqgzqCAy/Vn8i6WVIh7qZd0DdBFaWBjPdB6ma+Wihcjv0gHqD/mw3ouVv7kbbUNrab6dKEx/w3xQZEdeXIlzg==",
+    "version": "2.2.3",
+    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-linux-arm64/-/cbor-extract-linux-arm64-2.2.3.tgz",
+    "integrity": "sha512-QAuFuQkOw0cm4MNc+QwxH9aiMxmrczESnVEu33B8m2Du9fBuH/1AvJfmO8YajpeWLoHqt2iUG3d1/gIWAKY8IQ==",
     "cpu": [
       "arm64"
     ],
@@ -190,9 +190,9 @@ export const EXPECTED_GRAPH = {
     ]
   },
   "node_modules/@cbor-extract/cbor-extract-linux-x64": {
-    "version": "2.2.2",
-    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-linux-x64/-/cbor-extract-linux-x64-2.2.2.tgz",
-    "integrity": "sha512-rpiLnVEsqtPJ+mXTdx1rfz4RtUGYIUg2rUAZgd1KjiC1SehYUSkJN7Yh+aVfSjvCGtVP0/bfkQkXpPXKbmSUaA==",
+    "version": "2.2.3",
+    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-linux-x64/-/cbor-extract-linux-x64-2.2.3.tgz",
+    "integrity": "sha512-IQMPVLulOvFv9Had7J1idJyfQzsFamDVdjH37qW7suHI7mgO4w1Oo3MisL7AjnWARxo0/ZmEEQ3i81WA7y34Ug==",
     "cpu": [
       "x64"
     ],
@@ -203,9 +203,9 @@ export const EXPECTED_GRAPH = {
     ]
   },
   "node_modules/@cbor-extract/cbor-extract-win32-x64": {
-    "version": "2.2.2",
-    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-win32-x64/-/cbor-extract-win32-x64-2.2.2.tgz",
-    "integrity": "sha512-dI+9P7cfWxkTQ+oE+7Aa6onEn92PHgfWXZivjNheCRmTBDBf2fx6RyTi0cmgpYLnD1KLZK9ZYrMxaPZ4oiXhGA==",
+    "version": "2.2.3",
+    "resolved": "https://registry.npmjs.org/@cbor-extract/cbor-extract-win32-x64/-/cbor-extract-win32-x64-2.2.3.tgz",
+    "integrity": "sha512-fGFfq6F3l0GCoKOZeyjjm3q+NHO7jo8ILtQ93U3rYJOgG2BGLS/QmBdoFLNEsoWPjyxAS8svWhTyo73MTDawog==",
     "cpu": [
       "x64"
     ],
@@ -216,9 +216,9 @@ export const EXPECTED_GRAPH = {
     ]
   },
   "node_modules/cbor-extract": {
-    "version": "2.2.2",
-    "resolved": "https://registry.npmjs.org/cbor-extract/-/cbor-extract-2.2.2.tgz",
-    "integrity": "sha512-hlSxxI9XO2yQfe9g6msd3g4xCfDqK5T5P0fRMLuaLHhxn4ViPrm+a+MUfhrvH2W962RGxcBwEGzLQyjbDG1gng==",
+    "version": "2.2.3",
+    "resolved": "https://registry.npmjs.org/cbor-extract/-/cbor-extract-2.2.3.tgz",
+    "integrity": "sha512-zTOCEYwiQDChj5DV/sUqccv3jhdZqbhymztwcrW2LncIG2fPPkb1ceK5rmr0bdtxzJCXoWzZ95shA+uaSH8cKw==",
     "hasInstallScript": true,
     "license": "MIT",
     "optional": true,
@@ -229,12 +229,12 @@ export const EXPECTED_GRAPH = {
       "download-cbor-prebuilds": "bin/download-prebuilds.js"
     },
     "optionalDependencies": {
-      "@cbor-extract/cbor-extract-darwin-arm64": "2.2.2",
-      "@cbor-extract/cbor-extract-darwin-x64": "2.2.2",
-      "@cbor-extract/cbor-extract-linux-arm": "2.2.2",
-      "@cbor-extract/cbor-extract-linux-arm64": "2.2.2",
-      "@cbor-extract/cbor-extract-linux-x64": "2.2.2",
-      "@cbor-extract/cbor-extract-win32-x64": "2.2.2"
+      "@cbor-extract/cbor-extract-linux-arm": "2.2.3",
+      "@cbor-extract/cbor-extract-linux-x64": "2.2.3",
+      "@cbor-extract/cbor-extract-win32-x64": "2.2.3",
+      "@cbor-extract/cbor-extract-darwin-x64": "2.2.3",
+      "@cbor-extract/cbor-extract-linux-arm64": "2.2.3",
+      "@cbor-extract/cbor-extract-darwin-arm64": "2.2.3"
     }
   },
   "node_modules/detect-libc": {
