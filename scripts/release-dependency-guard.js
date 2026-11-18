@@ -18,7 +18,7 @@ const REQUIRED = Object.freeze({
   [READ]: "0.13.5",
   "ajv": "8.20.0",
   "ajv-formats": "3.0.1",
-  [CBOR]: "1.6.5",
+  [CBOR]: "1.6.9",
   "fast-deep-equal": "3.1.3",
   "fast-uri": "3.1.9",
   "json-schema-traverse": "1.0.0",
