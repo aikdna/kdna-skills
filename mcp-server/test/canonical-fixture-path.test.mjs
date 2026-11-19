@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { bindOperatorInput } from "../bin/operator-binding.mjs";
+import { buildChildEnv } from "../bin/read-session.mjs";
 import { makeCanonicalTempRoot } from "./support/canonical-temp-root.mjs";
 
 // Regression guard for the macOS default-path case.
@@ -80,4 +81,27 @@ test("a deliberately non-canonical alias is still rejected by the operator bindi
   const canonical = bindOperatorInput(["--asset", target, "--allow-read"]);
   assert.equal(canonical.state, "bound");
   canonical.close();
+});
+
+test("read-session buildChildEnv preserves Windows mixed-case runtime vars while stripping secrets", () => {
+  const sanitized = buildChildEnv({
+    Path: "C:\\Program Files\\nodejs;C:\\Windows\\System32",
+    SystemRoot: "C:\\Windows",
+    ComSpec: "C:\\Windows\\System32\\cmd.exe",
+    USERPROFILE: "C:\\Users\\author",
+    TEMP: "C:\\Users\\author\\AppData\\Local\\Temp",
+    TMP: "C:\\Users\\author\\AppData\\Local\\Temp",
+    HOME: "/Users/author",
+    NPM_TOKEN: "secret-should-be-stripped",
+    OPENAI_API_KEY: "sk-secret",
+  });
+  assert.equal(sanitized.Path, "C:\\Program Files\\nodejs;C:\\Windows\\System32");
+  assert.equal(sanitized.SystemRoot, "C:\\Windows");
+  assert.equal(sanitized.ComSpec, "C:\\Windows\\System32\\cmd.exe");
+  assert.equal(sanitized.USERPROFILE, "C:\\Users\\author");
+  assert.equal(sanitized.TEMP, "C:\\Users\\author\\AppData\\Local\\Temp");
+  assert.equal(sanitized.TMP, "C:\\Users\\author\\AppData\\Local\\Temp");
+  assert.equal(sanitized.HOME, "/Users/author");
+  assert.equal(sanitized.NPM_TOKEN, undefined);
+  assert.equal(sanitized.OPENAI_API_KEY, undefined);
 });

@@ -32,7 +32,37 @@ for (const [consumer, dependency] of [[cli, core], [cli, read], [read, core]]) {
   const resolved = createRequire(path.join(consumer.directory, "package.json")).resolve(dependency.value.name + "/package.json");
   if (resolved !== path.join(dependency.directory, "package.json")) throw new AdapterError("MCP_RUNTIME_INVALID", "The fixed native runtime contains a shadow dependency.");
 }
-const childEnv = Object.fromEntries(["HOME", "TMPDIR", "XDG_CACHE_HOME", "PATH", "LANG", "LC_ALL", "NODE_DISABLE_COMPILE_CACHE"].filter(key => process.env[key] !== undefined).map(key => [key, process.env[key]]));
+const ALLOWED_CHILD_ENV_KEYS = new Set([
+  "HOME",
+  "TMPDIR",
+  "XDG_CACHE_HOME",
+  "PATH",
+  "LANG",
+  "LC_ALL",
+  "NODE_DISABLE_COMPILE_CACHE",
+  // Windows child-process essentials (matched case-insensitively because Windows exposes `Path`, `SystemRoot`, `ComSpec`, etc.)
+  "SYSTEMROOT",
+  "WINDIR",
+  "COMSPEC",
+  "USERPROFILE",
+  "HOMEDRIVE",
+  "HOMEPATH",
+  "TEMP",
+  "TMP",
+  "APPDATA",
+  "LOCALAPPDATA",
+  "PATHEXT",
+]);
+export function buildChildEnv(sourceEnv = process.env) {
+  const out = {};
+  for (const [key, value] of Object.entries(sourceEnv || {})) {
+    if (value !== undefined && ALLOWED_CHILD_ENV_KEYS.has(key.toUpperCase())) {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+const childEnv = buildChildEnv(process.env);
 const unavailable = () => new AdapterError("MCP_CLI_UNAVAILABLE", "The official local CLI session did not complete. Start a new operator-bound process.");
 const cancelled = () => new AdapterError("MCP_READ_CANCELLED", "Local read presentation was cancelled; this process binding is closed.");
 

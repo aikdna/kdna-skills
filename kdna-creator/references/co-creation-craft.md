@@ -83,18 +83,25 @@ Once the author confirms the review table:
    ```
    (Or run `compile draft.json --output authored.json` when adding full `0.6.0` relationships, shared declarations, exceptions, misuse, or attachments before `create authored.json --output first.kdna --allow-create`.)
 
-3. **Cold-reopen & verify in a separate invocation**:
+3. **Cold-reopen, verify & export a one-page author review sheet**:
    ```sh
    "$KDNA_NODE" "$KDNA_CLI" inspect first.kdna --format human
    "$KDNA_NODE" "$KDNA_CLI" validate first.kdna --system --format human
    "$KDNA_NODE" "$KDNA_CLI" read first.kdna --mode catalog --allow-read --format human
+   "$KDNA_NODE" "$KDNA_CLI" review first.kdna --allow-read --output first-review.md
    ```
+   Hand the one-page review sheet to the author (or present it inline) so they can inspect every judgment's claim, method, reasons, boundaries, conditional exceptions, misuse warnings, and related judgments without reading raw JSON.
 
-4. **Compare revisions & offer local password protection**:
-   - On any subsequent revision (`revised.kdna`), keep `first.kdna` intact and verify the exact delta:
-     ```sh
-     "$KDNA_NODE" "$KDNA_CLI" diff first.kdna revised.kdna --format human
-     ```
+4. **Plain-language revision loop (Agent handles hashes, full-source preservation & ripple check)**:
+   When the author asks in plain language to revise an existing `.kdna` file, never ask them to calculate SHA-256 hashes or hand-edit nested JSON. The Agent runs the full loop behind the scenes:
+   1. Compute the original file's SHA-256 (`expected-a`) and extract complete source via `source-open <first.kdna> --expected-a sha256:<hash> --allow-source --output edits.json`.
+   2. Apply only the confirmed edits inside `edits.json`, preserving all existing `reasons`, `conditions`, `exceptions`, `misuse`, `relationships`, `sources`, `materials`, and `history` entries, bumping `manifest.version` / `payload.asset.asset_version` (and `judgment_version`), and appending an honest revision entry.
+   3. Pack to a new sibling file via `source-pack <first.kdna> --edits edits.json --expected-a sha256:<hash> --output revised.kdna --allow-source` (never overwriting `first.kdna`), and validate `--system`.
+   4. Present the clean author-facing delta — **before vs. after substantive changes plus every affected downstream related judgment** — using:
+      ```sh
+      "$KDNA_NODE" "$KDNA_CLI" diff first.kdna revised.kdna --format human
+      ```
+      (Pass `--verbose` or `--format json` only when inspecting low-level IR wiring or component IDs.) Obtain fresh author confirmation before switching active files.
    - When the author wants offline local confidentiality (no account, no cloud upload), offer `protect` using a private mode-`0600` password file or file descriptor (`>= 3`), never command-line text, and always retain the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source file (`first.kdna`) for future revisions (`source-open` / `source-pack` or `create --draft` operate on plaintext source rather than encrypted `.kdna` envelopes):
      ```sh
      "$KDNA_NODE" "$KDNA_CLI" protect first.kdna --output locked.kdna --password-file ./passphrase.txt
