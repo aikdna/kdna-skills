@@ -13,7 +13,8 @@ Always inspect `kdna --help` on the Host-selected CLI entry so you use the exact
 | Reopen and revise | `source-open`, `source-pack` | `source-open`, `source-pack` |
 | Read selected judgments | `read --mode exact_selection --judgment-id id1,id2 --allow-read --compact [--format human]` (default `--budget` is `1000000` bytes [`1 MB`] on `catalog` and `exact_selection`, and `4000000` bytes [`4 MB`] on `whole_asset`; `--compact` preserves full safety closure) or `--session` | `read --session --allow-read` with `selection.judgment_ids` and explicit `budget_bytes` |
 | Local password protection | `protect <in.kdna> --output <locked.kdna>` and `unprotect <locked.kdna> --output <plain.kdna>` with `(--password-fd <n> \| --password-file <path>)` (permanently account-free, offline `scrypt-sha256` / `argon2id` + `AES-256-KW` + `AES-256-GCM`) | Not present in `0.43.2` |
-| Compare two revisions | `diff <first.kdna> <revised.kdna> [--format json\|human]` | Compare `source-open` JSON payloads |
+| One-page author review sheet | `review <file.kdna> --allow-read [--format markdown\|human\|json] [--output review.md]` | Inspect unpacked payload manually |
+| Compare two revisions | `diff <first.kdna> <revised.kdna> [--format json\|human] [--verbose]` (default `--format human` highlights substantive judgment changes and affected downstream judgments) | Compare `source-open` JSON payloads |
 
 ## Create or revise a `0.6.0` asset (`0.44.0` workflow)
 
@@ -22,8 +23,8 @@ Follow [co-creation-craft.md](co-creation-craft.md) for discovery and human revi
 1. Scaffold the matching draft mode (`init --mode interview`, `works`, `research`, or default `minimal`, optionally with `--lang zh` or `--example` for a compilable teaching template) — or prepare full `0.6.0` authored JSON when encoding custom shared declarations or attachments.
 2. Run `validate-input draft.json --format human`. Resolve every blocking diagnostic (`missing_field`, `unknown_field`, `placeholder_not_replaced`, `duplicate_method_roles`) and review any non-blocking structural craft advisories (`tautological_statement`, `method_repeats_statement`, `unbounded_judgment`, `overbroad_scope`, `duplicate_focus`, `uniform_default_method`) with the author.
 3. Produce the asset without replacing existing files: `create --draft draft.json --output first.kdna --allow-create` (or `compile draft.json --output authored.json` followed by `create authored.json --output first.kdna --allow-create`).
-4. Verify in a separate invocation: `inspect first.kdna --format human`, `validate first.kdna --system --format human`, and `read first.kdna --mode catalog --allow-read --format human`.
-5. Revise without overwriting: `source-open first.kdna --expected-a sha256:<file-sha256> --allow-source`, apply the confirmed edits, save `revised.kdna` with `source-pack`, and verify the exact delta via `diff first.kdna revised.kdna --format human`.
+4. Verify in a separate invocation: `inspect first.kdna --format human`, `validate first.kdna --system --format human`, `read first.kdna --mode catalog --allow-read --format human`, and export a one-page author review sheet via `review first.kdna --allow-read`.
+5. Revise in plain language without overwriting (Agent computes the SHA-256 hash automatically): `source-open first.kdna --expected-a sha256:<file-sha256> --allow-source --output edits.json`, apply the confirmed edits while preserving all existing reasons, conditional exceptions, misuse warnings, relationships, sources, and revision history, save `revised.kdna` with `source-pack`, and verify substantive before/after changes plus affected downstream judgments via `diff first.kdna revised.kdna --format human` (`--verbose` for full IR reference details).
 
 ## Local password protection (permanently account-free, offline)
 

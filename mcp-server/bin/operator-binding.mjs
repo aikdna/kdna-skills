@@ -25,7 +25,7 @@ function readPasswordFile(passwordPath) {
   try {
     const before = fs.lstatSync(passwordPath);
     if (!before.isFile() || before.isSymbolicLink() || before.size === 0 || before.size > 4096 || fs.realpathSync(passwordPath) !== passwordPath) throw invalidPassword();
-    fd = fs.openSync(passwordPath, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+    fd = fs.openSync(passwordPath, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0));
     const opened = fs.fstatSync(fd);
     if (!sameFile(before, opened)) throw invalidPassword();
     const raw = Buffer.alloc(opened.size);
@@ -110,7 +110,7 @@ export function bindOperatorInput(argv) {
   try {
     const before = fs.lstatSync(selected);
     if (!before.isFile() || before.isSymbolicLink() || before.size > 64 * 1024 * 1024 || fs.realpathSync(selected) !== selected) throw invalid();
-    descriptor = fs.openSync(selected, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+    descriptor = fs.openSync(selected, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0));
     const opened = fs.fstatSync(descriptor);
     if (!sameFile(before, opened)) throw invalid();
     const bytes = Buffer.alloc(opened.size);
