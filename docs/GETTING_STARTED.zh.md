@@ -67,7 +67,7 @@ Skill。
 
 创建时，按 [`kdna-creator`](../kdna-creator/SKILL.md)、
 [人机共创方法手册](../kdna-creator/references/co-creation-craft.md)和
-[原生创作说明](../kdna-creator/references/native-asset-authoring.md)操作。先过克制门，
+[原生创作说明](../kdna-creator/references/native-asset-authoring.md)操作。先明确判断切口与适用边界，
 再按情境选择访谈追问、既有作品提炼或调研对比加真人拍板三种路径；在编码前用精简审阅表
 请作者逐条选择“采纳 / 改写 / 剔除”，区分作者判断、推断和构造例子；在 `@aikdna/kdna-cli@0.44.0`
 下先运行 `validate-input` 检查字段与工艺提示，再用官方 CLI 保存新文件、冷重开核对，
@@ -86,7 +86,7 @@ Skill。
 会话发出的 handle 扩展。回答时说明用了哪个资产、哪些判断。目录、技术检查
 或未就绪的结果都不等于已经取得判断正文，不能把受限内容当作不存在。
 
-读取正文时，默认返回作者正文与校验指纹；若需要查看原始完整信封或核对签名、校验和等状态，可通过 `audit` 获取。如果预算不足导致无法完整返回，请调大预算后重读，不要基于半截内容下结论。
+通过本地 MCP 读取正文时，省略 `presentation` 参数默认返回已装 Read 包的 `body` 视图（作者正文与校验指纹；若所装 Read 不支持投影则退回完整官方信封）。普通调用若需查看原始完整信封或核对完整签名、校验和与回执，应直接显式传 `presentation: "full"`；仅当此前显式使用 `presentation: "task"`（并指定 `view_budget_bytes`）拿到了返回的 `audit.audit_ref` 时，才可通过 `kdna.audit`（传入该 `audit_ref` 与 `budget_bytes`）取回那一次对应的原始完整结果（不执行新读取或续授权限）。如果预算不足导致无法完整返回，请调大预算后重读，不要基于半截内容下结论。
 
 修改时，按官方 Source 流程另存新文件，保留原件并记录真实改动。在新进程中
 重开新版本，检查改动涉及的判断，也检查应保持的内容，再用同一个实际问题
@@ -140,11 +140,13 @@ Agent、真实材料和一次修改，验证自己的实际链路：进程测试
 也不能证明回答质量。[支持矩阵](agent-support-matrix.json)单独记录当前 MCP
 证据，不与直接 CLI 能力混为一谈。
 
-消费 MCP 返回值的应用应明确区分呈现形状：省略参数或 `presentation: full`
-返回原官方结果；`presentation: task` 必须提供独立 `view_budget_bytes`，返回
-`kdna.mcp.task-presentation/0.1.0`。两者仍使用原来的官方 `budget_bytes`。
+消费 MCP 返回值的应用应明确区分呈现形状：省略 `presentation` 时默认返回已装 Read 包的
+`body` 视图（若该包不支持投影则退回完整官方信封）；显式传 `presentation: "full"` 返回
+完整官方信封；传 `presentation: "task"` 必须提供独立 `view_budget_bytes`，返回
+`kdna.mcp.task-presentation/0.1.0`。三种模式仍共用原来的官方 `budget_bytes`。
 别名是指向完全相同规范对象的外置指针，不是另一套作者格式；理解内容前先
-还原完整结构。`kdna.audit` 只是可选的原次结果取回，不续授权限。不能把适配器
+还原完整结构。`kdna.audit` 仅用于凭前序 `task` 交付签发的 `audit.audit_ref` 取回那一次的
+原完整结果，不触发新读取也不续授权限。不能把适配器
 不可用、引用过期或容量／预算失败当成官方拒绝，也不能当成成功读到空正文。
 
 使用 `kdna protect` 为作品添加本地口令保护时，请务必同时妥善保留未加密的创作草稿
