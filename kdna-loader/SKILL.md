@@ -149,10 +149,15 @@ handles across processes or continue tool access after cancel.
 
 ## Choose the presentation explicitly
 
-Catalog/read/expand omit `presentation` or use `presentation: "full"` for the
-unchanged official result. Only `presentation: "task"` accepts and requires
+When `presentation` is omitted on `kdna.catalog`, `kdna.read`, or `kdna.expand`,
+the adapter defaults to the installed Read package's `body` view (authored
+content plus one fingerprint), falling back to `full` only when that package
+cannot project. Pass `presentation: "full"` explicitly whenever you need the
+unchanged complete official envelope (including full verification, receipt, and
+long handles). Only `presentation: "task"` accepts and requires
 `view_budget_bytes`, separate from the official `budget_bytes`; both are
-integers from 0 through 1000000. Full mode rejects `view_budget_bytes`.
+integers from 0 through 1000000. Both `body` and `full` modes reject
+`view_budget_bytes`.
 
 Task mode returns `kdna.mcp.task-presentation/0.1.0`, an adapter view. Check its
 ready/catalog/rejection state, asset version, snapshot and authorization as
@@ -174,10 +179,12 @@ audit. Unknown verification fields make task presentation unavailable.
 
 Use a returned short `handle_ref` or the old full `handle` for `kdna.expand`,
 never both. The original official handle still governs expansion. To inspect
-the exact past full result, call `kdna.audit` with its `audit_ref` and an
-explicit `budget_bytes` only when the task needs that evidence. Audit performs
-no new read, verification or authorization. Necessary author meaning is already
-in the task view; audit is not a mandatory second read.
+the exact past full result of a prior `task` delivery, call `kdna.audit` with
+its issued `audit_ref` and an explicit `budget_bytes` only when the task needs
+that evidence (for ordinary non-task reads that need the full official envelope,
+pass `presentation: "full"` directly rather than calling `kdna.audit`). Audit
+performs no new read, verification or authorization. Necessary author meaning
+is already in the task view; audit is not a mandatory second read.
 
 These references belong to the same live process binding, snapshot,
 asset/version, tuple and Host epoch. Their monotonic lifetime is at most 60

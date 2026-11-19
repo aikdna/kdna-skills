@@ -85,7 +85,7 @@ Do not infer a file's format from the `.kdna` suffix, and never fall back to unz
 For creation, follow [`kdna-creator`](../kdna-creator/SKILL.md), the
 [co-creation craft playbook](../kdna-creator/references/co-creation-craft.md),
 and the [native authoring guide](../kdna-creator/references/native-asset-authoring.md).
-Start with the restraint gate, pick the matching discovery mode (Socratic
+Clarify the judgment scope and boundaries, pick the matching discovery mode (Socratic
 interview, authored works distillation, or research plus human choice), present
 a concise review table (`Adopt / Revise / Reject`) before compiling, run
 `validate-input` when using `@aikdna/kdna-cli@0.44.0`, save to a new `.kdna`
@@ -120,8 +120,11 @@ refused. The Agent handles the independent view
 budget and resolves every alias, keeping all author content and state
 distinctions needed for the task. It also reads the inline verification summary:
 an absent signature is different from a verified signature, and an earlier
-check is different from a new check. An audit request retrieves only the exact
-past full result when it is actually needed; it is not another permission
+check is different from a new check. For ordinary reads that need the complete
+official envelope (full verification, receipt, and handles), pass
+`presentation: "full"` directly. An audit request (`kdna.audit`) requires an
+`audit_ref` issued by a prior `presentation: "task"` delivery and retrieves
+only that exact past full result when needed; it is not another permission
 grant. A budget failure cannot be bypassed with a partial answer or Host file
 access. A [separate Codex CLI task example](../integrations/codex/README.md#observed-task-presentation-case)
 used one batched ready read while retaining the judgments' scope and limits.
@@ -194,12 +197,15 @@ answer. The [support matrix](agent-support-matrix.json) tracks the current
 MCP evidence separately from direct CLI capability.
 
 Applications that consume MCP results should choose the presentation explicitly
-when interpreting its shape: omitted/`full` returns the official result;
-`task` requires `view_budget_bytes` and returns
-`kdna.mcp.task-presentation/0.1.0`. Both modes still use the unchanged official
-`budget_bytes`. Task aliases are external pointers to exact canonical objects,
-not a second authoring format. Reconstruct them before interpreting content.
-`kdna.audit` is optional retrieval of one past result and never a way to renew
+when interpreting its shape: omitting `presentation` defaults to the installed
+Read package's `body` view (falling back to the complete official envelope when
+that package cannot project); explicit `presentation: "full"` returns the
+complete official envelope; `presentation: "task"` requires `view_budget_bytes`
+and returns `kdna.mcp.task-presentation/0.1.0`. All modes still use the
+unchanged official `budget_bytes`. Task aliases are external pointers to exact
+canonical objects, not a second authoring format. Reconstruct them before
+interpreting content. `kdna.audit` requires a prior `task` delivery's
+`audit.audit_ref` to retrieve that exact past full result and never renews
 authorization. Do not treat adapter unavailability, expired references or
 capacity/budget failures as an official denial or a successful empty read.
 
