@@ -83,14 +83,14 @@ Once the author confirms the review table:
    ```
    (Or run `compile draft.json --output authored.json` when adding full `0.6.0` relationships, shared declarations, exceptions, misuse, or attachments before `create authored.json --output first.kdna --allow-create`.)
 
-3. **Cold-reopen, verify & export a one-page author review sheet**:
+3. **Cold-reopen, verify & present a one-page author review sheet**:
    ```sh
    "$KDNA_NODE" "$KDNA_CLI" inspect first.kdna --format human
    "$KDNA_NODE" "$KDNA_CLI" validate first.kdna --system --format human
    "$KDNA_NODE" "$KDNA_CLI" read first.kdna --mode catalog --allow-read --format human
-   "$KDNA_NODE" "$KDNA_CLI" review first.kdna --allow-read --output first-review.md
+   "$KDNA_NODE" "$KDNA_CLI" read first.kdna --mode exact_selection --judgment-id <id1,id2,...> --allow-read --format human
    ```
-   Hand the one-page review sheet to the author (or present it inline) so they can inspect every judgment's claim, method, reasons, boundaries, conditional exceptions, misuse warnings, and related judgments without reading raw JSON.
+   Hand a one-page plain-prose review sheet to the author (or present it inline) covering every judgment's claim, method, reasons, boundaries, conditional exceptions, misuse warnings, and related judgments without raw JSON. On published `@aikdna/kdna-cli@0.44.0`, assemble it from `read --mode catalog` + `exact_selection --format human` (or unpacked `source-open` source); if `kdna --help` on a post-`0.44.0` CLI lists `review`, you may run `"$KDNA_NODE" "$KDNA_CLI" review first.kdna --allow-read --output first-review.md` directly.
 
 4. **Plain-language revision loop (Agent handles hashes, full-source preservation & ripple check)**:
    When the author asks in plain language to revise an existing `.kdna` file, never ask them to calculate SHA-256 hashes or hand-edit nested JSON. The Agent runs the full loop behind the scenes:
@@ -101,7 +101,7 @@ Once the author confirms the review table:
       ```sh
       "$KDNA_NODE" "$KDNA_CLI" diff first.kdna revised.kdna --format human
       ```
-      (Pass `--verbose` or `--format json` only when inspecting low-level IR wiring or component IDs.) Obtain fresh author confirmation before switching active files.
+      On published `@aikdna/kdna-cli@0.44.0`, omit internal `reference|...` IR edge lines and mechanical ID wiring when summarizing the diff for the author, and list any related `support` / `qualify` / `conflict` judgments impacted by the edit (do not pass `--verbose` to `0.44.0`; only pass `--verbose` if `kdna diff --help` on a newer CLI advertises it). Obtain fresh author confirmation before switching active files.
    - When the author wants offline local confidentiality (no account, no cloud upload), offer `protect` using a private mode-`0600` password file or file descriptor (`>= 3`), never command-line text, and always retain the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source file (`first.kdna`) for future revisions (`source-open` / `source-pack` or `create --draft` operate on plaintext source rather than encrypted `.kdna` envelopes):
      ```sh
      "$KDNA_NODE" "$KDNA_CLI" protect first.kdna --output locked.kdna --password-file ./passphrase.txt
