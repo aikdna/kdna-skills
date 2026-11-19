@@ -32,7 +32,9 @@ become permission to revise, publish, call another provider or act on advice.
    with `mcp-server/package-lock.json` and all bundled `vendor/` archives.
    Record the selected source revision. Do not mix files from different
    revisions or resolve a same-version replacement from a global installation.
-   The current MCP package is source-only; do not assume an npm release exists.
+   `@aikdna/kdna-mcp-server@0.8.0` is published on npm `latest`, and this
+   checkout also provides a complete offline-verifiable local source copy
+   (`mcp-server/` + `vendor/`).
 2. Inspect the local runtime. The installer requires `bash`, `tar`, Node.js 22 or newer and
    npm. The current stable companion graph was exercised with Node.js 22.23.1
    and npm 11.17.0. Select an appropriate isolated runtime when needed and
