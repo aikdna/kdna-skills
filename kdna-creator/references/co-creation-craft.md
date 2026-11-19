@@ -4,13 +4,12 @@ This reference defines the five-stage co-creation workflow for turning lived hum
 
 ---
 
-## Stage 0: Restraint Gate — When NOT to Create a `.kdna` Asset
+## Stage 0: Clarify the Judgment Core
 
-Before scaffolding anything, verify that the user actually needs a reusable judgment system:
+Before scaffolding anything, align with the author on what makes their judgment worth preserving:
 
-- **Keep plain Markdown, docs, or code** when the material is a one-off factual lookup, a chronological meeting log, deterministic code/configuration, credentials, or static reference tables with no recurring judgment calls.
-- **Create a `.kdna` asset** only when there are recurring, contested decisions where goals collide, context boundaries matter, and an Agent or teammate needs explicit applicability and stop-limits during future tasks.
-- One strong judgment with clear boundaries is better than twenty padded truisms. Never manufacture extra judgments to make an asset look comprehensive.
+- **Focus on real trade-offs and boundaries**: Whenever the user wants to capture their decision criteria, taste, or stop-limits (even a small, focused set of judgments), help them articulate *when a rule applies*, *what it prioritizes*, and *where it stops*.
+- **Quality over count**: One strong judgment with clear boundaries is better than twenty padded truisms. Never manufacture extra judgments to make an asset look comprehensive.
 
 ---
 

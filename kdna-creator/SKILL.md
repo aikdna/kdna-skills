@@ -9,7 +9,7 @@ Use the Host-selected official KDNA CLI (`@aikdna/kdna-cli@0.44.0`) for native `
 
 ## Native Five-Stage Co-Creation Workflow
 
-1. **Stage 0 — Restraint Gate**: Create a `.kdna` asset only for recurring, contested judgment calls where goals collide and explicit stop-boundaries help future work. Keep one-off lookups, meeting logs, deterministic scripts, secrets, and static reference tables as plain Markdown or code. Never manufacture extra judgments to pad a count.
+1. **Stage 0 — Clarify the Judgment Core**: Whenever the user wants to preserve their judgment standards, trade-off priorities, taste, or stop-boundaries on a topic (even just a few sharp rules), help them interview, refine, and package it into a high-signal `.kdna` work. Focus on genuine trade-offs and clear stop-limits rather than padding a count.
 2. **Stage 1 — Pick the Matching Entry Mode** (`@aikdna/kdna-cli@0.44.0` supports `init --mode minimal|interview|works|research [--lang en|zh] [--example]`):
    - **Socratic Interview (`--mode interview`)**: When tacit rules live in the author's head, ask 1–2 concrete scenario dilemmas per turn (*"When X and Y collide under pressure, which wins first and where does that flip?"*). Never ask humans to write protocol IDs, hashes, or role schemas.
    - **Works + Targeted Interview (`--mode works`)**: Read only explicitly authorized files, extract judgments that need to be preserved (working either from explicit questions or backward from existing conclusions, rules, processes, and methods to surface the question each answers), verbatim `reasons`, and concrete `example` cases, then interview only on unresolved collisions or missing boundaries.
