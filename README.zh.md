@@ -28,7 +28,7 @@ bash install.sh --claude      # 或选择：--codex | --cursor | --opencode | --
 | 自定义目录 | `bash install.sh --dir /path/to/skills` |
 
 - `install.sh` 会向你明确指定的客户端同时安装 [`kdna-loader`](./kdna-loader/SKILL.md)（按任务范围精确读取判断）与 [`kdna-creator`](./kdna-creator/SKILL.md)（访谈提炼、既有作品萃取、研究整理与版本修订）。重复执行且文件一致时返回 `0`；若本地已有修改则返回 `2` 并给出 `diff -u` 对比命令，除非显式传入 `--force`（亦支持 `--only loader|creator`）。
-- 若偏好全局安装命令行，也可直接运行 `npm install -g @aikdna/kdna-cli@0.45.0`（支持 `init`、`validate-input`、`compile`、`create --draft`、`protect`、`validate`、`read`、`diff`）。
+- 若偏好全局安装命令行，也可直接运行 `npm install -g @aikdna/kdna-cli@0.45.1`（支持 `init`、`validate-input`、`compile`、`create --draft`、`protect`、`validate`、`read`、`diff`）。
 
 ---
 
@@ -37,7 +37,7 @@ bash install.sh --claude      # 或选择：--codex | --cursor | --opencode | --
 在 Claude Code、Cursor、Codex、OpenCode、Copilot 或 Antigravity 中直接粘贴即可使用（需 **Node.js `>=22`**）。若需在 macOS 桌面端亲自阅读 `.kdna` 作品，可前往 [`aikdna.com/zh/downloads`](https://aikdna.com/zh/downloads) 下载 **KDNA Reader（macOS 桌面版）**，或直接下载首部公开判断作品 **《KDNA 白皮书》`v1.0.2`**（张零 / Zhang Ling · `CC BY 4.0` · `45` 题）：[中文版 `.kdna`](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.zh-CN.kdna)、[英文版 `.kdna`](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.en.kdna) 或 [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets)：
 
 1. **免配置直接让 Agent 精读《KDNA 白皮书》`v1.0.2`：**
-   > *“请先下载首份公开 `.kdna` 作品《KDNA白皮书》（`curl -fsSLo kdna-whitepaper-1.0.2.zh-CN.kdna https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.zh-CN.kdna`；英文版可用 `https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.en.kdna`），用 `npx -y @aikdna/kdna-cli@0.45.0 read kdna-whitepaper-1.0.2.zh-CN.kdna --mode catalog --format human --allow-read` 查看全部 45 个议题目录；再根据我想讨论的问题，用 `--mode exact_selection --judgment-id <id1,id2> --format human --allow-read` 按需精读对应判断（切勿用 `whole_asset` 读正文，也不要不加 `--compact` / `--format human` 裸读大体积 JSON）。”*
+   > *“请先下载首份公开 `.kdna` 作品《KDNA白皮书》（`curl -fsSLo kdna-whitepaper-1.0.2.zh-CN.kdna https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.zh-CN.kdna`；英文版可用 `https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.en.kdna`），用 `npx -y @aikdna/kdna-cli@0.45.1 read kdna-whitepaper-1.0.2.zh-CN.kdna --mode catalog --format human --allow-read` 查看全部 45 个议题目录；再根据我想讨论的问题，用 `--mode exact_selection --judgment-id <id1,id2> --format human --allow-read` 按需精读对应判断（切勿用 `whole_asset` 读正文，也不要不加 `--compact` / `--format human` 裸读大体积 JSON）。”*
 2. **在真实任务中采用本地 `.kdna` 判断作品（拒绝“判断污染”）：**
    > *“请使用 `kdna-loader` 读取 `/绝对路径/work.kdna` 来协助完成这项任务：`<你的任务>`。请先用 `--mode catalog --format human --allow-read` 读取目录，只选取与当前任务真正相关的 1–5 条判断 ID（若都不适用则一条也不选；切勿调用 `whole_asset`），用 `--mode exact_selection --format human --allow-read` 精读并严格带着适用条件与停手边界工作，最后告诉我本次采用了哪几条判断。”*
 3. **与 AI 共创你的第一份 `.kdna` 判断作品（访谈、文稿萃取或可信资料整编）：**

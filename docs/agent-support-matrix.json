@@ -4,14 +4,14 @@
   "mcp_server": "mcp-server/",
   "overall_status": "local_stdio_adapter",
   "candidate_runtime": {
-    "mcp": "0.8.1",
-    "cli": "0.45.0",
+    "mcp": "0.8.2",
+    "cli": "0.45.1",
     "core": "0.37.11",
     "read": "0.13.5",
     "read_contract": "kdna.read/0.7.0-candidate",
     "private": false,
     "publication": "release-ready",
-    "publication_scope": "CLI/Core/Read/MCP bind verified exact release archives; canonical npm publication executes via GitHub Release OIDC workflows in sequence (Core 0.37.11 -> Read 0.13.5 -> CLI 0.45.0 -> MCP 0.8.1)."
+    "publication_scope": "CLI/Core/Read/MCP bind verified exact release archives; canonical npm publication executes via GitHub Release OIDC workflows in sequence (Core 0.37.11 -> Read 0.13.5 -> CLI 0.45.1 -> MCP 0.8.2)."
   },
   "tool_surface": [
     "kdna.binding-status",
@@ -284,8 +284,8 @@
   "local_stdio_cli_verification": {
     "date": "2026-11-18",
     "node_version": "22.22.3",
-    "mcp_version": "0.8.1",
-    "cli_version": "0.45.0",
+    "mcp_version": "0.8.2",
+    "cli_version": "0.45.1",
     "assets_exercised": [
       "kdna-whitepaper-1.0.2.en.kdna",
       "kdna-whitepaper-1.0.2.zh-CN.kdna"
@@ -298,6 +298,6 @@
       "kdna.cancel"
     ],
     "skill_installer_verified": true,
-    "scope": "Local stdio MCP server, direct CLI 0.45.0 read/inspect/validate, and install.sh skill placement verified; named interactive Host UI behavior remains governed by separate Host observations."
+    "scope": "Local stdio MCP server, direct CLI 0.45.1 read/inspect/validate, and install.sh skill placement verified; named interactive Host UI behavior remains governed by separate Host observations."
   }
 }
