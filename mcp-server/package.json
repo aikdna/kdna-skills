@@ -1,6 +1,6 @@
 {
   "name": "@aikdna/kdna-mcp-server",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Local stdio Read adapter for one operator-bound KDNA asset.",
   "type": "module",
   "homepage": "https://aikdna.com",
@@ -37,7 +37,7 @@
     "vendor/noble-hashes-1.8.0.tgz",
     "vendor/pako-2.1.0.tgz",
     "vendor/require-from-string-2.0.2.tgz",
-    "vendor/aikdna-kdna-cli-0.45.1.tgz"
+    "vendor/aikdna-kdna-cli-0.45.2.tgz"
   ],
   "scripts": {
     "test": "node scripts/verify-runtime-candidates.mjs && node ../scripts/check-current-names.mjs && node --test test/*.test.mjs && npm run check:orphan-lockfile",
@@ -63,10 +63,10 @@
     "@noble/hashes": "1.8.0",
     "pako": "2.1.0",
     "require-from-string": "2.0.2",
-    "@aikdna/kdna-cli": "0.45.1"
+    "@aikdna/kdna-cli": "0.45.2"
   },
   "kdna_runtime": {
-    "cli": "0.45.1",
+    "cli": "0.45.2",
     "core": "0.37.11",
     "read": "0.13.5",
     "read_contract": "kdna.read/0.7.0-candidate"
