@@ -19,7 +19,7 @@ clear and authorized, proceed without another confirmation. Otherwise ask one
 plain-language question for the missing substantive choice. Do not ask the user
 to construct a digest, permission record, tuple, receipt or machine identifier.
 
-This route pairs `@aikdna/kdna-cli@0.45.1` (with `0.43.3` and `0.43.2` compatibility),
+This route pairs `@aikdna/kdna-cli@0.45.2` (with `0.43.3` and `0.43.2` compatibility),
 Core `0.37.11` and Read `0.13.5` implementing `kdna.read/0.7.0-candidate` for native
 container `0.6.0` `.kdna` assets. Do not infer a format from its filename, try a
 private parser or convert an unsupported file implicitly after rejection. Resolve
@@ -51,7 +51,7 @@ password-protected assets are permanently account-free and unlocked locally via
    contaminating the work with unrelated rules.
 3. **Step 3 — Batched `exact_selection` with `--format human` / `--compact` & hard boundary/conflict brakes**:
    Fetch the needed IDs together in one batched call (`--mode exact_selection
-   --judgment-id id1,id2 --allow-read --format human` or `--compact` on `0.45.1` —
+   --judgment-id id1,id2 --allow-read --format human` or `--compact` on `0.45.2` —
    **always pass `--format human` or `--compact` on multi-judgment works** such as
    the 45-judgment *KDNA Whitepaper* so output stays ~1k–3k tokens instead of
    exceeding Host ~25k-token tool limits; `--format human` and `--compact`
@@ -221,7 +221,7 @@ node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog 
 node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --asset-id <catalog-asset-id> --asset-version <catalog-version> --judgment-id <catalog-judgment-id> --budget 1000000 --allow-read --compact
 ```
 
-> **Large-work guardrail (`0.45.1`):** On multi-judgment works (for example *KDNA Whitepaper* `v1.0.2`), select 1–5 relevant judgments per `exact_selection` call and **always pass `--format human` or `--compact`** so output stays well within ~25k-token Host tool output windows. **Never use `--mode whole_asset` to read judgment bodies**—it returns catalog/governance metadata and deferred handles, not judgment prose.
+> **Large-work guardrail (`0.45.2`):** On multi-judgment works (for example *KDNA Whitepaper* `v1.0.2`), select 1–5 relevant judgments per `exact_selection` call and **always pass `--format human` or `--compact`** so output stays well within ~25k-token Host tool output windows. **Never use `--mode whole_asset` to read judgment bodies**—it returns catalog/governance metadata and deferred handles, not judgment prose.
 
 These are independent one-shot snapshots. For progressive consumption start
 `node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --session --allow-read`
@@ -266,11 +266,11 @@ The exact component definition is `sha256:37e857cc4e43f7283a51ee6abe1f6e84018039
 
 Check `kdna --help` on the Host-selected CLI entry:
 
-- **With `@aikdna/kdna-cli@0.45.1` (and `0.43.3`, not in 0.43.2)**: batch selected IDs via repeated
+- **With `@aikdna/kdna-cli@0.45.2` (and `0.43.3`, not in 0.43.2)**: batch selected IDs via repeated
   `--judgment-id` or comma-separated `--judgment-id id1,id2` (`--budget` defaults
   to `1000000` bytes [`1 MB`] on `catalog` and `exact_selection`, and `4000000` bytes
   [`4 MB`] on `whole_asset`, so `--budget` may be omitted unless tightening),
-  pass `--compact` on `0.45.1` for a closure-preserving model-ready projection
+  pass `--compact` on `0.45.2` for a closure-preserving model-ready projection
   (retaining `scope`, `boundaries`, `exceptions`, `misuse`, `closure`,
   `omissions`, and `diagnostics`; or `--format human` for terminal reading),
   unlock permanently account-free password-protected `0.6.0` files via

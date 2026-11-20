@@ -1,10 +1,10 @@
 # Authoring, reading, diffing and local protection (0.6.0 assets)
 
-## CLI surface matrix (`0.45.1` baseline vs older `0.43.2` checkouts)
+## CLI surface matrix (`0.45.2` baseline vs older `0.43.2` checkouts)
 
-Always inspect `kdna --help` on the Host-selected CLI entry so you use the exact commands installed in that environment (`0.45.1` and `0.43.3` commands are not in 0.43.2):
+Always inspect `kdna --help` on the Host-selected CLI entry so you use the exact commands installed in that environment (`0.45.2` and `0.43.3` commands are not in 0.43.2):
 
-| Capability | `@aikdna/kdna-cli@0.45.1` (not in 0.43.2) | `@aikdna/kdna-cli@0.43.2` (older checkout) |
+| Capability | `@aikdna/kdna-cli@0.45.2` (not in 0.43.2) | `@aikdna/kdna-cli@0.43.2` (older checkout) |
 | --- | --- | --- |
 | Scaffold a draft | `init [--mode minimal\|interview\|works\|research] [--lang en\|zh] [--example] [--output draft.json]` | Author full `{manifest, payload, members}` JSON directly |
 | Pre-flight input & craft check | `validate-input <draft-or-authored.json> [--format json\|human]` | Validate via `create` diagnostics |
@@ -16,7 +16,7 @@ Always inspect `kdna --help` on the Host-selected CLI entry so you use the exact
 | One-page author review sheet | `review <file.kdna> --allow-read [--format markdown\|human\|json] [--output review.md]` | Inspect unpacked payload manually |
 | Compare two revisions | `diff <first.kdna> <revised.kdna> [--format json\|human] [--verbose]` (default `--format human` highlights substantive judgment changes and affected downstream judgments) | Compare `source-open` JSON payloads |
 
-## Create or revise a `0.6.0` asset (`0.45.1` workflow)
+## Create or revise a `0.6.0` asset (`0.45.2` workflow)
 
 Follow [co-creation-craft.md](co-creation-craft.md) for discovery and human review, and [native-asset-authoring.md](native-asset-authoring.md) for full-payload domain coverage:
 
@@ -24,7 +24,7 @@ Follow [co-creation-craft.md](co-creation-craft.md) for discovery and human revi
 2. Run `validate-input draft.json --format human`. Resolve every blocking diagnostic (`missing_field`, `unknown_field`, `placeholder_not_replaced`, `duplicate_method_roles`) and review any non-blocking structural craft advisories (`tautological_statement`, `method_repeats_statement`, `unbounded_judgment`, `overbroad_scope`, `duplicate_focus`, `uniform_default_method`) with the author.
 3. Produce the asset without replacing existing files: `create --draft draft.json --output first.kdna --allow-create` (or `compile draft.json --output authored.json` followed by `create authored.json --output first.kdna --allow-create`).
 4. Verify in a separate invocation: `inspect first.kdna --format human`, `validate first.kdna --system --format human`, `read first.kdna --mode catalog --allow-read --format human`, and export a one-page author review sheet via `review first.kdna --allow-read`.
-5. Revise in plain language without overwriting (Agent computes the SHA-256 hash automatically): `source-open first.kdna --expected-a sha256:<file-sha256> --allow-source --output edits.json`, apply the confirmed edits while preserving all existing reasons, conditional exceptions, misuse warnings, relationships, sources, and revision history, save `revised.kdna` with `source-pack` (`@aikdna/kdna-cli@0.45.1` automatically regenerates unsigned `checksums.json` on published `.kdna` containers while refusing signed containers; or rebuild from `.authored.json` via `validate-input` + `create`), and verify substantive before/after changes plus affected downstream judgments via `diff first.kdna revised.kdna --format human` (`--verbose` for full IR reference details).
+5. Revise in plain language without overwriting (Agent computes the SHA-256 hash automatically): `source-open first.kdna --expected-a sha256:<file-sha256> --allow-source --output edits.json`, apply the confirmed edits while preserving all existing reasons, conditional exceptions, misuse warnings, relationships, sources, and revision history, save `revised.kdna` with `source-pack` (`@aikdna/kdna-cli@0.45.2` automatically regenerates unsigned `checksums.json` on published `.kdna` containers while refusing signed containers; or rebuild from `.authored.json` via `validate-input` + `create`), and verify substantive before/after changes plus affected downstream judgments via `diff first.kdna revised.kdna --format human` (`--verbose` for full IR reference details).
 
 ## Local password protection (permanently account-free, offline)
 
