@@ -1,6 +1,6 @@
-# KDNA MCP 0.8.0 — local stdio Read adapter
+# KDNA MCP 0.8.1 — local stdio Read adapter
 
-This local stdio MCP server (`@aikdna/kdna-mcp-server@0.8.0`) delegates native container `0.6.0` admission and scoped Read operations to the exact CLI `0.44.0` / Core `0.37.11` / Read `0.13.5` graph (`kdna.read/0.7.0-candidate`). Historical MCP `0.5.0`–`0.5.1` and CLI `0.36.x` workspace flows are superseded by this operator-bound single-asset native `0.6.0` adapter.
+This local stdio MCP server (`@aikdna/kdna-mcp-server@0.8.1`) delegates native container `0.6.0` admission and scoped Read operations to the exact CLI `0.45.0` / Core `0.37.11` / Read `0.13.5` graph (`kdna.read/0.7.0-candidate`). Historical MCP `0.5.0`–`0.5.1` and CLI `0.36.x` workspace flows are superseded by this operator-bound single-asset native `0.6.0` adapter.
 
 ## Operator-controlled startup
 
@@ -256,7 +256,7 @@ container format is not permission to convert it implicitly or read its raw payl
 
 For an Agent-led task, begin with the [getting-started guide](https://github.com/aikdna/kdna-skills/blob/main/docs/GETTING_STARTED.md).
 The installer requires Node.js 22 or later, npm, `bash` and `tar`. The current
-CLI 0.44.0 / Core 0.37.11 / Read 0.13.5 graph was exercised with Node.js 22.22.3
+CLI 0.45.0 / Core 0.37.11 / Read 0.13.5 graph was exercised with Node.js 22.22.3
 and npm 10.9.8. Earlier companion graphs' runtime checks do not verify this
 one on additional Node versions. The CI matrix is a set of required checks,
 not evidence that every run has already passed. From `mcp-server/`:
@@ -300,7 +300,7 @@ package-lock.json are excluded. The companion consumer lock is generated from
 the checked source graph. The packed-consumer test installs with an empty npm
 cache, then runs the same real stdio boundary suite against the installed bin.
 
-Canonical npm publication of `@aikdna/kdna-mcp-server@0.8.0` runs exclusively via the GitHub Release workflow (`kdna-mcp-server-0.8.0`) after companion packages (`@aikdna/kdna-core@0.37.11`, `@aikdna/kdna-read@0.13.5`, `@aikdna/kdna-cli@0.44.0`) are published on the official registry. Source and installed process tests do not
+Canonical npm publication of `@aikdna/kdna-mcp-server@0.8.1` runs exclusively via the GitHub Release workflow (`kdna-mcp-server-0.8.1`) after companion packages (`@aikdna/kdna-core@0.37.11`, `@aikdna/kdna-read@0.13.5`, `@aikdna/kdna-cli@0.45.0`) are published on the official registry. Source and installed process tests do not
 establish named Host adoption, human review, authorship or Creation acceptance.
 
 ## Native section contract boundary

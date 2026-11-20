@@ -195,11 +195,11 @@ function registryMetadata(candidate = evidence(), overrides = {}) {
   });
 }
 
-test("source Runtime 0.8.0 binds release-ready CLI Core and Read", () => {
+test("source Runtime 0.8.1 binds release-ready CLI Core and Read", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"));
   const lock = JSON.parse(fs.readFileSync(path.join(packageRoot, "package-lock.json"), "utf8"));
-  assert.equal(pkg.version, "0.8.0"); assert.equal(pkg.private, undefined);
-  const versions = {cli:"0.44.0",core:"0.37.11",read:"0.13.5"};
+  assert.equal(pkg.version, "0.8.1"); assert.equal(pkg.private, undefined);
+  const versions = {cli:"0.45.0",core:"0.37.11",read:"0.13.5"};
   const expected = Object.fromEntries(Object.entries(versions).map(([name,version]) => ["@aikdna/kdna-"+name, version]));
   for (const [name,spec] of Object.entries(expected)) assert.equal(pkg.dependencies[name],spec); assert.equal(Object.keys(pkg.dependencies).length,12); assert.deepEqual(lock.packages[""].dependencies,pkg.dependencies);
   for (const [name,version] of Object.entries(versions)) {
@@ -300,23 +300,23 @@ test("release context binds event, stable package, tag, ref, SHA, HEAD, clean tr
     );
 });
 
-test("current 0.8.0 release coordinate satisfies release context for both plain and workflow-prefixed tags", () => {
+test("current 0.8.1 release coordinate satisfies release context for both plain and workflow-prefixed tags", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot,"package.json"),"utf8"));
   const changelog = fs.readFileSync(path.join(root,"CHANGELOG.md"),"utf8");
-  assert.equal(pkg.private, undefined); assert.equal(pkg.version, "0.8.0");
-  assert.equal(validateReleaseContext(releaseInput({ pkg, changelog })).version, "0.8.0");
+  assert.equal(pkg.private, undefined); assert.equal(pkg.version, "0.8.1");
+  assert.equal(validateReleaseContext(releaseInput({ pkg, changelog })).version, "0.8.1");
   assert.equal(
     validateReleaseContext(
       releaseInput({
         pkg,
         changelog,
         env: {
-          RELEASE_TAG_NAME: "kdna-mcp-server-0.8.0",
-          GITHUB_REF: "refs/tags/kdna-mcp-server-0.8.0",
+          RELEASE_TAG_NAME: "kdna-mcp-server-0.8.1",
+          GITHUB_REF: "refs/tags/kdna-mcp-server-0.8.1",
         },
       }),
     ).tag,
-    "kdna-mcp-server-0.8.0",
+    "kdna-mcp-server-0.8.1",
   );
   assert.throws(() => validateReleaseContext(releaseInput({ pkg: { ...pkg, private: true }, changelog })), /private/i);
 });

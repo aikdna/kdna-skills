@@ -59,12 +59,12 @@ test("source verification rejects actual manifest, lock and archive tampering", 
  });
 });
 
-test("creator and loader document 0.44.0 authoring/protection/closure-safe compact commands while separating older 0.43.2 checkouts",()=>{
+test("creator and loader document 0.45.0 authoring/protection/closure-safe compact commands while separating older 0.43.2 checkouts",()=>{
   const ref=fs.readFileSync(path.join(root,"kdna-creator/references/authoring-and-protection.md"),"utf8");
   const loader=fs.readFileSync(path.join(root,"kdna-loader/SKILL.md"),"utf8");
   const creator=fs.readFileSync(path.join(root,"kdna-creator/SKILL.md"),"utf8");
   assert.ok(creator.includes("authoring-and-protection.md"));
-  for (const t of ["@aikdna/kdna-cli@0.44.0","not in 0.43.2","--password-fd","--password-file","Never put a password in argv","validate-input","--compact","--format human","diff","judgment_ids"]) assert.ok(ref.includes(t)||loader.includes(t),t);
-  assert.ok(loader.includes("@aikdna/kdna-cli@0.44.0"));
+  for (const t of ["@aikdna/kdna-cli@0.45.0","not in 0.43.2","--password-fd","--password-file","Never put a password in argv","validate-input","--compact","--format human","diff","judgment_ids"]) assert.ok(ref.includes(t)||loader.includes(t),t);
+  assert.ok(loader.includes("@aikdna/kdna-cli@0.45.0"));
   assert.doesNotMatch(ref+loader,/--password[ =]\S/);
 });

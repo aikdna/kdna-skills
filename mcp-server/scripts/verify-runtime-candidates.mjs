@@ -263,9 +263,9 @@ export const EXPECTED_GRAPH = {
     }
   },
   "node_modules/@aikdna/kdna-cli": {
-    "version": "0.44.0",
-    "resolved": "file:vendor/aikdna-kdna-cli-0.44.0.tgz",
-    "integrity": "sha512-QxiMvDx2" + "DEMEIOpZjzUlzVXBWKpP5DW8yTHopeprobil+1nkgU1T7aSDjAF6Jq2xE1cf0akWNlLh6QC/Yma25Q==",
+    "version": "0.45.0",
+    "resolved": "file:vendor/aikdna-kdna-cli-0.45.0.tgz",
+    "integrity": "sha512-42eGMpjx" + "8QTkH10WFly74YgBGjHwEm7ElCpeznZAb1FcVahqFfH1mh8o3Zer75RiCi+hOQEhkDzXaC2cMx7pLg==",
     "license": "Apache-2.0",
     "dependencies": {
       "@aikdna/kdna-core": "0.37.11",
@@ -360,21 +360,21 @@ export const ARTIFACTS = [
   },
   {
     "name": "@aikdna/kdna-cli",
-    "version": "0.44.0",
-    "sha256": "382cb0fc07935333a2671e28d0ce2af6cd723896dd14ea6e3e2fec79d7608636",
-    "integrity": "sha512-QxiMvDx2" + "DEMEIOpZjzUlzVXBWKpP5DW8yTHopeprobil+1nkgU1T7aSDjAF6Jq2xE1cf0akWNlLh6QC/Yma25Q==",
-    "file": "vendor/aikdna-kdna-cli-0.44.0.tgz"
+    "version": "0.45.0",
+    "sha256": "e9896219baa02425f69aff71df327d0407b58b41751e4d87596ef3835ba1ed2e",
+    "integrity": "sha512-42eGMpjx" + "8QTkH10WFly74YgBGjHwEm7ElCpeznZAb1FcVahqFfH1mh8o3Zer75RiCi+hOQEhkDzXaC2cMx7pLg==",
+    "file": "vendor/aikdna-kdna-cli-0.45.0.tgz"
   }
 ];
-export const PACKED_FILES = ["LICENSE","NOTICE","README.md","bin/kdna-mcp.mjs","bin/model-view.mjs","bin/operator-binding.mjs","bin/read-session.mjs","bin/reading-views.mjs","bin/task-content.mjs","package.json","vendor/aikdna-kdna-cli-0.44.0.tgz","vendor/aikdna-kdna-core-0.37.11.tgz","vendor/aikdna-kdna-read-0.13.5.tgz","vendor/ajv-8.20.0.tgz","vendor/ajv-formats-3.0.1.tgz","vendor/cbor-x-1.6.9.tgz","vendor/fast-deep-equal-3.1.3.tgz","vendor/fast-uri-3.1.9.tgz","vendor/json-schema-traverse-1.0.0.tgz","vendor/noble-hashes-1.8.0.tgz","vendor/pako-2.1.0.tgz","vendor/require-from-string-2.0.2.tgz"];
+export const PACKED_FILES = ["LICENSE","NOTICE","README.md","bin/kdna-mcp.mjs","bin/model-view.mjs","bin/operator-binding.mjs","bin/read-session.mjs","bin/reading-views.mjs","bin/task-content.mjs","package.json","vendor/aikdna-kdna-cli-0.45.0.tgz","vendor/aikdna-kdna-core-0.37.11.tgz","vendor/aikdna-kdna-read-0.13.5.tgz","vendor/ajv-8.20.0.tgz","vendor/ajv-formats-3.0.1.tgz","vendor/cbor-x-1.6.9.tgz","vendor/fast-deep-equal-3.1.3.tgz","vendor/fast-uri-3.1.9.tgz","vendor/json-schema-traverse-1.0.0.tgz","vendor/noble-hashes-1.8.0.tgz","vendor/pako-2.1.0.tgz","vendor/require-from-string-2.0.2.tgz"];
 const read = (root, name) => JSON.parse(fs.readFileSync(path.join(root, name), "utf8"));
 export function validateSourceFacts({ packageJson, lock, root }) {
   assert.equal(packageJson.name, "@aikdna/kdna-mcp-server");
-  assert.equal(packageJson.version, "0.8.0");
+  assert.equal(packageJson.version, "0.8.1");
   assert.equal(packageJson.private, undefined, "public release manifest must not set private");
   const dependencies = Object.fromEntries(ARTIFACTS.map(item => [item.name, item.version]));
   assert.deepEqual(packageJson.dependencies, dependencies);
-  assert.deepEqual(packageJson.kdna_runtime, { cli: "0.44.0", core: "0.37.11", read: "0.13.5", read_contract: "kdna.read/0.7.0-candidate" });
+  assert.deepEqual(packageJson.kdna_runtime, { cli: "0.45.0", core: "0.37.11", read: "0.13.5", read_contract: "kdna.read/0.7.0-candidate" });
   assert.deepEqual(packageJson.overrides, { "fast-uri": "$fast-uri", "@aikdna/kdna-core": "$@aikdna/kdna-core", "@aikdna/kdna-read": "$@aikdna/kdna-read" });
   assert.equal(lock.name, packageJson.name); assert.equal(lock.version, packageJson.version);
   assert.equal(lock.lockfileVersion, 3); assert.deepEqual(lock.packages[""].dependencies, dependencies);
@@ -421,9 +421,9 @@ export function verifyRuntime(root = ROOT) {
   assert.equal(packed.status, 0, packed.stderr);
   const result = validateCandidateFacts({ packageJson: read(root, "package.json"), lock: read(root, "package-lock.json"), installed, packedFiles: JSON.parse(packed.stdout)[0].files, root });
   const bindingBytes = fs.readFileSync(path.join(root, "node_modules/@aikdna/kdna-cli/public-contract-binding.json"));
-  assert.equal(crypto.createHash("sha256").update(bindingBytes).digest("hex"), "982e37adfa9726a56a8e58cf9295560ea6674c2cc67f1b4fdaf9b3c26ebd19ae", "the entire native CLI route binding must stay exact");
+  assert.equal(crypto.createHash("sha256").update(bindingBytes).digest("hex"), "eb8068850c9059d5c8daf3e5ae52f4cb4d913ca78c4027fd1e18d06549f80698", "the entire native CLI route binding must stay exact");
   const cliBinding = JSON.parse(bindingBytes);
-  assert.equal(cliBinding.implementation.version, "0.44.0");
+  assert.equal(cliBinding.implementation.version, "0.45.0");
   assert.equal(cliBinding.tuple.container, "0.6.0");
   assert.equal(cliBinding.tuple.read, "kdna.read/0.7.0-candidate");
   for (const name of ["core", "read"]) {
