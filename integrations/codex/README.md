@@ -1,6 +1,6 @@
 # KDNA with Codex
 
-Current local runtime coordinates: MCP 0.8.0 / CLI 0.44.0 / Core 0.37.11 / Read 0.13.5
+Current local runtime coordinates: MCP 0.8.1 / CLI 0.45.0 / Core 0.37.11 / Read 0.13.5
 (contract kdna.read/0.7.0-candidate). Separate **Codex CLI 0.154.0** model turns
 have used full and task presentations to read a synthetic native public asset
 and apply its judgments. For Agent-led setup and authoring, see the
@@ -24,9 +24,9 @@ Requires **Node.js >= 22**. Choose either the npm package or the checkout's offl
 
 ```sh
 # Option A — Run or install from npm
-npx -y @aikdna/kdna-cli@0.44.0 --help
+npx -y @aikdna/kdna-cli@0.45.0 --help
 # or install globally:
-npm install -g @aikdna/kdna-cli@0.44.0
+npm install -g @aikdna/kdna-cli@0.45.0
 
 # Option B — Offline verified local CLI inside this kdna-skills checkout
 bash install-cli.sh

@@ -21,7 +21,7 @@ const packageRoot = path.resolve(
   "..",
 );
 const INTEGRITIES = Object.freeze({
-  [CLI]: "sha512-QxiMvDx2" + "DEMEIOpZjzUlzVXBWKpP5DW8yTHopeprobil+1nkgU1T7aSDjAF6Jq2xE1cf0akWNlLh6QC/Yma25Q==",
+  [CLI]: "sha512-42eGMpjx" + "8QTkH10WFly74YgBGjHwEm7ElCpeznZAb1FcVahqFfH1mh8o3Zer75RiCi+hOQEhkDzXaC2cMx7pLg==",
   [CORE]: "sha512-HVXILcxX" + "W2qaSUm6MatgrFMjUhUynqlmHHdsPo8yBbHT3kuvucdp4te06Spawa4oOpWsN+059jw07IGsbfIq8A==",
   [READ]: "sha512-HQXjkjYL" + "l20LnBn8ykjTgyAtZRZffrzuQEtruyKwG7iGKtgpIFexiFevp3yLM2vHpUEfUBoo5DupDpQgPfPa1g==",
   [CBOR]: "sha512-TCT9XHLb" + "4iPGQ99fpQjcTRncbus6cXHvSD/RY+bPrDACBCJKiQLmAM6r7/BgQcI5i+8h4gwp4vjfb6S6T8bPGw==",
@@ -70,7 +70,7 @@ function metadata(packageName, overrides = {}) {
   };
 }
 
-test("release dependency guard accepts the exact official-registry or packed-vendor 0.8.0 CLI/Core/Read graph when registry metadata matches", () => {
+test("release dependency guard accepts the exact official-registry or packed-vendor 0.8.1 CLI/Core/Read graph when registry metadata matches", () => {
   assert.deepEqual(
     guardReleaseDependency({
       ...formalFacts(),
@@ -109,7 +109,7 @@ test("committed manifest is rejected when companion packages are not yet publish
 
 test("release dependency guard rejects unbundled file candidates, ranges, shadows, and edge drift", async (t) => {
   const cases = [
-    ["dependency range", (facts) => { facts.packageJson.dependencies[CLI] = "^0.44.0"; }],
+    ["dependency range", (facts) => { facts.packageJson.dependencies[CLI] = "^0.45.0"; }],
     ["root lock drift", (facts) => { facts.lock.packages[""].dependencies[CLI] = "0.43.5"; }],
     ["CLI unbundled file resolution", (facts) => { facts.lock.packages[`node_modules/${CLI}`].resolved = "file:test/cli.tgz"; }],
     ["Core unbundled file resolution", (facts) => { facts.lock.packages[`node_modules/${CORE}`].resolved = "file:test/core.tgz"; }],

@@ -24,7 +24,7 @@ Agent 应复用对话中已经明确的选择，只在缺少实质信息时用�
    再选定 revision。检出目录自带的摘要不能独立认证其来源。
    使用明确 Git revision 的完整检出，包含
    `mcp-server/package-lock.json` 和全部 `vendor/` 依赖归档，记录实际 revision。
-   不混用不同版本的文件，不从全局安装替换同名版本。`@aikdna/kdna-mcp-server@0.8.0`
+   不混用不同版本的文件，不从全局安装替换同名版本。`@aikdna/kdna-mcp-server@0.8.1`
    已在 npm `latest` 发布，本仓库同时提供完整可离线核验的本地源码与 `vendor/` 依赖归档。
 2. 检查本地运行时。安装脚本要求 `bash`、`tar`、Node.js 22 或更新版本及 npm；当前稳定配套
    依赖图已在 Node.js 22.23.1、npm 11.17.0 下运行。必要时在已有安装授权范围内
@@ -69,7 +69,7 @@ Skill。
 [人机共创方法手册](../kdna-creator/references/co-creation-craft.md)和
 [原生创作说明](../kdna-creator/references/native-asset-authoring.md)操作。先明确判断切口与适用边界，
 再按情境选择访谈追问、既有作品提炼或调研对比加真人拍板三种路径；在编码前用精简审阅表
-请作者逐条选择“采纳 / 改写 / 剔除”，区分作者判断、推断和构造例子；在 `@aikdna/kdna-cli@0.44.0`
+请作者逐条选择“采纳 / 改写 / 剔除”，区分作者判断、推断和构造例子；在 `@aikdna/kdna-cli@0.45.0`
 下先运行 `validate-input` 检查字段与工艺提示，再用官方 CLI 保存新文件、冷重开核对，
 并通过官方运行时用于一个具体任务。
 

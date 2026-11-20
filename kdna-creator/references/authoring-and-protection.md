@@ -1,10 +1,10 @@
 # Authoring, reading, diffing and local protection (0.6.0 assets)
 
-## CLI surface matrix (`0.44.0` baseline vs older `0.43.2` checkouts)
+## CLI surface matrix (`0.45.0` baseline vs older `0.43.2` checkouts)
 
-Always inspect `kdna --help` on the Host-selected CLI entry so you use the exact commands installed in that environment (`0.44.0` and `0.43.3` commands are not in 0.43.2):
+Always inspect `kdna --help` on the Host-selected CLI entry so you use the exact commands installed in that environment (`0.45.0` and `0.43.3` commands are not in 0.43.2):
 
-| Capability | `@aikdna/kdna-cli@0.44.0` (not in 0.43.2) | `@aikdna/kdna-cli@0.43.2` (older checkout) |
+| Capability | `@aikdna/kdna-cli@0.45.0` (not in 0.43.2) | `@aikdna/kdna-cli@0.43.2` (older checkout) |
 | --- | --- | --- |
 | Scaffold a draft | `init [--mode minimal\|interview\|works\|research] [--lang en\|zh] [--example] [--output draft.json]` | Author full `{manifest, payload, members}` JSON directly |
 | Pre-flight input & craft check | `validate-input <draft-or-authored.json> [--format json\|human]` | Validate via `create` diagnostics |
@@ -13,18 +13,18 @@ Always inspect `kdna --help` on the Host-selected CLI entry so you use the exact
 | Reopen and revise | `source-open`, `source-pack` | `source-open`, `source-pack` |
 | Read selected judgments | `read --mode exact_selection --judgment-id id1,id2 --allow-read --compact [--format human]` (default `--budget` is `1000000` bytes [`1 MB`] on `catalog` and `exact_selection`, and `4000000` bytes [`4 MB`] on `whole_asset`; `--compact` preserves full safety closure) or `--session` | `read --session --allow-read` with `selection.judgment_ids` and explicit `budget_bytes` |
 | Local password protection | `protect <in.kdna> --output <locked.kdna>` and `unprotect <locked.kdna> --output <plain.kdna>` with `(--password-fd <n> \| --password-file <path>)` (permanently account-free, offline `scrypt-sha256` / `argon2id` + `AES-256-KW` + `AES-256-GCM`) | Not present in `0.43.2` |
-| One-page author review sheet | Run `read --mode catalog --allow-read --format human` + `read --mode exact_selection --judgment-id <ids> --allow-read --format human` (or read `source-open` JSON) and render a plain-prose review sheet; if a post-`0.44.0` CLI checkout advertises `review` in `kdna --help`, you may run `review <file.kdna> --allow-read [--output review.md]` directly | Inspect unpacked payload manually |
-| Compare two revisions | `diff <first.kdna> <revised.kdna> [--format json\|human]` (filter internal `reference\|...` IR edges and ID wiring when summarizing for the author; pass `--verbose` only if a post-`0.44.0` CLI advertises it in `diff --help`) | Compare `source-open` JSON payloads |
+| One-page author review sheet | `review <file.kdna> --allow-read [--format markdown\|human\|json] [--output review.md]` | Inspect unpacked payload manually |
+| Compare two revisions | `diff <first.kdna> <revised.kdna> [--format json\|human] [--verbose]` (default `--format human` highlights substantive judgment changes and affected downstream judgments) | Compare `source-open` JSON payloads |
 
-## Create or revise a `0.6.0` asset (`0.44.0` workflow)
+## Create or revise a `0.6.0` asset (`0.45.0` workflow)
 
 Follow [co-creation-craft.md](co-creation-craft.md) for discovery and human review, and [native-asset-authoring.md](native-asset-authoring.md) for full-payload domain coverage:
 
 1. Scaffold the matching draft mode (`init --mode interview`, `works`, `research`, or default `minimal`, optionally with `--lang zh` or `--example` for a compilable teaching template) — or prepare full `0.6.0` authored JSON when encoding custom shared declarations or attachments.
 2. Run `validate-input draft.json --format human`. Resolve every blocking diagnostic (`missing_field`, `unknown_field`, `placeholder_not_replaced`, `duplicate_method_roles`) and review any non-blocking structural craft advisories (`tautological_statement`, `method_repeats_statement`, `unbounded_judgment`, `overbroad_scope`, `duplicate_focus`, `uniform_default_method`) with the author.
 3. Produce the asset without replacing existing files: `create --draft draft.json --output first.kdna --allow-create` (or `compile draft.json --output authored.json` followed by `create authored.json --output first.kdna --allow-create`).
-4. Verify in a separate invocation: `inspect first.kdna --format human`, `validate first.kdna --system --format human`, and `read first.kdna --mode catalog --allow-read --format human`. Then present a one-page plain-prose author review sheet (from `read --mode exact_selection --judgment-id <ids> --allow-read --format human` / `source-open` on published `0.44.0`, or `review first.kdna --allow-read` when `kdna --help` on a post-`0.44.0` CLI advertises `review`).
-5. Revise in plain language without overwriting (Agent computes the SHA-256 hash automatically): `source-open first.kdna --expected-a sha256:<file-sha256> --allow-source --output edits.json`, apply the confirmed edits while preserving all existing reasons, conditional exceptions, misuse warnings, relationships, sources, and revision history, save `revised.kdna` with `source-pack`, and compare revisions via `diff first.kdna revised.kdna --format human` (filtering internal IR edge/ID noise when reporting substantive before/after changes and affected downstream judgments to the author; never pass `--verbose` unless `diff --help` on a post-`0.44.0` CLI lists it).
+4. Verify in a separate invocation: `inspect first.kdna --format human`, `validate first.kdna --system --format human`, `read first.kdna --mode catalog --allow-read --format human`, and export a one-page author review sheet via `review first.kdna --allow-read`.
+5. Revise in plain language without overwriting (Agent computes the SHA-256 hash automatically): `source-open first.kdna --expected-a sha256:<file-sha256> --allow-source --output edits.json`, apply the confirmed edits while preserving all existing reasons, conditional exceptions, misuse warnings, relationships, sources, and revision history, save `revised.kdna` with `source-pack`, and verify substantive before/after changes plus affected downstream judgments via `diff first.kdna revised.kdna --format human` (`--verbose` for full IR reference details).
 
 ## Local password protection (permanently account-free, offline)
 
