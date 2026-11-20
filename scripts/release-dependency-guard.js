@@ -25,7 +25,7 @@ const REQUIRED = Object.freeze({
   "@noble/hashes": "1.8.0",
   "pako": "2.1.0",
   "require-from-string": "2.0.2",
-  [CLI]: "0.45.0",
+  [CLI]: "0.45.1",
 });
 
 function officialTarball(packageName, version) {

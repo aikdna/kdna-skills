@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.2 (2026-11-20)
+
+- Promote `@aikdna/kdna-mcp-server` to stable release coordinate `0.8.2` aligned
+  with `@aikdna/kdna-cli@0.45.1`, `@aikdna/kdna-core@0.37.11`, and
+  `@aikdna/kdna-read@0.13.5` (`kdna.read/0.7.0-candidate`) on native container
+  `0.6.0`.
+- Align `install.sh` CLI guidance with `@aikdna/kdna-cli@0.45.1` and document
+  unsigned `checksums.json` regeneration on `kdna source-pack` alongside
+  `.authored.json` `kdna create` revision workflows in `kdna-creator`.
+- Refresh vendored CLI archive (`aikdna-kdna-cli-0.45.1.tgz`), lockfile
+  integrity, and registry dependency guard coordinates.
+
 ## 0.8.1 (2026-11-20)
 
 - Promote `@aikdna/kdna-mcp-server` to stable release coordinate `0.8.1` aligned

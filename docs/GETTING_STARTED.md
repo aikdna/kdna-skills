@@ -32,7 +32,7 @@ become permission to revise, publish, call another provider or act on advice.
    with `mcp-server/package-lock.json` and all bundled `vendor/` archives.
    Record the selected source revision. Do not mix files from different
    revisions or resolve a same-version replacement from a global installation.
-   `@aikdna/kdna-mcp-server@0.8.1` is published on npm `latest`, and this
+   `@aikdna/kdna-mcp-server@0.8.2` is published on npm `latest`, and this
    checkout also provides a complete offline-verifiable local source copy
    (`mcp-server/` + `vendor/`).
 2. Inspect the local runtime. The installer requires `bash`, `tar`, Node.js 22 or newer and
@@ -90,7 +90,7 @@ and the [native authoring guide](../kdna-creator/references/native-asset-authori
 Clarify the judgment scope and boundaries, pick the matching discovery mode (Socratic
 interview, authored works distillation, or research plus human choice), present
 a concise review table (`Adopt / Revise / Reject`) before compiling, run
-`validate-input` when using `@aikdna/kdna-cli@0.45.0`, save to a new `.kdna`
+`validate-input` when using `@aikdna/kdna-cli@0.45.1`, save to a new `.kdna`
 file, cold-reopen it, and verify it through the official runtime on a concrete
 task.
 

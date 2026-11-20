@@ -1,6 +1,6 @@
 # KDNA with Cursor
 
-Current local runtime coordinates: MCP 0.8.1 / CLI 0.45.0 / Core 0.37.11 / Read 0.13.5
+Current local runtime coordinates: MCP 0.8.2 / CLI 0.45.1 / Core 0.37.11 / Read 0.13.5
 (contract kdna.read/0.7.0-candidate).
 
 ## 1. Install Both KDNA Skills (`kdna-loader` + `kdna-creator`)
@@ -21,9 +21,9 @@ Requires **Node.js >= 22**. Choose either the npm package or the checkout's offl
 
 ```sh
 # Option A — Run or install from npm
-npx -y @aikdna/kdna-cli@0.45.0 --help
+npx -y @aikdna/kdna-cli@0.45.1 --help
 # or install globally:
-npm install -g @aikdna/kdna-cli@0.45.0
+npm install -g @aikdna/kdna-cli@0.45.1
 
 # Option B — Offline verified local CLI inside this kdna-skills checkout
 bash install-cli.sh
