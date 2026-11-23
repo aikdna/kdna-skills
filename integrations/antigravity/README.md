@@ -53,7 +53,8 @@ kdna init --mode interview --output draft.json
 kdna validate-input draft.json --format human
 kdna create --draft draft.json --output first.kdna --allow-create
 kdna diff first.kdna revised.kdna --format human
-kdna protect first.kdna --output locked.kdna --password-file ./passphrase.txt
+# Pipe passphrase from a password manager or silent prompt (`IFS= read -rs KDNA_PASS`) — no plaintext file on disk
+printf '%s' "$KDNA_PASS" | kdna protect first.kdna --output locked.kdna --password-file /dev/stdin
 ```
 
 - Follow [`kdna-creator/SKILL.md`](../../kdna-creator/SKILL.md), [`co-creation-craft.md`](../../kdna-creator/references/co-creation-craft.md), [`native-asset-authoring.md`](../../kdna-creator/references/native-asset-authoring.md), and [`authoring-and-protection.md`](../../kdna-creator/references/authoring-and-protection.md).

@@ -60,8 +60,8 @@ Skill。
 
 | 已保存资产 | 读取入口 | 权限与凭据 |
 | --- | --- | --- |
-| 原生公开容器 `0.6.0` | 官方原生 CLI（优先），或可选的本地 MCP 源码预览，Read `0.7.0-candidate` | 选定文件及明确读取许可（`--allow-read`） |
-| 原生口令保护容器 `0.6.0` | 官方原生 CLI（优先），或可选的本地 MCP 源码预览，Read `0.7.0-candidate` | 选定文件、`--allow-read` 以及 `--password-file <0600路径>` 或 `--password-fd <n>`（`n >= 3`） |
+| 原生公开容器 `0.6.0` | 官方原生 CLI（优先），或可选的已发布本地 MCP 适配器（`@aikdna/kdna-mcp-server@0.8.3`），Read `0.7.0-candidate` | 选定文件及明确读取许可（`--allow-read`） |
+| 原生口令保护容器 `0.6.0` | 官方原生 CLI（优先），或可选的已发布本地 MCP 适配器（`@aikdna/kdna-mcp-server@0.8.3`），Read `0.7.0-candidate` | 选定文件、`--allow-read` 以及 `--password-file /dev/stdin`（或 `<0600路径>`）或 `--password-fd <n>`（`n >= 3`） |
 
 不要从 `.kdna` 后缀推断格式；输入不支持或未提供口令时，绝不能自动转码或绕过工具解压读取原始 payload。
 

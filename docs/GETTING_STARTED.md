@@ -79,8 +79,8 @@ Use the asset's declared format and entitlement state to select its reader:
 
 | Saved asset | Matching reader | Permission and credentials |
 | --- | --- | --- |
-| Public native container `0.6.0` | Official native CLI (primary), or the optional local MCP preview, Read `0.7.0-candidate` | Selected file and explicit Read permission (`--allow-read`) |
-| Password-protected native container `0.6.0` | Official native CLI (primary), or the optional local MCP preview, Read `0.7.0-candidate` | Selected file, `--allow-read`, and `--password-file <0600-path>` or `--password-fd <n>` (`n >= 3`) |
+| Public native container `0.6.0` | Official native CLI (primary), or the optional published local MCP adapter (`@aikdna/kdna-mcp-server@0.8.3`), Read `0.7.0-candidate` | Selected file and explicit Read permission (`--allow-read`) |
+| Password-protected native container `0.6.0` | Official native CLI (primary), or the optional published local MCP adapter (`@aikdna/kdna-mcp-server@0.8.3`), Read `0.7.0-candidate` | Selected file, `--allow-read`, and `--password-file /dev/stdin` (or `<0600-path>`) or `--password-fd <n>` (`n >= 3`) |
 
 Do not infer a file's format from the `.kdna` suffix, and never fall back to unzipping or raw-payload reading when an input is rejected.
 
