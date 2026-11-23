@@ -102,9 +102,10 @@ Once the author confirms the review table:
       "$KDNA_NODE" "$KDNA_CLI" diff first.kdna revised.kdna --format human
       ```
       (Pass `--verbose` or `--format json` only when inspecting low-level IR wiring or component IDs.) Obtain fresh author confirmation before switching active files.
-   - When the author wants offline local confidentiality (no account, no cloud upload), offer `protect` using a private mode-`0600` password file or file descriptor (`>= 3`), never command-line text, and always retain the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source file (`first.kdna`) for future revisions (`source-open` / `source-pack` or `create --draft` operate on plaintext source rather than encrypted `.kdna` envelopes):
+   - When the author wants offline local confidentiality (no account, no cloud upload), offer `protect` by piping the passphrase via `--password-file /dev/stdin` (or an inherited file descriptor `--password-fd <n>`, `n >= 3`) so no plaintext password file is written to disk — never command-line text — and always retain the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source file (`first.kdna`) for future revisions (`source-open` / `source-pack` or `create --draft` operate on plaintext source rather than encrypted `.kdna` envelopes):
      ```sh
-     "$KDNA_NODE" "$KDNA_CLI" protect first.kdna --output locked.kdna --password-file ./passphrase.txt
+     # Pipe passphrase from a password manager or silent prompt (`IFS= read -rs KDNA_PASS`) — no plaintext file on disk
+     printf '%s' "$KDNA_PASS" | "$KDNA_NODE" "$KDNA_CLI" protect first.kdna --output locked.kdna --password-file /dev/stdin
      ```
 
 ---
