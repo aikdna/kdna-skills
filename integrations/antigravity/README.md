@@ -1,6 +1,6 @@
 # KDNA with Antigravity
 
-Current local runtime coordinates: MCP 0.8.3 / CLI 0.45.2 / Core 0.37.11 / Read 0.13.5
+Current local runtime coordinates: MCP 0.8.4 / CLI 0.45.2 / Core 0.37.11 / Read 0.13.5
 (contract kdna.read/0.7.0-candidate).
 
 ## 1. Install Both KDNA Skills (`kdna-loader` + `kdna-creator`)

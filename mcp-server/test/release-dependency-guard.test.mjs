@@ -70,7 +70,7 @@ function metadata(packageName, overrides = {}) {
   };
 }
 
-test("release dependency guard accepts the exact official-registry or packed-vendor 0.8.3 CLI/Core/Read graph when registry metadata matches", () => {
+test("release dependency guard accepts the exact official-registry or packed-vendor 0.8.4 CLI/Core/Read graph when registry metadata matches", () => {
   assert.deepEqual(
     guardReleaseDependency({
       ...formalFacts(),

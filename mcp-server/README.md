@@ -1,6 +1,6 @@
-# KDNA MCP 0.8.3 — local stdio Read adapter
+# KDNA MCP 0.8.4 — local stdio Read adapter
 
-This local stdio MCP server (`@aikdna/kdna-mcp-server@0.8.3`) delegates native container `0.6.0` admission and scoped Read operations to the exact CLI `0.45.2` / Core `0.37.11` / Read `0.13.5` graph (`kdna.read/0.7.0-candidate`). Historical MCP `0.5.0`–`0.5.1` and CLI `0.36.x` workspace flows are superseded by this operator-bound single-asset native `0.6.0` adapter.
+This local stdio MCP server (`@aikdna/kdna-mcp-server@0.8.4`) delegates native container `0.6.0` admission and scoped Read operations to the exact CLI `0.45.2` / Core `0.37.11` / Read `0.13.5` graph (`kdna.read/0.7.0-candidate`). Historical MCP `0.5.0`–`0.5.1` and CLI `0.36.x` workspace flows are superseded by this operator-bound single-asset native `0.6.0` adapter.
 
 ## Operator-controlled startup
 
@@ -55,11 +55,18 @@ One server process serves one selected artifact for its whole lifetime.
   the current local read or cancel it.") instead of being queued: wait for the
   current result, or end it through `kdna.cancel` or the client's request
   cancellation — cancelling closes the process binding.
-- **Every read call carries its own budget.** `kdna.catalog`, `kdna.read`,
-  `kdna.expand` and `kdna.audit` each require an explicit integer
-  `budget_bytes` (0 through 1000000); there is no default budget, and a request
-  whose budget cannot hold its result is refused with a named error rather than
-  returning a partial view.
+- **Every read call enforces a byte budget.** `kdna.catalog` accepts an
+  optional integer `budget_bytes` (0 through 1000000, defaulting to `1000000`):
+  in the default `body` presentation it bounds the projected body response
+  (using an internal `4000000`-byte official envelope ceiling when `budget_bytes > 0`
+  so large multi-judgment catalogs whose raw envelope exceeds `200000` bytes
+  still project cleanly into their compact body view, failing closed with
+  `MCP_BODY_VIEW_BUDGET_EXCEEDED` if the projected body exceeds `budget_bytes`);
+  in `presentation: "full"` or `"task"` it bounds the complete official Read
+  envelope (`recommended >= 1000000`). `kdna.read`, `kdna.expand`, and
+  `kdna.audit` each require an explicit integer `budget_bytes` (0 through
+  1000000); a request whose budget cannot hold its result is refused with a
+  named error rather than returning a partial view.
 
 ## MCP transport and tools
 
@@ -86,7 +93,7 @@ argument or method parameter beyond request-level `_meta`.
 | --- | --- | --- |
 | kdna.binding-status | {} | Local binding state, not a public authority receipt |
 | kdna.inspect | {} | Official CLI technical admission/metadata |
-| kdna.catalog | budget_bytes; optional presentation | Complete public catalog within the budget |
+| kdna.catalog | optional budget_bytes (default 1000000); optional presentation | Complete public catalog within the budget (projected body budget in default body mode; official envelope budget in full/task mode) |
 | kdna.read | selection, budget_bytes; optional presentation | Exact selection and mandatory closure |
 | kdna.expand | exactly one of handle or handle_ref, budget_bytes; optional presentation | Original issued handle passed to the same official session |
 | kdna.audit | audit_ref, budget_bytes | Exact original full result of an earlier task delivery |
@@ -300,11 +307,11 @@ package-lock.json are excluded. The companion consumer lock is generated from
 the checked source graph. The packed-consumer test installs with an empty npm
 cache, then runs the same real stdio boundary suite against the installed bin.
 
-Canonical npm publication of `@aikdna/kdna-mcp-server@0.8.3` runs exclusively via the GitHub Release workflow (`kdna-mcp-server-0.8.3`) after companion packages (`@aikdna/kdna-core@0.37.11`, `@aikdna/kdna-read@0.13.5`, `@aikdna/kdna-cli@0.45.2`) are published on the official registry. Source and installed process tests do not
+Canonical npm publication of `@aikdna/kdna-mcp-server@0.8.4` runs exclusively via the GitHub Release workflow (`kdna-mcp-server-0.8.4`) after companion packages (`@aikdna/kdna-core@0.37.11`, `@aikdna/kdna-read@0.13.5`, `@aikdna/kdna-cli@0.45.2`) are published on the official registry. Source and installed process tests do not
 establish named Host adoption, human review, authorship or Creation acceptance.
 
 ## Native section contract boundary
 
-The complete CLI public contract binding is pinned by SHA-256 `6c91bc8b10abdb1a0cfa23cae3904a11075200b03011d8a7e3772ea9a40ae6c8`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
+The complete CLI public contract binding is pinned by SHA-256 `29a3b8531f3c18aa0f9d86448ea29fead88e69de78aa248e9fbda3db1fa00186`. It identifies the native container `0.6.0` and Read `0.7.0-candidate` tuple, exact Core/Read artifacts and route contracts. CLI and Read must resolve the same fixed Core instance; a nested shadow dependency is refused. The adapter delegates native admission and retained section reads to that runtime. Preserve catalog-only status, mandatory closure, native handle origin, diagnostics, absent declarations and explicit empty states. Technical validity, Read and static declarations do not establish live Creation authority, human confirmation or action permission.
 
 The public regression corpus is generated from synthetic authored JSON with the fixed CLI. It tests real native containers and one deliberately truncated container; no legacy component-format asset is treated as current native input.

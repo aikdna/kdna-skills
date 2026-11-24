@@ -24,8 +24,8 @@ Agent 应复用对话中已经明确的选择，只在缺少实质信息时用�
    再选定 revision。检出目录自带的摘要不能独立认证其来源。
    使用明确 Git revision 的完整检出，包含
    `mcp-server/package-lock.json` 和全部 `vendor/` 依赖归档，记录实际 revision。
-   不混用不同版本的文件，不从全局安装替换同名版本。`@aikdna/kdna-mcp-server@0.8.3`
-   已在 npm `latest` 发布，本仓库同时提供完整可离线核验的本地源码与 `vendor/` 依赖归档。
+   不混用不同版本的文件，不从全局安装替换同名版本。`@aikdna/kdna-mcp-server@0.8.4`
+   为当前就绪的 MCP 发布坐标，本仓库同时提供完整可离线核验的本地源码与 `vendor/` 依赖归档。
 2. 检查本地运行时。安装脚本要求 `bash`、`tar`、Node.js 22 或更新版本及 npm；当前稳定配套
    依赖图已在 Node.js 22.23.1、npm 11.17.0 下运行。必要时在已有安装授权范围内
    选用隔离运行时，不为这次任务顺手修改用户的全局运行时。
@@ -60,8 +60,8 @@ Skill。
 
 | 已保存资产 | 读取入口 | 权限与凭据 |
 | --- | --- | --- |
-| 原生公开容器 `0.6.0` | 官方原生 CLI（优先），或可选的已发布本地 MCP 适配器（`@aikdna/kdna-mcp-server@0.8.3`），Read `0.7.0-candidate` | 选定文件及明确读取许可（`--allow-read`） |
-| 原生口令保护容器 `0.6.0` | 官方原生 CLI（优先），或可选的已发布本地 MCP 适配器（`@aikdna/kdna-mcp-server@0.8.3`），Read `0.7.0-candidate` | 选定文件、`--allow-read` 以及 `--password-file /dev/stdin`（或 `<0600路径>`）或 `--password-fd <n>`（`n >= 3`） |
+| 原生公开容器 `0.6.0` | 官方原生 CLI（优先），或可选的已发布本地 MCP 适配器（`@aikdna/kdna-mcp-server@0.8.4`），Read `0.7.0-candidate` | 选定文件及明确读取许可（`--allow-read`） |
+| 原生口令保护容器 `0.6.0` | 官方原生 CLI（优先），或可选的已发布本地 MCP 适配器（`@aikdna/kdna-mcp-server@0.8.4`），Read `0.7.0-candidate` | 选定文件、`--allow-read` 以及 `--password-file /dev/stdin`（或 `<0600路径>`）或 `--password-fd <n>`（`n >= 3`） |
 
 不要从 `.kdna` 后缀推断格式；输入不支持或未提供口令时，绝不能自动转码或绕过工具解压读取原始 payload。
 

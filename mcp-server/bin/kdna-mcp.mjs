@@ -7,7 +7,10 @@ import { loadModelView, projectBody } from "./model-view.mjs";
 
 const object = value => value !== null && typeof value === "object" && !Array.isArray(value);
 const keys = (value, expected) => object(value) && Object.keys(value).length === expected.length && expected.every(key => Object.hasOwn(value, key));
+const DEFAULT_CATALOG_BUDGET_BYTES = 1000000;
+const CATALOG_BODY_ENVELOPE_BUDGET_BYTES = 4000000;
 const budgetSchema = { type: "integer", minimum: 0, maximum: 1000000 };
+const catalogBudgetSchema = { type: "integer", minimum: 0, maximum: 1000000, default: DEFAULT_CATALOG_BUDGET_BYTES, description: "Optional UTF-8 byte budget (0..1000000, default 1000000). For the default body presentation, bounds the projected body response (recommended >= 32768; large 45-judgment catalogs are ~8-12 KiB projected vs >200 KiB raw). For presentation:\"full\" or \"task\", bounds the complete official Read envelope (recommended >= 1000000)." };
 const presentationProperties = { presentation: { type: "string", enum: ["body", "full", "task"] }, view_budget_bytes: budgetSchema };
 const presentationRules = [{ if: { required: ["presentation"], properties: { presentation: { const: "task" } } }, then: { required: ["view_budget_bytes"] }, else: { not: { required: ["view_budget_bytes"] } } }];
 const emptySchema = { type: "object", properties: {}, additionalProperties: false };
@@ -43,7 +46,7 @@ function selectionIds(selection) {
 const tools = [
   { name: "kdna.binding-status", description: "Report only this process's operator-established local binding. It grants no new permission.", inputSchema: emptySchema },
   { name: "kdna.inspect", description: "Inspect the bound file through the official CLI; technical facts do not authorize actions or establish authorship.", inputSchema: emptySchema },
-  { name: "kdna.catalog", description: "Read the complete public catalog once. The default presentation is the installed Read body view (authored content plus one fingerprint); presentation:\"full\" returns the complete official envelope and an explicit body request is refused when that package cannot project; optional task presentation requires an independent view_budget_bytes.", inputSchema: { type: "object", required: ["budget_bytes"], additionalProperties: false, allOf: presentationRules, properties: { budget_bytes: budgetSchema, ...presentationProperties } } },
+  { name: "kdna.catalog", description: "Read the complete public catalog once. budget_bytes is optional (0..1000000, default 1000000): in the default body presentation it bounds the projected body view (recommended >= 32768; e.g. a 45-judgment catalog is ~8-12 KiB projected vs >200 KiB raw); in presentation:\"full\" or \"task\" it bounds the complete official Read envelope (recommended >= 1000000). The default presentation is the installed Read body view (authored content plus one fingerprint); presentation:\"full\" returns the complete official envelope and an explicit body request is refused when that package cannot project; optional task presentation requires an independent view_budget_bytes.", inputSchema: { type: "object", additionalProperties: false, allOf: presentationRules, properties: { budget_bytes: catalogBudgetSchema, ...presentationProperties } } },
   { name: "kdna.read", description: "Batch the exact judgments needed for this task with mandatory closure in one snapshot. The default presentation is the installed Read body view; presentation:\"full\" returns the complete official envelope. Keep the complete result; repeat only for a new need. Optional task is a lossless adapter view, not an official Read envelope.", inputSchema: { type: "object", required: ["selection", "budget_bytes"], additionalProperties: false, allOf: presentationRules, properties: { selection: selectionSchema, budget_bytes: budgetSchema, ...presentationProperties } } },
   { name: "kdna.expand", description: "Return an original handle or this process's short handle_ref to the same official CLI. The default presentation is the installed Read body view; presentation:\"full\" returns the complete official envelope. A reference grants no permission; Read still validates scope, snapshot, epoch and expiry.", inputSchema: { type: "object", required: ["budget_bytes"], additionalProperties: false, oneOf: [{ required: ["handle"] }, { required: ["handle_ref"] }], allOf: presentationRules, properties: { handle: { type: "object" }, handle_ref: selectionKey, budget_bytes: budgetSchema, ...presentationProperties } } },
   { name: "kdna.audit", description: "Retrieve the exact past full result for a delivered task audit_ref, within an explicit budget and the same live operator binding. This performs no new verification, reading or authorization.", inputSchema: { type: "object", required: ["audit_ref", "budget_bytes"], additionalProperties: false, properties: { audit_ref: selectionKey, budget_bytes: budgetSchema } } },
@@ -111,14 +114,14 @@ if (binding) {
   process.stdout.on("close", () => { outputFailed = true; void shutdown(false); });
   for (const signal of ["SIGTERM", "SIGINT"]) process.once(signal, () => { void shutdown(false); });
   const validBudget = value => Number.isSafeInteger(value) && value >= 0 && value <= 1000000;
-  function validPresentation(args, required) {
-    if (!object(args) || Object.keys(args).some(key => ![...required, "presentation", "view_budget_bytes"].includes(key)) || !required.every(key => Object.hasOwn(args, key))) return false;
+  function validPresentation(args, required, optional = []) {
+    if (!object(args) || Object.keys(args).some(key => ![...required, ...optional, "presentation", "view_budget_bytes"].includes(key)) || !required.every(key => Object.hasOwn(args, key))) return false;
     if (Object.hasOwn(args, "presentation") && !["body", "full", "task"].includes(args.presentation)) return false;
     return args.presentation === "task" ? Object.hasOwn(args, "view_budget_bytes") && validBudget(args.view_budget_bytes) : !Object.hasOwn(args, "view_budget_bytes");
   }
   function validCall(name, args) {
     if (["kdna.binding-status", "kdna.inspect", "kdna.cancel"].includes(name)) return keys(args, []);
-    if (name === "kdna.catalog") return validPresentation(args, ["budget_bytes"]) && validBudget(args.budget_bytes);
+    if (name === "kdna.catalog") return validPresentation(args, [], ["budget_bytes"]) && (!Object.hasOwn(args, "budget_bytes") || validBudget(args.budget_bytes));
     if (name === "kdna.read") return validPresentation(args, ["selection", "budget_bytes"]) && validBudget(args.budget_bytes) && validReadSelection(args.selection);
     if (name === "kdna.expand") {
       if (!object(args) || Object.hasOwn(args, "handle") === Object.hasOwn(args, "handle_ref")) return false;
@@ -135,7 +138,11 @@ if (binding) {
       try {
         binding.assertReadable();
         const handle = Object.hasOwn(args, "handle_ref") ? views.expand(args.handle_ref) : args.handle ?? null;
-        const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: args.budget_bytes, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: name === "kdna.read" ? { asset_id: args.selection.asset_id, asset_version: args.selection.asset_version, judgment_ids: selectionIds(args.selection) } : handle?.anchor?.selection ?? null, handle };
+        const selectedPresentation = args.presentation ?? defaultPresentation;
+        const callerBudget = name === "kdna.catalog" && !Object.hasOwn(args, "budget_bytes") ? DEFAULT_CATALOG_BUDGET_BYTES : args.budget_bytes;
+        const isCatalogBody = name === "kdna.catalog" && selectedPresentation === "body" && modelView !== null;
+        const officialBudget = isCatalogBody && callerBudget > 0 ? Math.max(callerBudget, CATALOG_BODY_ENVELOPE_BUDGET_BYTES) : callerBudget;
+        const request = { request_id: "mcp:" + randomUUID(), tuple: publicBinding.tuple, budget_bytes: officialBudget, mode: name === "kdna.catalog" ? "catalog" : name === "kdna.read" ? "exact_selection" : "expand", selection: name === "kdna.read" ? { asset_id: args.selection.asset_id, asset_version: args.selection.asset_version, judgment_ids: selectionIds(args.selection) } : handle?.anchor?.selection ?? null, handle };
         const value = name === "kdna.audit" ? views.audit(args.audit_ref, args.budget_bytes) : name === "kdna.inspect" ? await inspectBoundFile(binding, operation.controller.signal) : await session.request(request);
         if (operation.cancelled) throw new AdapterError("MCP_READ_CANCELLED", "Local read presentation was cancelled; this process binding is closed.");
         const success = value.channel === "read_envelope" ? ["ready", "catalog_only"].includes(value.envelope.status) : value.status === "accepted";
@@ -143,6 +150,12 @@ if (binding) {
         // kdna.audit returns the exact past full result it stored; the model
         // presentation default applies to new reads, not to the audit record.
         const presentation = name === "kdna.audit" ? value : present(value, args);
+        if (isCatalogBody && success) {
+          const projectedBytes = Buffer.byteLength(JSON.stringify(presentation), "utf8");
+          if (projectedBytes > callerBudget) {
+            throw new AdapterError("MCP_BODY_VIEW_BUDGET_EXCEEDED", "The complete projected catalog body view requires " + projectedBytes + " UTF-8 bytes (limit " + callerBudget + "); no partial result was delivered. Increase budget_bytes or omit it to use the default " + DEFAULT_CATALOG_BUDGET_BYTES + "-byte budget.");
+          }
+        }
         await result(id, { ...text(presentation), ...(success ? {} : { isError: true }) });
       } catch (cause) {
         if (!outputFailed) await result(id, toolError(cause));

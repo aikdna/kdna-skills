@@ -370,7 +370,7 @@ export const PACKED_FILES = ["LICENSE","NOTICE","README.md","bin/kdna-mcp.mjs","
 const read = (root, name) => JSON.parse(fs.readFileSync(path.join(root, name), "utf8"));
 export function validateSourceFacts({ packageJson, lock, root }) {
   assert.equal(packageJson.name, "@aikdna/kdna-mcp-server");
-  assert.equal(packageJson.version, "0.8.3");
+  assert.equal(packageJson.version, "0.8.4");
   assert.equal(packageJson.private, undefined, "public release manifest must not set private");
   const dependencies = Object.fromEntries(ARTIFACTS.map(item => [item.name, item.version]));
   assert.deepEqual(packageJson.dependencies, dependencies);
