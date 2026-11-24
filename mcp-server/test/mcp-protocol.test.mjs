@@ -555,7 +555,7 @@ test("presentation and short-reference schemas match runtime refusal; the projec
   const list = (await s.rpc("tools/list")).result.tools;
   for (const name of ["kdna.catalog", "kdna.expand", "kdna.audit"]) {
     const validate = new Ajv({ strict: false }).compile(list.find(t => t.name === name).inputSchema);
-    const cases = name === "kdna.catalog" ? [budget, { ...budget, presentation: "body" }, { ...budget, presentation: "full" }, { ...budget, presentation: "task", view_budget_bytes: 0 }, { ...budget, presentation: "task" }, { ...budget, view_budget_bytes: 1 }, { ...budget, presentation: "full", view_budget_bytes: 1 }, { ...budget, presentation: "body", view_budget_bytes: 1 }, { ...budget, presentation: null }, { ...budget, presentation: "unknown" }, { ...budget, presentation: "task", view_budget_bytes: 1000001 }] : name === "kdna.expand" ? [{ ...budget, handle: {} }, { ...budget, handle_ref: "handle:missing" }, { ...budget, handle: {}, handle_ref: "handle:missing" }, { ...budget, handle: null, handle_ref: "handle:missing" }, { ...budget }, { ...budget, handle_ref: 1 }, { ...budget, handle: {}, presentation: "body" }, { ...budget, handle: {}, presentation: "unknown" }] : [{ ...budget, audit_ref: "audit:missing" }, { ...budget, audit_ref: "audit:missing", path: "/other.kdna" }, { ...budget, audit_ref: "" }, { ...budget, audit_ref: "audit:missing", presentation: "task" }];
+    const cases = name === "kdna.catalog" ? [{}, { presentation: "body" }, { presentation: "full" }, { presentation: "task", view_budget_bytes: 0 }, { presentation: "task" }, { view_budget_bytes: 1 }, { presentation: "full", view_budget_bytes: 1 }, { presentation: "body", view_budget_bytes: 1 }, { budget_bytes: 200000 }, budget, { ...budget, presentation: "body" }, { ...budget, presentation: "full" }, { ...budget, presentation: "task", view_budget_bytes: 0 }, { ...budget, presentation: "task" }, { ...budget, view_budget_bytes: 1 }, { ...budget, presentation: "full", view_budget_bytes: 1 }, { ...budget, presentation: "body", view_budget_bytes: 1 }, { ...budget, presentation: null }, { ...budget, presentation: "unknown" }, { ...budget, presentation: "task", view_budget_bytes: 1000001 }] : name === "kdna.expand" ? [{ ...budget, handle: {} }, { ...budget, handle_ref: "handle:missing" }, { ...budget, handle: {}, handle_ref: "handle:missing" }, { ...budget, handle: null, handle_ref: "handle:missing" }, { ...budget }, { ...budget, handle_ref: 1 }, { ...budget, handle: {}, presentation: "body" }, { ...budget, handle: {}, presentation: "unknown" }] : [{ ...budget, audit_ref: "audit:missing" }, { ...budget, audit_ref: "audit:missing", path: "/other.kdna" }, { ...budget, audit_ref: "" }, { ...budget, audit_ref: "audit:missing", presentation: "task" }];
     for (const args of cases) {
       const expected = validate(args), response = await s.call(name, args);
       assert.equal(!response.error, expected, JSON.stringify({ name, args }));
@@ -651,4 +651,87 @@ test("operator-bound --password-file unlocks password-protected .kdna assets acr
     assert.equal(bad.status, 2);
     assert.match(bad.stderr, /MCP_ARGUMENT_INVALID/);
   }
+});
+
+test("kdna.catalog supports omitted budget_bytes and budgets default body view against projected size for >200KB raw catalogs", async t => {
+  const tempRoot = makeCanonicalTempRoot("agent-stdio-large-catalog-");
+  t.after(() => fs.rmSync(tempRoot, { recursive: true, force: true }));
+  const seed = JSON.parse(fs.readFileSync(path.join(fixtures, "seed.authored.json"), "utf8"));
+  const template = seed.payload.judgments[1];
+  for (let i = 3; i < 180; i++) {
+    const clone = structuredClone(template);
+    clone.id = `j:scale-${i}`;
+    clone.focus = `How should this synthetic large-catalog system handle decision ${i} without truncating mandatory boundaries?`;
+    clone.method.components[0].id = `component:${i}`;
+    clone.result_contract.id = `result-contract:${i}`;
+    clone.result.contract_ref = `result-contract:${i}`;
+    seed.payload.judgments.push(clone);
+    seed.payload.reading_order.push(clone.id);
+  }
+  const authoredPath = path.join(tempRoot, "large-catalog.authored.json");
+  const assetPath = path.join(tempRoot, "large-catalog.kdna");
+  fs.writeFileSync(authoredPath, JSON.stringify(seed));
+  const createRun = spawnSync(
+    process.execPath,
+    [cli, "create", authoredPath, "--output", assetPath, "--allow-create"],
+    { encoding: "utf8", timeout: 30000 }
+  );
+  assert.equal(createRun.status, 0, createRun.stderr || createRun.stdout);
+
+  const s = launch(t, { argv: ["--asset", assetPath, "--allow-read"] });
+  await s.initialize();
+
+  // Verify the declared tools/list schema documents optional budget_bytes with default 1000000
+  const catalogTool = (await s.rpc("tools/list")).result.tools.find(tool => tool.name === "kdna.catalog");
+  assert.equal(catalogTool.inputSchema.required, undefined);
+  assert.equal(catalogTool.inputSchema.properties.budget_bytes.default, 1000000);
+  assert.match(catalogTool.description, /budget_bytes is optional/i);
+
+  // Confirm raw full envelope genuinely exceeds 200,000 bytes (reproducing the >200KB catalog trap)
+  const fullOmitted = await s.call("kdna.catalog", { presentation: "full" });
+  const fullEnvelope = ready(fullOmitted);
+  const fullBytes = Buffer.byteLength(fullOmitted.result.content[0].text, "utf8");
+  assert.ok(fullBytes > 200000, `expected raw catalog > 200000 bytes, got ${fullBytes}`);
+  assert.equal(fullEnvelope.content.catalog.length, 180);
+
+  // 1. Omitted budget_bytes succeeds in default body presentation
+  const bodyOmittedResp = await s.call("kdna.catalog", {});
+  const bodyOmitted = bodyView(bodyOmittedResp);
+  const bodyBytes = Buffer.byteLength(bodyOmittedResp.result.content[0].text, "utf8");
+  assert.equal(bodyOmitted.content.catalog.length, 180);
+  assert.ok(bodyBytes < 200000, `expected projected body < 200000 bytes, got ${bodyBytes}`);
+
+  // 2. Explicit budget_bytes: 200000 succeeds in default body presentation even though raw > 200000
+  const body200kResp = await s.call("kdna.catalog", { budget_bytes: 200000 });
+  const body200k = bodyView(body200kResp);
+  assert.deepEqual(body200k.content, bodyOmitted.content);
+  assert.equal(body200k.fingerprint.snapshot_id, bodyOmitted.fingerprint.snapshot_id);
+
+  // 3. Explicit presentation: "full" with budget_bytes: 200000 still fails closed (READ_BUDGET_INSUFFICIENT)
+  const full200kResp = await s.call("kdna.catalog", { budget_bytes: 200000, presentation: "full" });
+  assert.equal(full200kResp.result.isError, true);
+  assert.equal(decoded(full200kResp).envelope.status, "rejected");
+  assert.ok(decoded(full200kResp).envelope.diagnostics.some(d => d.code === "READ_BUDGET_INSUFFICIENT"));
+
+  // 4. Omitted budget_bytes also works with presentation: "task" when view_budget_bytes is supplied
+  const taskOmittedResp = await s.call("kdna.catalog", { presentation: "task", view_budget_bytes: 1000000 });
+  const taskOmitted = decoded(taskOmittedResp);
+  assert.notEqual(taskOmittedResp.result.isError, true, JSON.stringify(taskOmitted));
+  assert.equal(taskOmitted.status, "catalog_only");
+  assert.equal(taskOmitted.content.catalog.length, 180);
+
+  // 5. Projected body view still enforces caller budget_bytes fail-closed (no partial content)
+  const tooSmallResp = await s.call("kdna.catalog", { budget_bytes: 100 });
+  assert.equal(tooSmallResp.result.isError, true);
+  assert.equal(decoded(tooSmallResp).code, "MCP_BODY_VIEW_BUDGET_EXCEEDED");
+  assert.equal(decoded(tooSmallResp).content, undefined);
+
+  // 6. Zero budget still fails closed via official Read (either no_body_control or rejected envelope)
+  const zeroResp = await s.call("kdna.catalog", { budget_bytes: 0 });
+  assert.equal(zeroResp.result.isError, true);
+  const zeroBody = decoded(zeroResp);
+  assert.notEqual(zeroBody.envelope?.status, "ready");
+  assert.ok(zeroBody.channel === "no_body_control" || zeroBody.envelope?.status === "rejected", JSON.stringify(zeroBody));
+
+  await s.close();
 });

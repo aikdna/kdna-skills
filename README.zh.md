@@ -47,9 +47,9 @@ bash install.sh --claude      # 或选择：--codex | --cursor | --opencode | --
 
 ---
 
-## 可选：本地 stdio MCP 服务（`@aikdna/kdna-mcp-server@0.8.3` · `mcp-server/`）
+## 可选：本地 stdio MCP 服务（`@aikdna/kdna-mcp-server@0.8.4` · `mcp-server/`）
 
-面向支持 MCP 协议的客户端，[`mcp-server/`](./mcp-server/README.md)（npm 包 [`@aikdna/kdna-mcp-server@0.8.3`](https://www.npmjs.com/package/@aikdna/kdna-mcp-server)）提供受控的本地 stdio MCP 服务，无需放开全盘目录扫描即可按目录与精确选取方式读取指定的 `.kdna` 文件。详细配置说明见 [`docs/GETTING_STARTED.md`](./docs/GETTING_STARTED.md) 与 [`integrations/`](./integrations)。
+面向支持 MCP 协议的客户端，[`mcp-server/`](./mcp-server/README.md)（npm 包 [`@aikdna/kdna-mcp-server@0.8.4`](https://www.npmjs.com/package/@aikdna/kdna-mcp-server)）提供受控的本地 stdio MCP 服务，无需放开全盘目录扫描即可按目录与精确选取方式读取指定的 `.kdna` 文件。详细配置说明见 [`docs/GETTING_STARTED.md`](./docs/GETTING_STARTED.md) 与 [`integrations/`](./integrations)。
 
 ---
 

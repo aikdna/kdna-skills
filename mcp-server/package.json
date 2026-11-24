@@ -1,6 +1,6 @@
 {
   "name": "@aikdna/kdna-mcp-server",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Local stdio Read adapter for one operator-bound KDNA asset.",
   "type": "module",
   "homepage": "https://aikdna.com",

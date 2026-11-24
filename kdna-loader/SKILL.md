@@ -115,9 +115,12 @@ model or authorize a Host to forward the disclosed material elsewhere.
 After MCP initialize and notifications/initialized:
 
 1. `kdna.binding-status` reports the local binding and its explicit limits.
-2. `kdna.catalog` with `budget_bytes` returns the official public catalog.
-   Retain the complete catalog. An exact-selection response contains only its
-   selected catalog entry and must not replace the original choice list.
+2. `kdna.catalog` (optional `budget_bytes`, default `1000000`) returns the official public catalog.
+   In the default `body` presentation, `budget_bytes` bounds the projected body
+   view; in `presentation: "full"` or `"task"`, it bounds the complete official
+   Read envelope. Retain the complete catalog. An exact-selection response
+   contains only its selected catalog entry and must not replace the original
+   choice list.
 3. Choose the judgments this task actually needs from that catalog. If the
    choice is ambiguous, resolve the substantive choice; do not fabricate IDs
    or rank assets. Send one `kdna.read` for the task's selection using the

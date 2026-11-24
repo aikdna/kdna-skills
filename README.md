@@ -47,9 +47,9 @@ Try these directly in Claude Code, Cursor, Codex, OpenCode, Copilot, or Antigrav
 
 ---
 
-## Optional: Local stdio MCP Server (`@aikdna/kdna-mcp-server@0.8.3` · `mcp-server/`)
+## Optional: Local stdio MCP Server (`@aikdna/kdna-mcp-server@0.8.4` · `mcp-server/`)
 
-For MCP-capable clients that prefer structured tool calls over shell execution, [`mcp-server/`](./mcp-server/README.md) (`@aikdna/kdna-mcp-server@0.8.3` on npm) provides a local stdio MCP server exposing scoped `catalog`, `exact_selection`, and expansion reads without broad filesystem scanning. Host setup guides live in [`docs/GETTING_STARTED.md`](./docs/GETTING_STARTED.md) and [`integrations/`](./integrations).
+For MCP-capable clients that prefer structured tool calls over shell execution, [`mcp-server/`](./mcp-server/README.md) (`@aikdna/kdna-mcp-server@0.8.4` on npm) provides a local stdio MCP server exposing scoped `catalog`, `exact_selection`, and expansion reads without broad filesystem scanning. Host setup guides live in [`docs/GETTING_STARTED.md`](./docs/GETTING_STARTED.md) and [`integrations/`](./integrations).
 
 ---
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.8.4 (2026-11-24)
+
+- Fix `kdna.catalog` `budget_bytes` trap in `@aikdna/kdna-mcp-server@0.8.4`
+  (pinned to `@aikdna/kdna-cli@0.45.2`, `@aikdna/kdna-core@0.37.11`, and
+  `@aikdna/kdna-read@0.13.5` on native container `0.6.0`):
+  - Make `budget_bytes` optional on `kdna.catalog` (defaulting to `1000000`
+    bytes, matching `@aikdna/kdna-cli`'s `catalog` default) and document
+    recommended thresholds directly in the `tools/list` schema.
+  - For `kdna.catalog` in default `body` presentation (`budget_bytes > 0`),
+    fetch the raw official envelope under an internal `4000000`-byte ceiling
+    and enforce the caller's `budget_bytes` against the projected body response
+    (failing closed with `MCP_BODY_VIEW_BUDGET_EXCEEDED` if exceeded), so
+    multi-judgment works whose raw catalog envelope exceeds `200000` bytes
+    (such as *KDNA Whitepaper* `v1.0.2`) succeed cleanly with both `{}` and
+    `{"budget_bytes": 200000}` while `presentation: "full"` and `"task"` keep
+    strict official-envelope budgeting.
+- Fix stale CLI public contract binding SHA-256 in `mcp-server/README.md` to
+  `29a3b8531f3c18aa0f9d86448ea29fead88e69de78aa248e9fbda3db1fa00186` and add
+  stdio regression tests covering >200 KiB raw catalogs and omitted
+  `budget_bytes`.
+
 ## 0.8.3 (2026-11-20)
 
 - Promote `@aikdna/kdna-mcp-server` to stable release coordinate `0.8.3` aligned

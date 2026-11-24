@@ -1,6 +1,6 @@
 # KDNA with Codex
 
-Current local runtime coordinates: MCP 0.8.3 / CLI 0.45.2 / Core 0.37.11 / Read 0.13.5
+Current local runtime coordinates: MCP 0.8.4 / CLI 0.45.2 / Core 0.37.11 / Read 0.13.5
 (contract kdna.read/0.7.0-candidate). Separate **Codex CLI 0.154.0** model turns
 have used full and task presentations to read a synthetic native public asset
 and apply its judgments. For Agent-led setup and authoring, see the
