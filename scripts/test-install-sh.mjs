@@ -43,6 +43,7 @@ test('install.sh --dir installs kdna-loader and active kdna-creator files withou
     assert.equal(fs.existsSync(path.join(targetDir, 'kdna-creator', 'SKILL.md')), true);
     assert.equal(fs.existsSync(path.join(targetDir, 'kdna-creator', 'references', 'authoring-and-protection.md')), true);
     assert.equal(fs.existsSync(path.join(targetDir, 'kdna-creator', 'references', 'co-creation-craft.md')), true);
+    assert.equal(fs.existsSync(path.join(targetDir, 'kdna-creator', 'references', 'draft-schema-and-methods.md')), true);
     assert.equal(fs.existsSync(path.join(targetDir, 'kdna-creator', 'references', 'native-asset-authoring.md')), true);
     assert.equal(fs.existsSync(path.join(targetDir, 'kdna-creator', 'scripts', 'native-asset-review.mjs')), true);
     assert.equal(fs.existsSync(path.join(targetDir, 'kdna-creator', 'agents', 'openai.yaml')), true);
@@ -105,6 +106,7 @@ test('install.sh supports all 6 Host flags under isolated HOME, --only filter, a
       assert.equal(fs.existsSync(path.join(base, 'kdna-loader', 'SKILL.md')), true, `${flag} loader`);
       assert.equal(fs.existsSync(path.join(base, 'kdna-creator', 'SKILL.md')), true, `${flag} creator`);
       assert.equal(fs.existsSync(path.join(base, 'kdna-creator', 'references', 'authoring-and-protection.md')), true, `${flag} protection ref`);
+      assert.equal(fs.existsSync(path.join(base, 'kdna-creator', 'references', 'draft-schema-and-methods.md')), true, `${flag} schema ref`);
     }
 
     const onlyHome = fs.mkdtempSync(path.join(os.tmpdir(), 'kdna-install-only-'));

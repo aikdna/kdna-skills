@@ -1,6 +1,6 @@
 ---
 name: kdna-loader
-description: Read a user-selected local .kdna asset through the exact official CLI/Core/Read; operator-bound MCP is an optional source preview. Never discover assets or treat model-supplied paths as permission.
+description: Read a user-selected local .kdna asset through @aikdna/kdna-cli@0.46.0 (direct CLI primary) or operator-bound @aikdna/kdna-mcp-server@0.8.4 (optional read-only stdio preview). Never discover assets or treat model-supplied paths as permission.
 ---
 
 # KDNA Loader
@@ -19,77 +19,96 @@ clear and authorized, proceed without another confirmation. Otherwise ask one
 plain-language question for the missing substantive choice. Do not ask the user
 to construct a digest, permission record, tuple, receipt or machine identifier.
 
-This route pairs `@aikdna/kdna-cli@0.45.2` (with `0.43.3` and `0.43.2` compatibility),
-Core `0.37.11` and Read `0.13.5` implementing `kdna.read/0.7.0-candidate` for native
-container `0.6.0` `.kdna` assets. Do not infer a format from its filename, try a
-private parser or convert an unsupported file implicitly after rejection. Resolve
-the accepted local installation explicitly. Do not use an unverified CLI, a same-version
-registry replacement, a private parser or raw payload fallback. Native `0.6.0`
-password-protected assets are permanently account-free and unlocked locally via
-`--password-file` or `--password-fd` on the direct CLI (or via operator-bound
-`--password-file` or `--password-fd` when starting `kdna-mcp.mjs`).
+- **Direct CLI primary route**: `@aikdna/kdna-cli@0.46.0` (compatible with `0.45.2`, `0.43.3`, and `0.43.2` checkouts; add `--registry=https://registry.npmmirror.com` only on Mainland China npm timeout), Core `0.37.11`, and Read `0.13.5` implementing `kdna.read/0.7.0-candidate` for native container `0.6.0` `.kdna` assets.
+- **Optional local stdio MCP server**: `@aikdna/kdna-mcp-server@0.8.4` remains strictly read-only, single-file OS-`argv`-bound on its vendored `0.45.2` / Core `0.37.11` / Read `0.13.5` graph.
+
+Do not infer a format from a `.kdna` filename, try a private parser, or convert
+an unsupported file implicitly after rejection. Resolve the accepted local
+installation explicitly. Native `0.6.0` password-protected assets are
+permanently account-free and unlocked locally via `--password-env <VAR>`,
+`--password-prompt` (interactive human TTY), `--password-file <0600-path>`, or
+`--password-fd <n>` on direct CLI `0.46.0` — or via operator-bound
+`--password-file <0600-path>` / `--password-fd <n>` when starting `kdna-mcp.mjs`.
 
 ## Four-step real-work consumption and evolution loop
 
 1. **Step 1 — Scoped consent & safe unlock**: Confirm the exact user-selected
    `.kdna` path, task purpose, recipient and byte budget once. If the native
-   `0.6.0` asset is password-protected, pass only the user-supplied
-   `--password-file <0600-path>` or `--password-fd <n>` (`n >= 3`) — never put a
-   password in `argv` or chat, and never guess one.
+   `0.6.0` asset is password-protected:
+   - **Direct CLI (`0.46.0`)**: prefer `--password-env <VAR>` (user exports the passphrase in their own shell outside chat so no plaintext password file touches disk), `--password-prompt` (interactive human terminal), `--password-file <0600-path>`, or `--password-fd <n>` (`n >= 3`).
+   - **Direct CLI `--session` and MCP (`kdna-mcp.mjs`)**: use `--password-env <VAR>` (CLI `--session` `0.46.0`), `--password-file <0600-path>`, or `--password-fd <n>` (`n >= 3`). **Never pass `--password-file /dev/stdin` to `--session` or MCP** (stdin carries JSONL / JSON-RPC requests).
+   - Never put a password in argv, shell history, echoed logs, or chat, and never guess or invent one. Run `kdna inspect <locked.kdna> --metadata --format human` first when checking pre-unlock outer manifest metadata safely.
 2. **Step 2 — `catalog` first & anti-pollution filter (`0` is valid)**: Read
    `catalog` before reading any body (`--mode catalog --format human --allow-read`
    or `--compact`). **Never call `--mode whole_asset` expecting judgment prose
    inline** (`whole_asset` returns governance/catalog metadata and deferred
    handles with zero judgment bodies). Select **only** the judgment IDs (typically
    1–5 task-relevant judgments on a multi-judgment work) whose question directly
-   governs the current task (or when the user pastes a KDNA Reader copied
-   reference `<asset_id>@<version> · <judgment_id> — <question>`, verify that
-   `<judgment_id>` in `catalog` and select it directly). Never copy all catalog
-   IDs by default on a multi-judgment asset. If **zero** catalog entries apply to
-   this task, **read zero judgment bodies**, report briefly that `catalog` was
-   checked and none of its scoped judgments apply, and complete the task without
-   contaminating the work with unrelated rules.
+   governs the current task. Never copy all catalog IDs by default on a
+   multi-judgment asset. If **zero** catalog entries apply to this task, **read
+   zero judgment bodies**, report briefly that `catalog` was checked and none of
+   its scoped judgments apply, and complete the task without contaminating the
+   work with unrelated rules.
 3. **Step 3 — Batched `exact_selection` with `--format human` / `--compact` & hard boundary/conflict brakes**:
    Fetch the needed IDs together in one batched call (`--mode exact_selection
-   --judgment-id id1,id2 --allow-read --format human` or `--compact` on `0.45.2` —
-   **always pass `--format human` or `--compact` on multi-judgment works** such as
-   the 45-judgment *KDNA Whitepaper* so output stays ~1k–3k tokens instead of
-   exceeding Host ~25k-token tool limits; `--format human` and `--compact`
-   preserve full `scope`, `boundaries`, `exceptions`, `misuse`, `closure`
-   support/qualifying/governing context, `omissions`, and `diagnostics` while
-   trimming repeated receipt metadata; or one `read --session --allow-read`
-   `exact_selection` request with `judgment_ids` when retaining expansion handles
-   or running `0.43.2`). Preserve every selected judgment's mandatory closure
-   (`scope`, `boundaries`, `exceptions`, `misuse`, `value_order` and `conflict`
-   relations). When the current case hits a stated `boundary`, matches `misuse`,
-   or triggers two conflicting judgments with no governing `value_order`,
-   **brake and surface that limit or conflict to the user** instead of
-   extrapolating past it.
-4. **Step 4 — Visible attribution, three-way feedback triage & `diff` upgrade
-   consent**: Cite the asset (`asset_id`, `version`, digest) and exact judgment
-   IDs that shaped the result (`action_authorization` remains `not_evaluated`).
-   If the user disagrees with or refines a judgment-guided output, never silently
-   mutate the `.kdna` file — ask one concise three-way triage question:
-   - **Revise this deliverable only (`改当前成果`)**: update the current output
-     and leave the `.kdna` asset untouched;
-   - **One-time task exception (`本次例外`)**: set the judgment aside for this
-     run only without rewriting the asset;
-   - **Revise the long-term judgment (`修订长期判断`)**: hand off to
-     `kdna-creator` (`source-open` → `source-pack`), save a new file beside the
-     original, and run `kdna diff <old.kdna> <revised.kdna> --format human` so
-     the user explicitly approves any version upgrade before switching files.
+   --judgment-id id1,id2 --allow-read --format human` or `--compact` — **always
+   pass `--format human` or `--compact` on multi-judgment works** such as the
+   45-judgment *KDNA Whitepaper* so output stays ~1k–3k tokens instead of
+   exceeding Host ~25k-token tool limits; CLI `0.46.0` `--format human` and
+   `--compact` preserve full `scope`, `boundaries`, conditional `exceptions`
+   trigger `When:` + `waive`/`replace_limit`, `misuse`, `answer_other`,
+   `formation_rule`, `closure` support/qualifying/governing context,
+   `omissions`, and `diagnostics` while trimming repeated receipt metadata; or
+   use one `read --session --allow-read` `exact_selection` request with
+   `judgment_ids` when retaining expansion handles or running `0.43.2`).
+   Preserve every selected judgment's mandatory closure (`scope`, `boundaries`,
+   `exceptions`, `misuse`, `value_order` and `conflict` relations). When the
+   current case hits a stated `boundary`, matches `misuse`, reaches an open
+   undecided `answer_kind: "other"` item, or triggers two conflicting judgments
+   with no governing `value_order`, **brake and surface that limit or conflict
+   to the user** instead of extrapolating past it.
+4. **Step 4 — Visible attribution, three-way feedback triage & `diff` upgrade consent**:
+   Cite the asset (`asset_id`, `version`, digest) and exact judgment IDs that
+   shaped the result (`action_authorization` remains `not_evaluated`). If the
+   user disagrees with or refines a judgment-guided output, never silently mutate
+   the `.kdna` file — ask one concise three-way triage question:
+   - **Revise this deliverable only**: update the current output and leave the `.kdna` asset untouched;
+   - **One-time task exception**: set the judgment aside for this run only without rewriting the asset;
+   - **Revise the long-term judgment**: hand off to `kdna-creator` (edit canonical `draft.json` → `create --draft`, or `source-open` → `source-pack` only when no `draft.json` exists), save a new file beside the original, and run `kdna diff <old.kdna> <revised.kdna> --format human` (using `--left-password-*` / `--right-password-*` if encrypted with different passphrases) so the user explicitly approves any version upgrade before switching files.
 
-## Preferred route: direct official CLI
+## Multi-asset conflict arbitration
 
-When the Host can run local tools, use the official CLI for one explicit file
-and task. This is the default route; MCP is not required. Technical inspection
-and validation do not disclose a judgment or grant read/action permission.
+When a user explicitly authorizes **multiple** `.kdna` files for one task (for
+example, personal taste + team review policy + domain reference):
+
+1. Inspect and read each authorized file's `catalog` independently (CLI runs
+   one file per invocation; MCP binds one file per process). Select only the
+   relevant IDs per asset; never merge IDs across assets or auto-discover extra
+   files on disk.
+2. Attribute every contributing asset (`asset_id`, `version`) and judgment ID
+   distinctly in the answer.
+3. **If two authorized assets conflict without a user-declared precedence rule**:
+   brake immediately, state both positions with their `applies_when` scopes and
+   `boundaries`, and ask the user which asset governs this task. If the same
+   collision recurs, offer to hand off to `kdna-creator` to record a reusable
+   precedence issue (or dedicated arbitration asset) rather than silently
+   blending or mutating either file.
+
+## Preferred route: direct official CLI (`@aikdna/kdna-cli@0.46.0`)
+
+When the Host can run local tools, use the official CLI directly for each
+explicitly authorized file and task. This is the default route; MCP is not
+required. Technical inspection and validation do not disclose a judgment or
+grant read/action permission.
 
 ```sh
-node /accepted/local/cli/src/cli.js validate /absolute/selected.kdna --system --format human
-node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog --allow-read --format human
-node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --judgment-id <id-1>,<id-2> --allow-read --format human
-# (or pass --compact instead of --format human when structured JSON is required)
+npx -y @aikdna/kdna-cli@0.46.0 inspect /absolute/selected.kdna --format human
+npx -y @aikdna/kdna-cli@0.46.0 validate /absolute/selected.kdna --system --format human
+npx -y @aikdna/kdna-cli@0.46.0 read /absolute/selected.kdna --mode catalog --allow-read --format human
+npx -y @aikdna/kdna-cli@0.46.0 read /absolute/selected.kdna --mode exact_selection --judgment-id <id-1>,<id-2> --allow-read --format human
+# Encrypted 0.6.0 asset (user exports KDNA_PASS outside chat — never in argv or chat):
+npx -y @aikdna/kdna-cli@0.46.0 read /absolute/locked.kdna --mode catalog --allow-read --format human --password-env KDNA_PASS
+# (pass --compact instead of --format human when structured JSON is required)
 ```
 
 Use one-shot reads for a bounded question. For progressive consumption, use the
@@ -97,14 +116,16 @@ session route in [Direct official CLI details](#direct-official-cli-details).
 Keep every handle in the same process and preserve the selected judgment's
 mandatory context and limits.
 
-## Optional MCP source preview
+## Optional MCP source preview (`@aikdna/kdna-mcp-server@0.8.4`)
 
 The local operator or trusted launcher starts the installed candidate with
-`--asset /absolute/selected.kdna --allow-read` in **OS process argv**. This
-channel is outside model-controlled MCP stdin and tools. The Host must prevent
-the model from rewriting this startup configuration or launching another
-process with broader input. This adapter cannot enforce that condition in a
-Host that grants the model unrestricted shell or configuration access.
+`--asset /absolute/selected.kdna --allow-read` in **OS process argv** (adding
+`--password-file <0600-path>` or `--password-fd <n>` for encrypted assets —
+never `/dev/stdin`). This channel is outside model-controlled MCP stdin and
+tools. The Host must prevent the model from rewriting this startup configuration
+or launching another process with broader input. This adapter cannot enforce
+that condition in a Host that grants the model unrestricted shell or
+configuration access.
 
 The server fixes exactly those file bytes in a private local temporary copy.
 Without both operator selection and permission it stays unbound. Neither
@@ -224,26 +245,35 @@ node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode catalog 
 node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --mode exact_selection --asset-id <catalog-asset-id> --asset-version <catalog-version> --judgment-id <catalog-judgment-id> --budget 1000000 --allow-read --compact
 ```
 
-> **Large-work guardrail (`0.45.2`):** On multi-judgment works (for example *KDNA Whitepaper* `v1.0.2`), select 1–5 relevant judgments per `exact_selection` call and **always pass `--format human` or `--compact`** so output stays well within ~25k-token Host tool output windows. **Never use `--mode whole_asset` to read judgment bodies**—it returns catalog/governance metadata and deferred handles, not judgment prose.
+> **Large-work guardrail (`0.46.0` / `0.45.2`):** On multi-judgment works (for example *KDNA Whitepaper* `v1.0.2`), select 1–5 relevant judgments per `exact_selection` call and **always pass `--format human` or `--compact`** so output stays well within ~25k-token Host tool output windows. **Never use `--mode whole_asset` to read judgment bodies**—it returns catalog/governance metadata and deferred handles, not judgment prose.
 
 These are independent one-shot snapshots. For progressive consumption start
 `node /accepted/local/cli/src/cli.js read /absolute/selected.kdna --session --allow-read`
-once. Send newline-terminated public ReadRequest objects. Copy the exact tuple
-from that accepted CLI's public-contract-binding.json; generate request_id and
-set mode, budget_bytes, selection and handle. Catalog uses selection:null and
-handle:null; exact_selection uses either the single compatible {asset_id,asset_version,judgment_id} or the plural {asset_id,asset_version,judgment_ids:[...]} with exactly one of the two judgment keys present (a present key must also hold a valid value), and handle:null; expand
-uses the issued handle and that handle's selection. Keep the same process and
-end stdin to close it. Do not describe a separately launched CLI as the same
-snapshot or reuse a handle across launches. The executable examples and tests
-in mcp-server/test/explicit-cli-flow.test.mjs exercise this exact sequence.
+once (using `--password-env <VAR>`, `--password-file <0600-path>`, or
+`--password-fd <n>` if encrypted — never `/dev/stdin`). Send newline-terminated
+public ReadRequest objects. Copy the exact tuple from that accepted CLI's
+`public-contract-binding.json`; generate `request_id` and set `mode`,
+`budget_bytes`, `selection` and `handle`. Catalog uses `selection:null` and
+`handle:null`; `exact_selection` uses either the single compatible
+`{asset_id,asset_version,judgment_id}` or the plural
+`{asset_id,asset_version,judgment_ids:[...]}` with exactly one of the two
+judgment keys present (a present key must also hold a valid value), and
+`handle:null`; `expand` uses the issued handle and that handle's selection. Keep
+the same process and end stdin to close it. Do not describe a separately
+launched CLI as the same snapshot or reuse a handle across launches. The
+executable examples and tests in `mcp-server/test/explicit-cli-flow.test.mjs`
+exercise this exact sequence.
 
 ## Interpret the result and disclose adoption
 
-A ready `read_envelope` carries accepted body disclosure. `catalog_only` is a successful catalog response, not a selected judgment body. Native admission rejection, no-body control and transport failure retain their exact separate channel shapes.
-Non-ready envelopes, admission_rejection, control/no_body and transport_failure
-are not empty successes. Preserve public reason/stage/diagnostics; local
-MCP_* errors describe the adapter/transport boundary. Do not silently increase
-a budget or replace a refused operation with whole-asset/raw text.
+A ready `read_envelope` carries accepted body disclosure. `catalog_only` is a
+successful catalog response, not a selected judgment body. Native admission
+rejection, no-body control and transport failure retain their exact separate
+channel shapes. Non-ready envelopes, `admission_rejection`, `control/no_body`
+and `transport_failure` are not empty successes. Preserve public
+reason/stage/diagnostics; local `MCP_*` errors describe the adapter/transport
+boundary. Do not silently increase a budget or replace a refused operation with
+whole-asset/raw text.
 
 Read permission is not action authorization, authorship, human confirmation,
 quality review, Creation Complete or Authoring Fit. Declared provenance and
@@ -269,18 +299,19 @@ The exact component definition is `sha256:37e857cc4e43f7283a51ee6abe1f6e84018039
 
 Check `kdna --help` on the Host-selected CLI entry:
 
-- **With `@aikdna/kdna-cli@0.45.2` (and `0.43.3`, not in 0.43.2)**: batch selected IDs via repeated
+- **With `@aikdna/kdna-cli@0.46.0` (and `0.45.2` / `0.43.3`, not in 0.43.2)**: batch selected IDs via repeated
   `--judgment-id` or comma-separated `--judgment-id id1,id2` (`--budget` defaults
   to `1000000` bytes [`1 MB`] on `catalog` and `exact_selection`, and `4000000` bytes
   [`4 MB`] on `whole_asset`, so `--budget` may be omitted unless tightening),
-  pass `--compact` on `0.45.2` for a closure-preserving model-ready projection
-  (retaining `scope`, `boundaries`, `exceptions`, `misuse`, `closure`,
-  `omissions`, and `diagnostics`; or `--format human` for terminal reading),
-  unlock permanently account-free password-protected `0.6.0` files via
-  `--password-file` / `--password-fd` (Never put a password in argv or chat), and
-  compare old vs revised `.kdna` versions via
-  `kdna diff <old.kdna> <revised.kdna> --format human` before switching an active
-  workflow to a newer asset revision.
+  pass `--format human` (in `0.46.0`, renders full conditional `exceptions`,
+  `answer_other`, and `formation_rule`) or `--compact` for a closure-preserving
+  model-ready projection, unlock permanently account-free password-protected
+  `0.6.0` files via `--password-env <VAR>` (`0.46.0`), `--password-prompt`
+  (`0.46.0` interactive TTY), `--password-file <0600-path>`, or `--password-fd <n>`
+  (Never put a password in argv or chat), and compare old vs revised `.kdna`
+  versions via `kdna diff <old.kdna> <revised.kdna> --format human` (with
+  `--left-password-*` / `--right-password-*` in `0.46.0` when passphrases
+  differ) before switching an active workflow to a newer asset revision.
 - **With older `@aikdna/kdna-cli@0.43.2` checkouts (or whenever retaining handles to `expand`
   deferred content)**: run `inspect --json`, read `catalog`, then run one
   `read --session --allow-read` whose second JSONL request is `exact_selection`

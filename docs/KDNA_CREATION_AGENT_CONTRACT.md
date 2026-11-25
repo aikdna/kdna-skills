@@ -1,11 +1,56 @@
-# Creation Agent adapter contract
+# Creation Agent Adapter Contract (Native `0.6.0`)
 
-The standalone entry is [KDNA Creator](../kdna-creator/SKILL.md). Its [native authoring guide](../kdna-creator/references/native-asset-authoring.md) covers the Host-selected native Create/Source workflow; the [terminal adapter](../kdna-creator/references/terminal-session.md) and typed guide cover the explicitly matched Studio session. This repository contributes guidance, not a second public parser, component interpreter or compiler.
+The standalone creation entry is [KDNA Creator](../kdna-creator/SKILL.md), paired
+with four focused on-demand references:
+[co-creation-craft.md](../kdna-creator/references/co-creation-craft.md),
+[draft-schema-and-methods.md](../kdna-creator/references/draft-schema-and-methods.md),
+[authoring-and-protection.md](../kdna-creator/references/authoring-and-protection.md),
+and [native-asset-authoring.md](../kdna-creator/references/native-asset-authoring.md).
+This repository contributes authoring guidance and digest-bound review tooling,
+not a second public parser, component interpreter, or compiler.
 
-Native authoring starts with the intended reader, task, authorized materials and the work's real boundaries. The local inventory script reports actual authored values, presence and scope. A digest-bound review record gives each domain an explicit reason, evidence and task-specific decision; optional empty fields can be appropriate. Record completeness does not evaluate content quality, schema admission, official readback, Reader rendering or reviewer identity. Substantive review and the official no-loss Create/Source/Read checks remain separate. Genuine edits preserve the old file and record only the history that actually occurred.
+## Authoring & Compilation Boundary
 
-The Studio adapter accepts substantive alternatives, optional finite component structures, explicit authored presence, real human-declared or expressly delegated-Agent adoption, current preview and saved-byte completion. Exact Studio archive contents are declared by the reference binding; separate Host installation approval and independent forward evaluation remain necessary. User authorization already given should be reused, and an authorized Agent must not be mislabeled human.
+1. **Direct native CLI (`@aikdna/kdna-cli@0.46.0`)**: Creation, validation,
+   revision, diffing, and permanently account-free offline protection run
+   through the official CLI (`init`, `validate-input`, `compile`,
+   `create --draft`, `inspect`, `validate --system`, `read`, `review`, `diff`,
+   `protect`, `unprotect`, and `source-open` / `source-pack` for external
+   `.kdna` files without a `draft.json`).
+2. **Read-only MCP stays separate**: `@aikdna/kdna-mcp-server@0.8.4` remains a
+   strictly read-only, single-file OS-`argv`-bound local stdio adapter. It does
+   not expose compile, create, or write tools.
+3. **Single-source revision discipline**: For draft-born assets, `draft.json`
+   (`kdna.draft/1`) is the sole canonical source for revisions. Saving never
+   overwrites prior `.kdna` files; every revision writes a new sibling file and
+   presents `kdna diff --format human` for fresh author confirmation.
 
-The current Studio exporter requires an explicitly complete supported method; method absence is not a successful export route. Saved public and protected Studio bytes use the separate [local protection Host](../kdna-creator/references/studio-protected-host.md) for explicit Read and independently permitted source revision. Its operator controls installation, file, purpose, permissions and credential pipes outside the task Agent's payloads. Static reopening does not recreate live adoption, and this source-only route does not add protected consumption to the native MCP adapter.
+## Craft, Provenance & Honest Verification
 
-Legacy accepted evidence and original assets remain unchanged. The matched Studio format2 rejects legacy inputs rather than relabeling them. Private dialogue/materials stay private, explicit public source/notice obligations are retained, and creation/identity/action claims remain distinct. No result here establishes general Creator effectiveness or whole-project completion.
+- **Tier calibration**: Tier 1 light/taste assets (1–15 judgments) require only
+  sharp `focus`, non-platitude `statement`, `applies_when`, and `boundaries`
+  without forced sections or relationships. Tier 2/3 systems activate
+  `sections`, typed `relationships`, `value_order`, `worldview`, `exceptions`,
+  `misuse`, and `sources` provenance.
+- **Distinct 3-path confirmation contracts**: `works` confirms fidelity to the
+  author's current stance; `interview` confirms concrete slices, priorities,
+  and stop-boundaries without nagging; `research` confirms material scope,
+  route preference, and adoption boundaries — never asking non-experts to
+  certify domain truth — while separating `creator` from cited original
+  `sources`.
+- **Digest-bound raw review**: For raw `{manifest, payload, members}` inputs,
+  [`native-asset-review.mjs`](../kdna-creator/scripts/native-asset-review.mjs)
+  emits a SHA-256-bound structural inventory and declared-review check. Record
+  completeness never establishes content quality, Core admission, human
+  confirmation, or Reader acceptance.
+- **Two-tier verification honesty**: Same-session CLI checks are reported
+  honestly as Tier 1 Deterministic Closure & Brake Smoke Checks (never "blind
+  tests"). Tier 2 True Fresh-Context Blind Testing applies only when the Host
+  spawns zero-history isolated subagents.
+- **Offline protection & trust invariants**: Passphrases enter only through
+  `--password-prompt`, `--password-env <VAR>`, `--password-file <0600-path>`,
+  or `--password-fd <n>` — never `argv` or chat. Outer `manifest` metadata
+  remains plaintext while `payload.kdnab` is AEAD-encrypted. Private dialogue
+  and `.kdna-work/` staging files stay private; creation, identity, human
+  adoption, and action authorization remain distinct (`not_evaluated` /
+  `not_verified` on static reopening).

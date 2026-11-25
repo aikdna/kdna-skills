@@ -1,40 +1,60 @@
 ---
 name: kdna-creator
-description: Co-create, review, revise, and locally protect KDNA judgment assets through Socratic interview, authored works distillation, or evidence-compared human choice using the Host-selected official KDNA CLI.
+description: Co-create, review, revise, and locally protect native 0.6.0 KDNA assets via works, interview, or research using @aikdna/kdna-cli@0.46.0.
 ---
 
 # KDNA Creator
 
-Use the Host-selected official KDNA CLI (`@aikdna/kdna-cli@0.45.2`) for native `0.6.0` assets with `init`, `validate-input`, `compile`, `create`, `review`, `source-open`, `source-pack`, `diff` and `protect`, following the [co-creation craft playbook](references/co-creation-craft.md), [native asset authoring and content review](references/native-asset-authoring.md), and [authoring, reading, diffing and protection](references/authoring-and-protection.md).
+Use `@aikdna/kdna-cli@0.46.0` (npm primary; `--registry=https://registry.npmmirror.com` only on CN timeout) for native `0.6.0` authoring. Load references **on demand only**:
 
-## Native Five-Stage Co-Creation Workflow
+- [co-creation-craft.md](references/co-creation-craft.md): 3-path craft, 5 empirical lessons, `.kdna-work/` staging, cross-domain examples.
+- [draft-schema-and-methods.md](references/draft-schema-and-methods.md): extended `kdna.draft/1`, 16-method roles, `KDNA Reader v0.3.4` notes.
+- [authoring-and-protection.md](references/authoring-and-protection.md): CLI `0.46.0` commands, single-source `draft.json` revision, `diff`, protection.
+- [native-asset-authoring.md](references/native-asset-authoring.md): raw `{manifest, payload, members}` attachments, `native-asset-review.mjs`, diagnostics.
 
-1. **Stage 0 — Clarify the Judgment Core**: Whenever the user wants to preserve their judgment standards, trade-off priorities, taste, or stop-boundaries on a topic (even just a few sharp rules), help them interview, refine, and package it into a high-signal `.kdna` work. Focus on genuine trade-offs and clear stop-limits rather than padding a count.
-2. **Stage 1 — Pick the Matching Entry Mode** (`@aikdna/kdna-cli@0.45.2` supports `init --mode minimal|interview|works|research [--lang en|zh] [--example]`):
-   - **Socratic Interview (`--mode interview`)**: When tacit rules live in the author's head, ask 1–2 concrete scenario dilemmas per turn (*"When X and Y collide under pressure, which wins first and where does that flip?"*). Never ask humans to write protocol IDs, hashes, or role schemas.
-   - **Works + Targeted Interview (`--mode works`)**: Read only explicitly authorized files, extract judgments that need to be preserved (working either from explicit questions or backward from existing conclusions, rules, processes, and methods to surface the question each answers), verbatim `reasons`, and concrete `example` cases, then interview only on unresolved collisions or missing boundaries.
-   - **Research & Reference Synthesis (`--mode research`)**: Compare competing external options (`evidence_analysis`) for an explicit human choice, or synthesize a holder-authorized corpus of trusted reference materials into a reviewed domain work with explicit source attribution (never disguising reference synthesis as personal lived experience, and keeping unchosen options as `discuss` materials or open `answer_kind: "other"` items).
-3. **Stage 2 — Issue Organization Around Judgments, Anti-Platitude & Strict Draft Field Boundary**:
-   - Organize each issue (`focus`) around a concrete judgment that needs to be preserved — either starting from a recurring decision question or working backward from an existing conclusion, rule, process, or method to state the specific question it answers (never gate creation on whether a question sounds abstractly "interesting", and never use vague topic labels).
-   - Reject truisms nobody could disagree with; state the concrete priority and accepted cost without repeating `focus` in `statement` or repeating `statement` in `method`.
-   - Ensure each role in `method.components` appears at most once per judgment (merge multiple points sharing a role in order into one component statement).
-   - Specify concrete `applies_when` (`scope.statement`) and explicit stop-limits (`boundaries`). **Strict `kdna.draft/1` schema boundary:** `kdna.draft/1` draft files accept only core judgment fields (`id`, `focus`, `statement`, `applies_when`, `boundaries`, `method`, `reasons`, `example`) — **do NOT write `exceptions`, `misuse`, or `relationships` inside `draft.json`** (which fails validation with `unknown_field`). To add `exceptions`, foreseeable `misuse`, or `relationships`, run `kdna compile draft.json --output authored.json` into full `0.6.0` input first and add them there before `kdna create`.
-4. **Stage 3 — Three-Choice Human Review Table & Honest Provenance**:
-   - Present a concise review table (`ID | Contested Question | Conclusion & Cost | Applies When | Stops When | Adopt / Revise / Reject`) before saving.
-   - Attribute authorship to the human holder/creator while recording AI Agents honestly in provenance as authorized tools rather than co-creators. Never pass unreviewed Agent synthesis off as human-authored conviction; preserve undecided domain questions via `answer_kind: "other"` and unstated methods via `method.method.term: "other"`.
-5. **Stage 4 — Validate, Build, One-Page Review Sheet, Plain-Language Revision & Local Protect**:
-   - Run `validate-input --format human` (`@aikdna/kdna-cli@0.45.2`), resolve all blocking diagnostics, and review non-blocking structural advisories (`tautological_statement`, `method_repeats_statement`, `unbounded_judgment`, `overbroad_scope`, `duplicate_focus`, `uniform_default_method`) without treating them as numerical scores.
-   - Save to a new file (`compile` + `create`, `create --draft`, or `create`). Whenever the work includes conditional `exceptions` (`conditions` + `replace_limit`), `misuse`, or inter-judgment `relationships`, **always** run `kdna compile draft.json --output authored.json` and encode the complete source structure there — never drop rich fields to fit `kdna.draft/1` and never ask the author to hand-edit raw JSON.
-   - Cold-reopen with `inspect --format human`, `validate --system --format human`, `read --mode catalog --allow-read --format human`, and generate a one-page author proof sheet (`kdna review <file.kdna> --allow-read`) so the author can verify every judgment, reason, boundary, conditional exception, misuse warning, and relation in plain prose.
-   - **Plain-language revision loop (Agent absorbs all mechanical chores)**: When the author selects an existing `.kdna` (or its `.authored.json` source) and states a revision in plain language, the Agent automatically: (1) computes the original `.kdna` file's `sha256` (`--expected-a`); (2) runs `source-open` to extract the full `{manifest, payload}` source (or edits `.authored.json` directly when working from authored source); (3) applies the confirmed edit while preserving every existing `reason`, `condition`, `exception`, `misuse`, `relationship`, `source`, `material`, and `history` entry, bumping `manifest.version` / `payload.asset.asset_version` (and `judgment_version`) and recording an honest revision entry; (4) packs a new file beside the original via `source-pack` (`@aikdna/kdna-cli@0.45.2` automatically recomputes and re-admits unsigned `checksums.json` when revising published `.kdna` files, while signed containers fail closed; or runs `validate-input` + `create` from `.authored.json`); and (5) runs `kdna diff <old.kdna> <revised.kdna> --format human` to show the author **before vs. after substantive changes plus the affected downstream related judgments** (passing `--verbose` only if full internal IR wiring is requested) for fresh author confirmation before switching active files.
-   - Use permanently account-free offline `protect` only with `--password-file` (mode `0600`) or `--password-fd` (never put passwords in `argv` or chat), and **always retain the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source file** because future revisions (`source-open` / `source-pack` or `create --draft`) run against plaintext source rather than encrypted `.kdna` envelopes.
+## Stage 0: Scope & Tier Calibration
 
-## Provenance, Revision & Local Protection Boundaries
+- **Expand vs. Isolate**: Extend an existing `.kdna` only within one decision domain; isolate separate domains so `catalog` stays clean. Elevate recurring cross-domain collisions into an explicit arbitration issue.
+- **Tier Calibration (no uniform quality ruler)**:
+  - *Tier 1 (Light / Taste, 1-15)*: Sharp `focus`, non-platitude `statement`, `applies_when`, `boundaries` only; never force `sections`, `relationships`, `worldview`, or fabricated `method` roles.
+  - *Tier 2/3 (System / Research, 15+ or multi-source)*: Activate `sections`, `relationships` (`support`/`qualify`/`conflict`/`complement`), `value_order`, `worldview`, `exceptions`, `misuse`, and `sources`.
 
-Start from the user's natural language and reuse the existing authorization. Establish the intended judgment, scope, explicit materials and new private output path. Read only named UTF-8 text files or interview through the selected live channel. If verified-local processing is required and the Host cannot attest it, stop before reading; a local executable does not prove where the Agent processes content.
+## Stage 1: 3-Path Routing & Confirmation
 
-Draft substantive alternatives when exploring options, preserving actual source and license obligations. When a judgment's method is genuinely unstated, record that absence explicitly via `method.method.term: "other"` rather than inventing a method. Keep candidate-specific conditions with that candidate rather than merging them into overall conditions.
+Reuse prior choices; ask at most one plain question for missing route/output path. Never ask humans for schemas, IDs, or hashes.
 
-Obtain actual selection and fresh final adoption of the full current preview. When editorial adoption is expressly delegated to an Agent, record that existing authority and represent the actor as an Agent, never as a human. After any revision, show a fresh preview, run `kdna diff <old.kdna> <revised.kdna> --format human`, and obtain fresh adoption before switching active files. Always keep the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source alongside any `kdna protect` output so future revisions (`source-open` / `source-pack` or `create --draft`) operate directly on plaintext source.
+- **`works` (`--mode works`)**: Exhaust authorized files first; ask only on live collisions or missing stop-boundaries. **Confirm**: fidelity to the author's *current* stance.
+- **`interview` (`--mode interview`)**: Elicit tacit rules via 1-2 dilemmas/turn (*"When X and Y collide, which wins and where does it flip?"*). **Anti-nagging**: no repetitive loops; ask only for missing priorities, stop-boundaries, or irreversible commitments.
+- **`research` (`--mode research`)**: Compare options (`evidence_analysis`) or synthesize a trusted corpus. **Confirm**: material scope, route preference, and adoption boundaries -- **NEVER ask non-experts to certify domain truth**. Separate `creator` from cited `sources` (`source_refs`); keep unchosen options as `discuss` or open `answer_kind: "other"`.
 
-Deliver the saved `.kdna` file only after the CLI saves, reads back, and verifies the bytes. Static reopening keeps `creation_accepted:not_evaluated`, `live_context:unavailable`, `identity:not_verified`, and `action_authorization:not_evaluated`. Saving, protecting, or reading an asset grants no action authority.
+## Stage 2: Ingestion, Authority & Staging
+
+- **Multi-format extraction**: Read only authorized files. Extract UTF-8 first from `.docx`, `.pdf`, chat exports, or voice transcripts; fix ASR homophones by context (flag uncertain edits). **Never skip unreadable files silently** -- list every skipped file.
+- **Source Authority Hierarchy**: `live author correction > author-edited primary > raw draft > secondary summary / AI glossary`. Higher version labels never override primary sources.
+- **Conditional `.kdna-work/` Staging** (ONLY at `>= 5` files or `> 30 KB`): stage privately in `.kdna-work/` (`00-inventory.md` -> `01-raw-claims.jsonl` with upfront provenance tags + anchors -> `02-cluster-and-weave.md` -> `03-review-table.md`). Never pack `.kdna-work/` into `.kdna`.
+
+## Stage 3: Distillation, Anti-Distortion & Weaving
+
+- **Bidirectional issues**: Derive `focus` forward (`Q -> A`) or backward (`conclusion/rule -> Q`); never reject needed rules because the question sounds plain.
+- **Catalog blind-readability**: Every `focus` must be selectable from `catalog` alone -- include scope cues; ban vague labels and unexplained jargon.
+- **Subject lock & provenance**: Lock each judgment to its subject; separate direct stance, synthesis, derived extensions, and external sources; enforce **cross-file boundary attribution** (never cite File A for File B's limit).
+- **Calibrated anti-absolutism & facts**: Ban unverified outcome guarantees and mind-reading; **keep** sharp operational redlines with boundaries/exceptions. Separate observable facts from inferred motives.
+- **Phase & order**: Distinguish prep/review/training vs. live execution in `applies_when`/`misuse`; never treat `sections` (`reading_order`) as mandatory execution steps unless `form: "rule"`.
+- **Throttle-brake & methods**: Pair prescriptive/mutually constraining rules with counterweights via `conflict`/`qualify` (no fake conflicts on Tier 1). Use `method.term: "other"` when unstated; merge repeated roles in order.
+
+## Stage 4: Scoped Layered Review
+
+Confirm layer-by-layer (spine -> live conflicts -> optional extensions) in a plain **`Adopt / Revise / Reject`** table (broad praise never confirms wording or citations). After compiling, run `kdna review <file.kdna> --allow-read` for a one-page proof sheet.
+
+## Stage 5: Compile, Verification & Protection
+
+- **Single-source `kdna.draft/1`**: Run `validate-input draft.json --format human`, fix errors, review advisories, then `create --draft draft.json --output <new.kdna> --allow-create`. Keep `draft.json` as the **sole canonical source** for revisions (edit `draft.json` -> bump `asset.version` -> `create --draft` -> `kdna diff <old> <new> --format human`). Use `source-open`/`source-pack` only for external `.kdna` without `draft.json` (or with `members[]`).
+- **Honest 2-Tier Verification** (after cold-reopen `inspect` + `validate --system`):
+  - *Tier 1 -- Closure & Brake Smoke Check (all Hosts; never call "blind")*: Run `kdna read <file.kdna> --mode exact_selection --judgment-id <id> --format human --allow-read` on 1 real task + 1 edge case; verify CLI stdout delivers paired brakes (`conflict`/`qualify`), boundaries, and exceptions.
+  - *Tier 2 -- Fresh-Context Blind Test (only with isolated zero-history subagents)*: Fresh subagent gets only `catalog` stdout + case -> picks IDs -> CLI runs `exact_selection` -> fresh turn gets only `exact_selection` stdout + case. Label single-thread runs as non-blind walkthroughs.
+- **Offline protection**: Run `kdna protect` via `--password-prompt`, `--password-env <VAR>`, `--password-file <0600-path>`, or `--password-fd <n>` -- never passphrases in `argv`/chat. Warn that **outer `manifest` stays plaintext** while `payload.kdnab` is AEAD-encrypted; keep plaintext `draft.json` + `.kdna` privately.
+- **Frozen `KDNA Reader v0.3.4`**: CLI `0.46.0` supports `form: "rule"` and `answer_kind: "other"`, while Reader `v0.3.4` shows an incomplete banner on both; default to `form: "conclusion"` + `method` for zero-banner display until Reader's next release (never fabricate answers for undecided questions).
+
+## Trust Boundaries
+
+Stop before reading if verified-local processing is required without Host attestation. Record delegated Agents as Agents, never humans. Static reopening keeps `creation_accepted:not_evaluated`, `identity:not_verified`, and `action_authorization:not_evaluated`; saving or reading grants no action authority.

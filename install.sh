@@ -119,6 +119,7 @@ collect_creator_files() {
     "kdna-creator/agents/openai.yaml" \
     "kdna-creator/references/authoring-and-protection.md" \
     "kdna-creator/references/co-creation-craft.md" \
+    "kdna-creator/references/draft-schema-and-methods.md" \
     "kdna-creator/references/native-asset-authoring.md" \
     "kdna-creator/scripts/native-asset-review.mjs"; do
     if [ ! -f "$SCRIPT_DIR/$rel" ]; then
@@ -198,6 +199,6 @@ log "Completed KDNA Skill setup for $HOST_NAME in $SKILL_BASE (installed $INSTAL
 cat <<'EOF'
 
 Skill placement does not activate the Host or grant permission to read or create
-an asset. Use the direct official CLI (run `bash install-cli.sh` in this checkout
-for an offline local CLI, or `@aikdna/kdna-cli@0.45.2`) as the primary route.
+an asset. Use `@aikdna/kdna-cli@0.46.0` as the primary direct CLI route (or run
+`bash install-cli.sh` in this checkout for the offline local MCP read-only graph).
 EOF
