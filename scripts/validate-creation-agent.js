@@ -1,18 +1,153 @@
 #!/usr/bin/env node
 "use strict";
-// Static packaging, routing, example and exact declaration checks only.
-// Real Creator behavior and editorial adoption require independent forward evaluation.
-const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..'),skillRoot=path.join(root,'kdna-creator');
-const read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const texts={skill:read('kdna-creator/SKILL.md'),reference:read('kdna-creator/references/terminal-session.md'),guide:read('kdna-creator/references/component-creation-draft.md'),contract:read('docs/KDNA_CREATION_AGENT_CONTRACT.md')};
-const expected={"@aikdna/kdna-studio-cli":["0.13.0","8f1b0b8109d03c1678339f90fbf3c63ef20c4eb190004f0d4b8aabfff198415a"],"@aikdna/kdna-core":["0.37.2","16234f84440252b0c449c529de71435630cc79816f88ff0d0a8a2b4d852c1274"],"@aikdna/kdna-read":["0.11.3","5fd1efc5bfd28ce8c9724fefb09c1abed35dde2c16f8498b572da5c640679f4c"],"@aikdna/kdna-studio-core":["4.0.0","062c35970e4c7e3ba49f8d9420f1e221a3ec007fac145d67c04fe5ee2e88be62"]};
-const binding=JSON.parse(read('kdna-creator/references/current-studio-binding.json'));
-assert.equal(binding.kind,'creator-adapter-current-archive-binding');assert.equal(binding.adapter,'kdna-creator');assert.equal(binding.evidence_format,'kdna.studio-creation-evidence/2');assert.equal(binding.provider_assertion,'declared_not_authenticated');assert.equal(binding.materialization_rule,'kdna.studio-materialization/2');assert.equal(binding.component_definition,'sha256:37e857cc4e43f7283a51ee6abe1f6e8401803902e8dc47f6d14d712aa7d7b089');assert.equal(binding.archives.length,4);assert.equal(Object.hasOwn(binding,'status'),false);
-const seen=new Set();for(const item of binding.archives){const e=expected[item.name];assert.ok(e&&!seen.has(item.name));seen.add(item.name);assert.equal(item.version,e[0]);assert.equal(item.sha256,e[1]);assert.equal(item.archive,item.name.replace(/^@/,'').replace('/','-')+'-'+item.version+'.tgz');assert.ok(Number.isSafeInteger(item.bytes)&&item.bytes>0);}
-assert.equal(binding.cli_version,expected['@aikdna/kdna-studio-cli'][0]);assert.match(binding.transitive_lock.sha256,/^[0-9a-f]{64}$/);
-assert.match(texts.skill,/name: kdna-creator/);assert.ok(texts.skill.includes('(references/co-creation-craft.md)')&&texts.skill.includes('(references/native-asset-authoring.md)')&&texts.skill.includes('(references/authoring-and-protection.md)'));assert.ok(texts.contract.includes('../kdna-creator/references/terminal-session.md'));
-for(const [name,text] of Object.entries({...texts,binding:JSON.stringify(binding)})){assert.ok(!/\/Users\/|\/private\/tmp\/|\/home\//.test(text),name+' has private machine path');for(const match of text.matchAll(/```json\n([\s\S]*?)\n```/g)){const frame=JSON.parse(match[1]);assert.ok(typeof frame.id==='string'&&frame.op==='interpret'&&frame.data&&typeof frame.data.replyTo==='string');assert.ok(['select','confirm'].includes(frame.data.kind));if(frame.data.kind==='select')assert.ok(Array.isArray(frame.data.choices)&&frame.data.choices.every(c=>typeof c.judgmentLocalKey==='string'&&typeof c.alternativeLocalKey==='string'));else assert.equal(Object.hasOwn(frame.data,'choices'),false);}}
-for(const m of texts.skill.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)){const target=path.resolve(skillRoot,m[1]);assert.ok(target.startsWith(skillRoot+path.sep)&&fs.existsSync(target),'broken standalone skill reference');}
-const metadata=read('kdna-creator/agents/openai.yaml');assert.ok(metadata.includes('$kdna-creator'));assert.ok(!/^(policy|dependencies):/m.test(metadata));for(const name of ['README.md','README.zh.md'])assert.ok(read(name).includes('kdna-creator'));
-console.log('Static Creator declarations, examples and standalone routing match current files; actual Agent behavior, identity, installation acceptance and full creation remain independently evaluated.');
+// Static packaging, routing, size-budget, reference, JSON-example, and hygiene
+// checks for native 0.6.0 kdna-creator. Real Creator behavior and editorial
+// adoption remain independently evaluated.
+const fs = require("node:fs");
+const path = require("node:path");
+const assert = require("node:assert/strict");
+
+const root = path.resolve(__dirname, "..");
+const skillRoot = path.join(root, "kdna-creator");
+const read = (rel) => fs.readFileSync(path.join(root, rel), "utf8");
+
+const ACTIVE_REFERENCES = [
+  "references/co-creation-craft.md",
+  "references/draft-schema-and-methods.md",
+  "references/authoring-and-protection.md",
+  "references/native-asset-authoring.md",
+];
+
+const RETIRED_STUDIO_FILES = [
+  "kdna-creator/references/component-creation-draft.md",
+  "kdna-creator/references/current-studio-binding.json",
+  "kdna-creator/references/studio-protected-host.md",
+  "kdna-creator/references/terminal-session.md",
+  "kdna-creator/scripts/check-studio-cli-binding.mjs",
+  "kdna-creator/scripts/studio-local-launcher.cjs",
+  "kdna-creator/scripts/studio-local-launcher.test.cjs",
+  "kdna-creator/scripts/studio-protected-host.cjs",
+  "kdna-creator/scripts/studio-protected-host.test.cjs",
+  "kdna-creator/scripts/fixtures/partial-write-preload.cjs",
+];
+
+const MAX_SKILL_BYTES = 7 * 1024; // 7 KB hard budget for kdna-creator/SKILL.md
+
+const skillPath = path.join(skillRoot, "SKILL.md");
+const skillBytes = fs.readFileSync(skillPath);
+assert.ok(
+  skillBytes.length <= MAX_SKILL_BYTES,
+  `kdna-creator/SKILL.md exceeds ${MAX_SKILL_BYTES} B budget (${skillBytes.length} B)`,
+);
+
+const texts = {
+  skill: skillBytes.toString("utf8"),
+  contract: read("docs/KDNA_CREATION_AGENT_CONTRACT.md"),
+  ...Object.fromEntries(
+    ACTIVE_REFERENCES.map((rel) => [rel, read(`kdna-creator/${rel}`)]),
+  ),
+};
+
+// Verify frontmatter, required references, and key native 0.6.0 routing contracts.
+assert.match(texts.skill, /^---\n[\s\S]*?\bname:\s*kdna-creator\b[\s\S]*?\n---/);
+for (const rel of ACTIVE_REFERENCES) {
+  assert.ok(
+    texts.skill.includes(`(${rel})`),
+    `kdna-creator/SKILL.md missing link to (${rel})`,
+  );
+  assert.ok(
+    texts.contract.includes(`../kdna-creator/${rel}`),
+    `docs/KDNA_CREATION_AGENT_CONTRACT.md missing link to ../kdna-creator/${rel}`,
+  );
+}
+
+for (const token of [
+  "@aikdna/kdna-cli@0.46.0",
+  "works",
+  "interview",
+  "research",
+  ".kdna-work/",
+  "Adopt / Revise / Reject",
+  "kdna review",
+  "kdna diff",
+  "--password-env",
+  "--password-prompt",
+  "KDNA Reader v0.3.4",
+]) {
+  assert.ok(
+    texts.skill.includes(token),
+    `kdna-creator/SKILL.md missing required token: ${token}`,
+  );
+}
+
+// Verify all relative Markdown links in SKILL.md stay within kdna-creator/ and exist.
+for (const m of texts.skill.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
+  const href = m[1];
+  if (/^https?:\/\//.test(href) || href.startsWith("#")) continue;
+  const target = path.resolve(skillRoot, href.split("#")[0]);
+  assert.ok(
+    target.startsWith(skillRoot + path.sep) && fs.existsSync(target),
+    `broken standalone skill reference: ${href}`,
+  );
+}
+
+// Verify zero private machine paths, zero retired Studio traps, and valid JSON blocks.
+const RETIRED_RE =
+  /studio-protected-host|terminal-session\.md|current-studio-binding\.json|component-creation-draft\.md|kdna-studio-cli|kdna-studio-core/;
+for (const [name, text] of Object.entries(texts)) {
+  assert.ok(
+    !/\/Users\/|\/private\/tmp\/|\/home\//.test(text),
+    `${name} contains a private machine path`,
+  );
+  assert.ok(
+    !RETIRED_RE.test(text),
+    `${name} contains a retired Studio 0.5.0 reference`,
+  );
+  for (const match of text.matchAll(/```json\n([\s\S]*?)\n```/g)) {
+    assert.doesNotThrow(
+      () => JSON.parse(match[1]),
+      `${name} has an invalid JSON fenced example`,
+    );
+  }
+}
+
+// Verify retired Studio 0.5.0 files are removed and native review helper stays intact.
+for (const retired of RETIRED_STUDIO_FILES) {
+  assert.equal(
+    fs.existsSync(path.join(root, retired)),
+    false,
+    `retired Studio file still exists: ${retired}`,
+  );
+}
+assert.equal(
+  fs.existsSync(path.join(skillRoot, "scripts", "native-asset-review.mjs")),
+  true,
+  "kdna-creator/scripts/native-asset-review.mjs must remain present",
+);
+
+// Verify agent metadata, installer coverage, and top-level README links.
+const metadata = read("kdna-creator/agents/openai.yaml");
+assert.ok(metadata.includes("$kdna-creator"));
+assert.ok(!/^(policy|dependencies):/m.test(metadata));
+
+const installSh = read("install.sh");
+for (const rel of ACTIVE_REFERENCES) {
+  assert.ok(
+    installSh.includes(`"kdna-creator/${rel}"`),
+    `install.sh missing kdna-creator/${rel}`,
+  );
+}
+
+for (const name of ["README.md", "README.zh.md"]) {
+  assert.ok(read(name).includes("kdna-creator"), `${name} missing kdna-creator`);
+}
+
+console.log(
+  JSON.stringify({
+    status: "NATIVE_CREATOR_VALID",
+    skill_bytes: skillBytes.length,
+    max_skill_bytes: MAX_SKILL_BYTES,
+    active_references: ACTIVE_REFERENCES.length,
+    retired_studio_files_present: 0,
+  }),
+);

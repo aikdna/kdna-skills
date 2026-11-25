@@ -1,7 +1,7 @@
 # KDNA with Codex
 
-Current local runtime coordinates: MCP 0.8.4 / CLI 0.45.2 / Core 0.37.11 / Read 0.13.5
-(contract kdna.read/0.7.0-candidate). Separate **Codex CLI 0.154.0** model turns
+Current local MCP runtime coordinates: MCP 0.8.4 / vendored CLI 0.45.2 / Core 0.37.11 / Read 0.13.5
+(contract kdna.read/0.7.0-candidate). Direct CLI authoring and reading use `@aikdna/kdna-cli@0.46.0`. Separate **Codex CLI 0.154.0** model turns
 have used full and task presentations to read a synthetic native public asset
 and apply its judgments. For Agent-led setup and authoring, see the
 [getting-started guide](../../docs/GETTING_STARTED.md).
@@ -16,25 +16,25 @@ bash install.sh --codex
 
 - Pass `--only loader` or `--only creator` to install a single Skill.
 - Pass `--force` to update existing Skill files when upgrading a local checkout.
-- Skill placement places `kdna-loader/SKILL.md` and `kdna-creator/` (`SKILL.md`, `agents/openai.yaml`, `references/co-creation-craft.md`, `references/native-asset-authoring.md`, `references/authoring-and-protection.md`, and `scripts/native-asset-review.mjs`) under `~/.codex/skills/`. It does not automatically grant permission to read or create `.kdna` assets.
+- Skill placement places `kdna-loader/SKILL.md` and `kdna-creator/` (`SKILL.md`, `agents/openai.yaml`, `references/co-creation-craft.md`, `references/draft-schema-and-methods.md`, `references/authoring-and-protection.md`, `references/native-asset-authoring.md`, and `scripts/native-asset-review.mjs`) under `~/.codex/skills/`. It does not automatically grant permission to read or create `.kdna` assets.
 
 ## 2. Install or Verify the Official KDNA CLI
 
-Requires **Node.js >= 22**. Choose either the npm package or the checkout's offline vendored graph:
+Requires **Node.js >= 22**. Choose either the npm package (recommended for `0.46.0` authoring & reading) or the checkout's offline vendored graph (powers MCP `0.8.4`):
 
 ```sh
-# Option A — Run or install from npm
-npx -y @aikdna/kdna-cli@0.45.2 --help
+# Option A — Run or install from npm (add --registry=https://registry.npmmirror.com only on CN timeout)
+npx -y @aikdna/kdna-cli@0.46.0 --help
 # or install globally:
-npm install -g @aikdna/kdna-cli@0.45.2
+npm install -g @aikdna/kdna-cli@0.46.0
 
-# Option B — Offline verified local CLI inside this kdna-skills checkout
+# Option B — Offline verified read-only graph inside this kdna-skills checkout (CLI 0.45.2 for MCP 0.8.4)
 bash install-cli.sh
 ```
 
 ## 3. Direct CLI Workflow (Recommended Default)
 
-When Codex has shell tool access, use the official CLI directly for the exact file the user selected:
+When Codex has shell tool access, use `@aikdna/kdna-cli@0.46.0` directly for the exact file the user selected:
 
 ### Reading a `.kdna` Asset (`kdna-loader`)
 
@@ -46,8 +46,8 @@ kdna read /absolute/selected.kdna --mode exact_selection --judgment-id <id-1>,<i
 ```
 
 - Always read `catalog` first and select only the 1–5 judgment IDs relevant to the current task (`0` is valid when none apply).
-- Pass `--format human` or `--compact` on multi-judgment works (such as the *KDNA Whitepaper* `v1.0.2`) so output stays compact while preserving full `scope`, `boundaries`, `exceptions`, `misuse`, and `closure`.
-- For password-protected `0.6.0` assets, pass `--password-file /path/to/0600-passphrase.txt` or `--password-fd <n>` (`n >= 3`) — never pass a password in `argv` or chat.
+- Pass `--format human` or `--compact` on multi-judgment works (such as the *KDNA Whitepaper* `v1.0.2`) so output stays compact while preserving full `scope`, `boundaries`, conditional `exceptions`, `misuse`, and `closure`.
+- For password-protected `0.6.0` assets, pass `--password-env <VAR>` (user exports outside chat), `--password-prompt` (interactive TTY), `--password-file /path/to/0600-passphrase.txt`, or `--password-fd <n>` (`n >= 3`) — never pass a password in `argv` or chat, and never use `/dev/stdin` with `--session`.
 
 ### Co-Creating, Revising, and Protecting a `.kdna` Asset (`kdna-creator`)
 
@@ -55,13 +55,14 @@ kdna read /absolute/selected.kdna --mode exact_selection --judgment-id <id-1>,<i
 kdna init --mode interview --output draft.json
 kdna validate-input draft.json --format human
 kdna create --draft draft.json --output first.kdna --allow-create
+kdna review first.kdna --allow-read
 kdna diff first.kdna revised.kdna --format human
-# Pipe passphrase from a password manager or silent prompt (`IFS= read -rs KDNA_PASS`) — no plaintext file on disk
-printf '%s' "$KDNA_PASS" | kdna protect first.kdna --output locked.kdna --password-file /dev/stdin
+# Interactive hidden TTY prompt (or --password-env KDNA_PASS in Agent shells; outer manifest stays plaintext):
+kdna protect first.kdna --output locked.kdna --password-prompt
 ```
 
-- Follow [`kdna-creator/SKILL.md`](../../kdna-creator/SKILL.md), [`co-creation-craft.md`](../../kdna-creator/references/co-creation-craft.md), [`native-asset-authoring.md`](../../kdna-creator/references/native-asset-authoring.md), and [`authoring-and-protection.md`](../../kdna-creator/references/authoring-and-protection.md).
-- Always retain the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source (`first.kdna`) when running `kdna protect`, because future revisions (`source-open` / `source-pack` or `create --draft`) operate on plaintext source rather than encrypted `.kdna` envelopes.
+- Follow [`kdna-creator/SKILL.md`](../../kdna-creator/SKILL.md), [`co-creation-craft.md`](../../kdna-creator/references/co-creation-craft.md), [`draft-schema-and-methods.md`](../../kdna-creator/references/draft-schema-and-methods.md), [`authoring-and-protection.md`](../../kdna-creator/references/authoring-and-protection.md), and [`native-asset-authoring.md`](../../kdna-creator/references/native-asset-authoring.md).
+- Keep `draft.json` as the sole canonical source for revisions (edit `draft.json` → `create --draft` → `kdna diff`), and retain plaintext `draft.json` + `.kdna` privately alongside any `kdna protect` output.
 
 ## 4. Optional Operator-Bound MCP Server Configuration
 
@@ -76,7 +77,7 @@ When you prefer an operator-bound stdio MCP session scoped to one local `.kdna` 
 
 ### Codex MCP Configuration (`~/.codex/config.toml` or `.codex/config.toml`)
 
-Codex accepts stdio servers in `~/.codex/config.toml` or a project's `.codex/config.toml` (pass `"--password-file", "/abs/path/0600-passphrase.txt"` in `args` when binding a password-protected `.kdna` asset):
+Codex accepts stdio servers in `~/.codex/config.toml` or a project's `.codex/config.toml` (for password-protected `.kdna` assets, pass `"--password-file", "/abs/path/0600-passphrase.txt"` or `"--password-fd", "<n>"` in `args` — never `--password-file /dev/stdin`):
 
 ```toml
 [mcp_servers.kdna]

@@ -1,167 +1,143 @@
-# Human + Agent Co-Creation Craft Playbook (Native `0.6.0` Assets)
+# Human + Agent Co-Creation Craft Playbook (Native `0.6.0`)
 
-This reference defines the five-stage co-creation workflow for turning lived human expertise, authored works, or compared research into high-signal native `0.6.0` `.kdna` judgment assets using `@aikdna/kdna-cli@0.45.2` (or the Host-selected local CLI checkout). It adds editorial craft and interaction discipline without weakening Core's structural authority or introducing numerical quality scores.
-
----
-
-## Stage 0: Clarify the Judgment Core
-
-Before scaffolding anything, align with the author on what makes their judgment worth preserving:
-
-- **Focus on real trade-offs and boundaries**: Whenever the user wants to capture their decision criteria, taste, or stop-limits (even a small, focused set of judgments), help them articulate *when a rule applies*, *what it prioritizes*, and *where it stops*.
-- **Quality over count**: One strong judgment with clear boundaries is better than twenty padded truisms. Never manufacture extra judgments to make an asset look comprehensive.
+This reference expands the procedural craft behind [`SKILL.md`](../SKILL.md) for turning lived experience, authored works, or compared reference materials into high-signal native `0.6.0` `.kdna` assets using `@aikdna/kdna-cli@0.46.0`. It encodes interaction discipline and anti-distortion safeguards without replacing Core's structural authority or introducing numerical quality scores.
 
 ---
 
-## Stage 1: Choose One of the Three Co-Creation Entry Modes
+## 1. Scope Split, Tier Calibration & 4-Factor Diagnostics
 
-Match the starting scaffold and conversation style to what the human actually brings:
+### Expand vs. Isolate a New Asset
+Before adding judgments to an existing `.kdna` file, ask whether they govern the **same recurring decision domain**:
+- **Expand** when new judgments refine priorities, boundaries, or exceptions inside the same domain and reader expectation.
+- **Isolate into a separate `.kdna` asset** when combining unrelated domains would pollute `catalog` selection on ordinary tasks.
+- **Elevate live cross-domain collisions**: When two otherwise valid domains collide in practice (for example, personal writing taste vs. legal compliance), do not quietly bury one inside the other — record the arbitration priority as an explicit issue (or dedicated precedence asset).
 
-| Mode | CLI Scaffold | When to Use | How the Agent Conducts Discovery |
+### Tier Calibration (No Uniform Quality Ruler)
+A 4-rule aesthetic preference file and a 60-rule domain system do **not** share one structural ruler:
+
+| Tier | Typical Size & Use | Required Craft Elements | Avoid Over-Engineering |
 | --- | --- | --- | --- |
-| **A. Socratic Interview** | `kdna init --mode interview --output draft.json` | The author holds tacit rules in their head and has few or no written documents yet. | Ask **1–2 concrete scenario dilemmas per turn** (*"When X and Y collide under deadline pressure, which wins first, and at what exact threshold does that flip?"*). Never hand the human a blank schema or ask for protocol IDs, hashes, or role tables. |
-| **B. Works + Targeted Interview** | `kdna init --mode works --output draft.json` | The author supplies essays, postmortems, design docs, review comments, or memos (for example, authoring a work like *《KDNA白皮书》* `1.0.2`). | Read only the explicitly authorized files. Extract judgments that need to be preserved (working either from explicit questions or backward from existing conclusions, rules, processes, and methods to surface the question each answers), verbatim rationale (`reasons`), and concrete cases (`example`). Interview **only** on genuine gaps: unresolved collisions between two pieces, implicit scope limits, or missing stop-boundaries. |
-| **C. Research & Reference Synthesis** | `kdna init --mode research --output draft.json` | The user asks the Agent to compare external standards/papers for a human choice, or delegates synthesis of a trusted reference-material corpus into a holder-reviewed domain work. | Present structured options with supporting and contrary evidence (`evidence_analysis`) or synthesize the authorized reference corpus with explicit source attribution (never disguising reference synthesis as personal lived experience). Require explicit human review and adoption before saving, and keep unchosen candidates as `discuss` materials or undecided `answer_kind: "other"` items. |
+| **Tier 1 — Light / Taste** | 1–15 judgments (personal taste, writing voice, weekly cadence, quick team habits) | Sharp `focus`, non-platitude `statement`, concrete `applies_when`, explicit `boundaries` | Do **not** force `sections`, `relationships`, `worldview`, `value_order`, or fabricated `method` roles. Leave optional arrays empty. |
+| **Tier 2 — Domain Playbook** | 10–30 judgments (code review, editorial SOP, hiring rubric, negotiation playbook) | Tier 1 + `creator`, `value_order`, selective `relationships` (`conflict`/`qualify` brakes), `exceptions`, `misuse` | Add edges only where genuine tension or qualification exists; never pad counts to hit round numbers. |
+| **Tier 3 — Complex System / Book / Research** | 25+ judgments or multi-source corpus (books, methodologies, literature syntheses) | Tier 2 + `sections`, `worldview`, `sources` + `source_refs`, `.kdna-work/` staging, layered human review | Separate reading chapters (`sections`) from runtime execution steps; preserve undecided questions honestly (`answer_kind: "other"`). |
 
-For a minimal single-preference scratchpad, `kdna init --output draft.json` (`--mode minimal`) remains available.
-
----
-
-## Stage 2: Question Distillation, Anti-Platitude & Three-Tier Boundary Craft
-
-Every candidate judgment must pass four structural craft checks before human review:
-
-1. **Contested Question (`focus`)**:
-   - Write `focus` as the specific recurring decision question where reasonable practitioners could choose differently (e.g., *"Whether routine weekly engineering updates lead with completed outcomes or chronological activity"*), not a vague noun label (*"Team communication"*).
-   - Two judgments must not ask the exact same `focus` question unless scoped to distinct non-overlapping contexts.
-
-2. **Anti-Platitude Conclusion (`statement` / `core_expression.statement`)**:
-   - **Test**: Could a competent practitioner reasonably choose the opposite rule in another valid context? If nobody could ever disagree (*"Write clear, maintainable code and test thoroughly"*), it is a platitude, not a judgment.
-   - Rewrite platitudes into operational priorities that name what wins, what loses, and what cost is accepted. Never copy `focus` verbatim into `statement`.
-
-3. **Honest Formation Method & Unique Role Components**:
-   - Choose a method term (`tradeoff`, `criteria_comparison`, `observation`, `experience`, `evidence_analysis`, `inference`, `feeling`, or `other`) **only** when the author's reasoning genuinely matches that formation structure.
-   - Do not repeat `statement` verbatim inside a method role; explain *how* the conclusion was reached.
-   - **Unique role rule**: In full `0.6.0` input, each role in `method.components` may appear **at most once** per judgment. When an author states two points for the same role (for example, two accepted downsides under `不可兼得之处`), merge them in order into a single component statement so zero authored nuance is lost.
-
-4. **Three-Tier Scope & Stop-Boundary Craft**:
-   - **`applies_when` (`scope.statement`)**: Name the concrete task, actor, and operating conditions. Avoid single-word catch-alls (`"all"`, `"always"`, `"通用"`, `"所有场景"`).
-   - **`boundaries`**: Name the explicit stop-edge or threshold where this judgment yields, reverses, or stays silent (e.g., *"Stops applying once an incident is declared; switch to incident timeline protocol"*).
-   - **`exceptions` / `misuse` / `relationships` (full `0.6.0` input only — never in `kdna.draft/1`)**: Do **not** place `exceptions`, `misuse`, or `relationships` inside `draft.json` (`kdna.draft/1` rejects them with `unknown_field`). When adding explicit carve-outs (`exceptions`), foreseeable misapplications (`misuse`), or inter-judgment `relationships`, run `kdna compile draft.json --output authored.json` into full `0.6.0` input first.
+### Four-Factor Failure Diagnosis
+When an Agent produces a poor result using a `.kdna` asset, diagnose which of four distinct factors failed before rewriting the asset:
+1. **Distorted saving**: The `.kdna` file omitted a boundary, mangled the author's priority, or flattened provenance.
+2. **Retrieval / condition matching**: `focus` or `applies_when` was too vague or jargon-heavy for Step-1 `catalog` selection.
+3. **Uncovered trade-off**: The real task exposed a new collision the author had not yet decided.
+4. **Agent execution capability**: The right judgments arrived intact, but the model failed to follow them under task complexity.
 
 ---
 
-## Stage 3: Three-Choice Human Review Table & Honest Provenance
+## 2. Three Co-Creation Paths & Distinct Confirmation Contracts
 
-Never dump raw JSON onto a human author as the primary review step. Present a concise review table in natural language and ask for an explicit per-judgment disposition:
-
-| Judgment ID | Contested Question (`focus`) | Proposed Conclusion & Accepted Tradeoff | Applies When | Stops Applying (`boundaries`) | Author Disposition |
-| --- | --- | --- | --- | --- | --- |
-| `update:order` | Lead with outcomes vs chronological log? | Lead with completed outcomes, blockers second, next steps third; accepts losing narrative backstory. | Routine async weekly engineering updates. | Active incidents or postmortem timelines. | **Adopt / Revise / Reject** |
-
-Provenance rules during review:
-- **Adopt**: Record as the author's judgment with the confirmed scope and boundaries.
-- **Revise**: Update wording, scope, method, or boundaries to match the author's correction, then re-confirm affected relations (`support`, `conflict`, `qualify`, `complement`, `value_order`).
-- **Reject / Still Undecided**: Remove rejected Agent suggestions cleanly. If the question itself belongs inside the author's domain but the author has deliberately not yet decided, preserve it honestly in full `0.6.0` input with `answer_kind: "other"` rather than fabricating a conclusion or silently erasing the open question.
+| Path | CLI Scaffold | Discovery Rhythm | Confirmation Contract (CRITICAL) |
+| --- | --- | --- | --- |
+| **Works (`works`)** | `kdna init --mode works --output draft.json` | Read all user-authorized files first. Extract judgments forward (`Q -> A`) or backward (`rule/conclusion -> Q`), verbatim `reasons`, and concrete `example` cases. Interview **only** on live collisions or missing stop-boundaries. | Confirm **fidelity to the author's current stance** (superseding outdated drafts cleanly via authority hierarchy). |
+| **Interview (`interview`)** | `kdna init --mode interview --output draft.json` | Ask **1–2 concrete scenario dilemmas per turn** (*"When X and Y collide under pressure, which wins first and where does that flip?"*). **Anti-nagging**: stop interviewing once priorities and stop-boundaries are clear; never repeat answered questions or hand over blank schemas. | Confirm **concrete slices, priority order, and stop-boundaries** in plain language. |
+| **Research (`research`)** | `kdna init --mode research --output draft.json` | Compare external papers/standards (`evidence_analysis`) or synthesize an authorized reference corpus. Separate `creator` (holder/compiler) from original `sources` (`source_refs`). Keep unchosen candidates as `discuss` materials or open `answer_kind: "other"` judgments. | **NEVER ask non-experts to certify domain truth.** Confirm **material scope, route preference, and adoption boundaries** — and state explicitly that cited claims belong to their `sources`, not the holder's lived experience. |
 
 ---
 
-## Stage 4: Validate, Compile, Cold-Reopen, Diff & Local Protection
+## 3. Five Empirical Distillation Lessons (From Real Multi-Draft Corpus Work)
 
-Once the author confirms the review table:
+Real-world distillation of complex book-length corpora (including multi-revision editions of *Minimalist Communication* / 《极简沟通》) uncovered five recurring LLM failure modes that prompt platitudes fail to stop:
 
-1. **Validate input & inspect craft advisories**:
-   ```sh
-   "$KDNA_NODE" "$KDNA_CLI" validate-input draft.json --format human
-   ```
-   - Fix every blocking diagnostic (`missing_field`, `unknown_field`, `placeholder_not_replaced`, `duplicate_method_roles`, `invalid_method_roles`, `missing_method_roles`).
-   - Review any non-blocking structural advisories (`tautological_statement`, `method_repeats_statement`, `unbounded_judgment`, `overbroad_scope`, `duplicate_focus`, `uniform_default_method`). Advisories keep exit status `0` and never compute a numerical score, but each flags a concrete risk of downstream Agent misapplication.
-
-2. **Compile and create without overwriting prior files**:
-   ```sh
-   "$KDNA_NODE" "$KDNA_CLI" create --draft draft.json --output first.kdna --allow-create
-   ```
-   (Or run `compile draft.json --output authored.json` when adding full `0.6.0` relationships, shared declarations, exceptions, misuse, or attachments before `create authored.json --output first.kdna --allow-create`.)
-
-3. **Cold-reopen, verify & export a one-page author review sheet**:
-   ```sh
-   "$KDNA_NODE" "$KDNA_CLI" inspect first.kdna --format human
-   "$KDNA_NODE" "$KDNA_CLI" validate first.kdna --system --format human
-   "$KDNA_NODE" "$KDNA_CLI" read first.kdna --mode catalog --allow-read --format human
-   "$KDNA_NODE" "$KDNA_CLI" review first.kdna --allow-read --output first-review.md
-   ```
-   Hand the one-page review sheet to the author (or present it inline) so they can inspect every judgment's claim, method, reasons, boundaries, conditional exceptions, misuse warnings, and related judgments without reading raw JSON.
-
-4. **Plain-language revision loop (Agent handles hashes, full-source preservation & ripple check)**:
-   When the author asks in plain language to revise an existing `.kdna` file, never ask them to calculate SHA-256 hashes or hand-edit nested JSON. The Agent runs the full loop behind the scenes:
-   1. Compute the original file's SHA-256 (`expected-a`) and extract complete source via `source-open <first.kdna> --expected-a sha256:<hash> --allow-source --output edits.json`.
-   2. Apply only the confirmed edits inside `edits.json`, preserving all existing `reasons`, `conditions`, `exceptions`, `misuse`, `relationships`, `sources`, `materials`, and `history` entries, bumping `manifest.version` / `payload.asset.asset_version` (and `judgment_version`), and appending an honest revision entry.
-   3. Pack to a new sibling file via `source-pack <first.kdna> --edits edits.json --expected-a sha256:<hash> --output revised.kdna --allow-source` (never overwriting `first.kdna`), and validate `--system`.
-   4. Present the clean author-facing delta — **before vs. after substantive changes plus every affected downstream related judgment** — using:
-      ```sh
-      "$KDNA_NODE" "$KDNA_CLI" diff first.kdna revised.kdna --format human
-      ```
-      (Pass `--verbose` or `--format json` only when inspecting low-level IR wiring or component IDs.) Obtain fresh author confirmation before switching active files.
-   - When the author wants offline local confidentiality (no account, no cloud upload), offer `protect` by piping the passphrase via `--password-file /dev/stdin` (or an inherited file descriptor `--password-fd <n>`, `n >= 3`) so no plaintext password file is written to disk — never command-line text — and always retain the unencrypted authoring draft (`draft.json` / `authored.json`) and plaintext `.kdna` source file (`first.kdna`) for future revisions (`source-open` / `source-pack` or `create --draft` operate on plaintext source rather than encrypted `.kdna` envelopes):
-     ```sh
-     # Pipe passphrase from a password manager or silent prompt (`IFS= read -rs KDNA_PASS`) — no plaintext file on disk
-     printf '%s' "$KDNA_PASS" | "$KDNA_NODE" "$KDNA_CLI" protect first.kdna --output locked.kdna --password-file /dev/stdin
-     ```
+1. **Source Authority Hierarchy Beats Secondary Summaries**:
+   An early 916-row extraction reported "zero substantive deviation" because the Agent checked itself against secondary AI glossaries and summaries that had *already* mutated the author's core concepts (flipping perspective definitions and renaming core terms). Always enforce:
+   `live author correction > author-edited primary text > raw draft > secondary summary / AI glossary`.
+   Never let a higher draft number or self-declared "locked" banner override an author-edited primary source.
+2. **Separate Operating Phases Explicitly ("Flexible Caveat" Does Not Fix a Category Error)**:
+   Labeling an offline training/reflection loop as "flexible" still caused downstream Agents to run that loop step-by-step during live real-time conversation. Always declare operating phase explicitly in `applies_when` (e.g., *"Pre-meeting preparation and post-interaction review only"*) and `misuse` (*"Do not run as a live script during real-time conflict"*).
+3. **Scoped, Layered Confirmation Prevents Phantom Sign-Off & Quota Padding**:
+   An author saying *"the framework looks right"* NEVER confirms verbatim wording, external citations, or symmetric scenario padding (e.g., mechanically generating exactly 15 intimate + 15 family + 15 workplace extensions). Confirm in layers: (a) load-bearing core spine first, (b) live unresolved conflicts second, (c) optional derived extensions clearly tagged and kept out of core unless adopted.
+4. **Cross-File Boundary Attribution & Live-Conflict Filtering**:
+   Every minor fidelity bug in large multi-file extractions came from silently attaching a stop-boundary from File B under File A's citation, or escalating superseded historical drafts as "conflicts". Always preserve each boundary's exact file anchor, and escalate **only** live mutually exclusive collisions to the author.
+5. **Reading Order ≠ Discovery History ≠ Runtime Execution Order**:
+   Organizing judgments into narrative `sections` helps human readers navigate a book-scale asset, but Agents readily mistake `reading_order` for a mandatory step-by-step runtime checklist. Keep chapter structure in `sections`, state applicability independently per judgment, and use `form: "rule"` only when an actual conditional procedure is intended.
 
 ---
 
-## Reference `kdna.draft/1` Example (Rich Domain Draft)
+## 4. Multi-Format Ingestion & Conditional `.kdna-work/` Staging
 
-```json
-{
-  "format": "kdna.draft/1",
-  "asset": {
-    "id": "engineering-review",
-    "type": "domain",
-    "title": "Engineering Change Review Judgments",
-    "summary": "Recurring priorities and stop-boundaries for reviewing production service changes.",
-    "description": "Distilled from team postmortems and review notes for backend service pull requests.",
-    "keywords": ["code-review", "reliability", "rollback"],
-    "language": "en",
-    "version": "1.0.0",
-    "license": {
-      "identifier": "CC-BY-4.0",
-      "uri": "https://creativecommons.org/licenses/by/4.0/"
-    }
-  },
-  "scope": "Routine backend service pull requests; emergency hotfixes during active outages follow incident command rules instead.",
-  "actors": [
-    { "id": "lead", "name": "Service Architecture Team", "kind": "organization" }
-  ],
-  "highest_question": "What must be verified first before approving a backend service change?",
-  "boundaries": "Does not authorize deployment or override security vulnerability blocks.",
-  "judgments": [
-    {
-      "id": "review:rollback-before-elegance",
-      "focus": "Whether rollback safety or internal abstraction elegance takes priority when reviewing a stateful change",
-      "statement": "Require a verified rollback path before debating internal code elegance on any change touching persistent state.",
-      "applies_when": "Pull requests that alter database schemas, queue formats, or persistent state migrations.",
-      "boundaries": "Purely stateless refactors with byte-identical wire and storage behavior.",
-      "method": {
-        "term": "tradeoff",
-        "roles": {
-          "options": "Gate approval on rollback reversibility first versus gate approval on clean internal refactoring in the same change.",
-          "factors": "Blast-radius containment speed during partial deploy failure versus short-term code duplication.",
-          "priority_rule": "Reversibility under production failure outweighs temporary adapter duplication during a two-step migration.",
-          "accepted_cost": "Accepts carrying temporary dual-read compatibility code across one release cycle."
-        }
-      },
-      "reasons": [
-        "Irreversible schema deploys turned minor logic bugs into multi-hour outages in prior releases."
-      ],
-      "example": {
-        "summary": "Order-status column rename review",
-        "context": "Backend service running rolling deployments across four replicas.",
-        "input": "Single pull request dropping the old column and deploying new reader code simultaneously.",
-        "application": "Blocked single-step drop; split into expand-and-dual-write release followed by cleanup.",
-        "result": "Canary rollback succeeded in under two minutes when an upstream consumer sent the legacy field."
-      }
-    }
-  ]
-}
-```
+### Multi-Format Ingestion Rules
+- Read **only** files explicitly named or authorized by the user.
+- For `.docx`, `.pdf`, chat logs, or voice transcripts, extract clean UTF-8 text before distilling.
+- On voice/ASR transcripts, repair obvious homophone errors strictly from surrounding context and mark any uncertain repair for author review rather than silently guessing.
+- **Zero silent skips**: If any file is encrypted, scanned image-only without OCR, corrupted, or unsupported, list it explicitly in the inventory and ask the user how to handle it.
+
+### Conditional `.kdna-work/` Staging Protocol (`>= 5` files OR `> 30 KB`)
+Skip staging completely for small single-file or short interview tasks. When authorized inputs reach **`>= 5` files or `> 30 KB` total text**, create a private sibling `.kdna-work/` folder (never bundled into `.kdna`) and run four deterministic files in order:
+
+1. **`00-inventory.md`**: List every authorized file, byte size, extraction status (`ok` / `partial` / `skipped` + reason), and **Source Authority Rank** (`1 = live author correction`, `2 = author-edited primary`, `3 = raw draft`, `4 = secondary summary`).
+2. **`01-raw-claims.jsonl`**: One JSON object per line with upfront provenance tags before clustering:
+   `{"claim_id":"c001","source_file":"ch2.md","anchor":"L42-L50","authority_rank":2,"provenance":"direct_author","subject":"...","claim":"...","boundary":"...","phase":"live|prep|review"}`
+   Allowed `provenance` values: `direct_author`, `synthesis`, `derived_extension`, `external_source`. Keep boundaries bound to their exact `source_file` + `anchor`.
+3. **`02-cluster-and-weave.md`**: Deduplicate overlapping claims by authority rank, flag load-bearing spine judgments, isolate **live** mutually exclusive conflicts (discarding already-superseded draft differences), check blind-readability of each proposed `focus`, and pair prescriptive throttles with their brake (`conflict`/`qualify`) edges.
+4. **`03-review-table.md`**: Layered natural-language `Adopt / Revise / Reject` review table grouped into Layer 1 (Load-bearing spine), Layer 2 (Live conflicts & boundaries), and Layer 3 (Optional extensions / open questions).
+
+---
+
+## 5. Distillation & Anti-Distortion Craft Checks
+
+Before presenting the review table, verify every candidate judgment against six checks:
+
+1. **Bidirectional Issue Framing**: Either `Q -> A` (from a recurring decision dilemma) or `conclusion/rule -> Q` (working backward from an existing rule to name the exact decision it settles). Never discard a needed operational rule because its question sounds plain rather than "interesting".
+2. **Catalog Blind-Readability (`focus`)**: Read `focus` with all bodies hidden. Would an unfamiliar Agent select this judgment accurately from `catalog` alone? Embed key scope cues in `focus` and replace unexplained internal acronyms or vague topic nouns.
+3. **Anti-Platitude & Calibrated Anti-Absolutism**:
+   - Reject truisms nobody could disagree with (*"Communicate clearly and empathetically"*). Name what wins, what loses, and what cost is accepted.
+   - Ban unverified outcome guarantees (*"Guarantees conflict resolution in 5 minutes"*) and mind-reading (*"They only interrupt because they lack confidence"*).
+   - **Keep** sharp operational redlines (*"Never deploy a destructive schema drop without a tested rollback"*) paired with explicit `boundaries` / `exceptions` and observable facts.
+4. **Subject Lock & Provenance Separation**: Keep each judgment locked to one clear subject; never blend author convictions, editorial summaries, and external research quotes into one unmarked paragraph.
+5. **Throttle-Brake Pairing**: Where a high-leverage rule could be over-applied (e.g., *"Cut meetings aggressively"* or *"Be radically direct"*), check whether a real counterweight/stop-boundary exists and wire it via `qualify` or `conflict` (for Tier 2/3 assets) or explicit `boundaries`/`misuse`. Do not invent artificial counter-rules for simple Tier 1 taste preferences.
+6. **Honest Method & Unique Roles**: Use a formation `method` only when genuinely backed by the material (see [draft-schema-and-methods.md](draft-schema-and-methods.md)); if unstated, use `other`. Never repeat `statement` verbatim inside a method role; merge multiple points sharing one role in order.
+
+---
+
+## 6. Cross-Domain Examples (Beyond Software Engineering)
+
+Avoid defaulting to software-engineering jargon when the author's domain is taste, writing, life, or research:
+
+- **Aesthetic Taste / Photography Curation (Tier 1, 5 judgments)**:
+  - `focus`: *"Whether street-photography edits preserve harsh midday shadow contrast or recover shadow detail for balanced exposure"*
+  - `statement`: *"Preserve deep unrecovered shadows in harsh midday light to keep graphic tension; accept losing texture in dark clothing."*
+  - `method`: `feeling` (`personal_preference`) or `criteria_comparison` — zero `sections` or `relationships` required.
+- **Editorial / Long-Form Writing (Tier 1–2, 12 judgments)**:
+  - `focus`: *"Whether analytical essays open with the central claim or build chronologically toward a final reveal"*
+  - `statement`: *"State the contested claim within the opening paragraph before unpacking evidence; accept sacrificing suspense for reader orientation."*
+  - `boundaries`: *"Personal narrative memoirs or fiction where dramatic pacing is the primary goal."*
+- **Family & Life Decisions (Tier 1–2, 8 judgments)**:
+  - `focus`: *"How our household splits discretionary weekend time between scheduled family commitments and unscheduled recovery"*
+  - Uses `experience`, an explicit `exceptions` carve-out (`when`: *"Out-of-town relatives visit for under 72 hours"*, `then`: `"waive"`), and keeps an unresolved question (e.g., school choice criteria) honestly marked `answer_kind: "other"`.
+- **Domain Research Synthesis (Tier 2–3, 20 judgments)**:
+  - `creator`: `{ "id": "compiler", "name": "Caregiver Research Notes", "kind": "person", "statement": "Compiled from cited clinical guidelines; not original medical advice." }`
+  - `sources`: named published guidelines with `version` and `uri`, cited via `source_refs`; `method`: `evidence_analysis` with `contrary_evidence`; strong `misuse` warning prohibiting clinical diagnosis.
+- **Production Operations Governance (Tier 2–3, 18 judgments)**:
+  - Combines `sections`, `value_order`, `tradeoff` rules, and a `conflict`/`qualify` throttle-brake edge pairing *"Require two-step reversible migrations"* with *"Active Sev-1 outage mitigation override"*.
+
+---
+
+## 7. Scoped Layered Review & Honest 2-Tier Verification
+
+### Layered Review Table (`Adopt / Revise / Reject`)
+Present judgments in natural language — never dump raw JSON for human approval:
+
+| Layer | ID | Question (`focus`) | Stance & Accepted Cost | Applies When / Stops When | Provenance | Disposition |
+| --- | --- | --- | --- | --- | --- | --- |
+| Spine | `edit:lead-claim` | Open analytical essays with claim or chronological build-up? | State the claim in paragraph 1; accepts losing suspense. | Analytical essays / Stops on narrative memoir or fiction. | `direct_author` (`notes.md:L14`) | **Adopt / Revise / Reject** |
+
+After `create --draft`, run `kdna review <file.kdna> --allow-read` so the author inspects one clean plain-prose proof sheet covering all boundaries, conditional exceptions, misuse warnings, and relations.
+
+### Honest 2-Tier Verification (Never Fake Blindness)
+Running `read --mode catalog` → picking IDs → `exact_selection` inside the **same conversation that just authored `draft.json`** is **contaminated by live context** and must NEVER be called a "blind test" or "zero-leakage test":
+
+- **Tier 1 — Deterministic Closure & Brake Smoke Check (all Hosts; label as smoke check / non-blind walkthrough)**:
+  1. Ask the human for 1 real task + 1 edge/counter-case.
+  2. Run `kdna read <file.kdna> --mode exact_selection --judgment-id <primary_throttle_id> --format human --allow-read`.
+  3. Inspect CLI stdout deterministically: confirm that the expected `boundaries`, conditional `exceptions` (including trigger `When:` and `replace_limit`/`waive`), `misuse`, and paired brake judgments (`conflict`/`qualify`) actually appeared in the returned closure.
+- **Tier 2 — True Fresh-Context Blind Test (ONLY when the Host supports isolated zero-history subagents)**:
+  1. Subagent A (zero prior history) receives strictly `catalog` stdout + the user's real case → emits selected IDs only.
+  2. CLI runs `exact_selection` on strictly those emitted IDs.
+  3. Subagent B (or clean turn seeing strictly `exact_selection` stdout + user case, zero draft history) produces the task answer.
+  If your Host cannot isolate conversation context (single-thread chats), run Tier 1 and report it honestly as a non-blind walkthrough.
