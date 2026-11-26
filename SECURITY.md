@@ -7,7 +7,7 @@ Please **do not** report security vulnerabilities through public GitHub issues.
 Instead, use one of these private channels:
 
 - **GitHub Private Vulnerability Reporting**: Go to the [Security Advisories](https://github.com/aikdna/kdna-skills/security/advisories/new) page
-- **Email**: [hi@aikdna.com](mailto:hi@aikdna.com)
+- **Email**: **hi@aikdna.com** or **security@aikdna.com**
 
 We aim to respond within 72 hours and provide a timeline for resolution within 1 week.
 Please do not disclose the vulnerability publicly until we have had a chance to address it.
@@ -27,6 +27,6 @@ Older versions may receive critical security patches on a case-by-case basis.
 
 ## Security Model
 
-For the KDNA Protocol security and governance architecture, see:
+For the KDNA Protocol security and boundary model, see:
 - [`SECURITY.md` in `aikdna/kdna`](https://github.com/aikdna/kdna/blob/main/SECURITY.md)
-- [Trust & Security](https://aikdna.com/en/trust) and [Governance](https://aikdna.com/en/governance) on the official website.
+- [Core Narrative & Boundaries](https://github.com/aikdna/kdna/blob/main/docs/core-narrative-and-boundaries.md) and [aikdna.com](https://aikdna.com).

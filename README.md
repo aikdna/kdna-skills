@@ -1,6 +1,6 @@
 # KDNA with Your Agent (`kdna-skills`)
 
-English | [简体中文](./README.zh.md) · [Website](https://aikdna.com) · [KDNA Reader (macOS)](https://aikdna.com/en/downloads) · [Integration Guide](https://aikdna.com/en/docs/integrations)
+English | [简体中文](./README.zh.md) · [Website](https://aikdna.com) · [Case Studies & Benchmarks](https://aikdna.com/en/explore/systems) · [KDNA Reader (macOS)](https://aikdna.com/en/downloads) · [Integration Guide](https://aikdna.com/en/docs/integrations)
 
 **Agent Skills (`kdna-creator`, `kdna-loader`) and local MCP server for co-creating, reading, and revising `.kdna` judgment works.**
 
@@ -53,7 +53,7 @@ bash install-cli.sh
 
 ## Starter Prompts (Copy & Paste to Your Agent)
 
-Try these directly in Claude Code, Cursor, Codex, OpenCode, Copilot, or Antigravity (requires **Node.js `>=22`**). For human reading on macOS, download **KDNA Reader (macOS Desktop)** at [`aikdna.com/en/downloads`](https://aikdna.com/en/downloads), or download **KDNA Whitepaper `v1.0.2`** (*《KDNA白皮书》* by Zhang Ling / 张零, `CC BY 4.0`, `45` judgments) directly in [English (`.kdna`)](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.en.kdna), [Chinese (`.kdna`)](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.zh-CN.kdna), or [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets):
+Try these directly in Claude Code, Cursor, Codex, OpenCode, Copilot, or Antigravity (requires **Node.js `>=22`**). For human reading on macOS, download **KDNA Reader (macOS Desktop)** at [`aikdna.com/en/downloads`](https://aikdna.com/en/downloads), explore our official bilingual domain exemplars and 192-run clean benchmarks at [`aikdna.com/en/explore/systems`](https://aikdna.com/en/explore/systems) ([Human-Sounding Writing `v1.0.1`](https://aikdna.com/en/explore/human-writing) · [Code Review `v1.0.2`](https://aikdna.com/en/explore/code-review)), or download **KDNA Whitepaper `v1.0.2`** (*《KDNA白皮书》* by Zhang Ling / 张零, `CC BY 4.0`, `45` judgments) directly in [English (`.kdna`)](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.en.kdna), [Chinese (`.kdna`)](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.zh-CN.kdna), or [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets):
 
 1. **Direct-read the official *KDNA Whitepaper* `v1.0.2` (zero repo setup):**
    > *"Download `kdna-whitepaper-1.0.2.en.kdna` from `https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.en.kdna`, run `npx -y @aikdna/kdna-cli@0.46.0 read kdna-whitepaper-1.0.2.en.kdna --mode catalog --format human --allow-read` to inspect the 45-question catalog, and then read only the relevant judgments for my question via `--mode exact_selection --judgment-id <id1,id2> --format human --allow-read` (never call `--mode whole_asset` expecting judgment prose)."*
