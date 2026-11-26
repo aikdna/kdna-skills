@@ -1,6 +1,6 @@
 # 让你的 Agent 读懂并共创 KDNA（`kdna-skills`）
 
-[English](./README.md) | 简体中文 · [官方网站](https://aikdna.com/zh) · [KDNA Reader (macOS)](https://aikdna.com/zh/downloads) · [集成指南](https://aikdna.com/zh/docs/integrations)
+[English](./README.md) | 简体中文 · [官方网站](https://aikdna.com/zh) · [对比案例与实测](https://aikdna.com/zh/explore/systems) · [KDNA Reader (macOS)](https://aikdna.com/zh/downloads) · [集成指南](https://aikdna.com/zh/docs/integrations)
 
 **面向 `.kdna` 判断作品共创、按需读取与版本修订的 Agent 技能包（`kdna-creator`、`kdna-loader`）及本地 MCP 服务。**
 
@@ -53,7 +53,7 @@ bash install-cli.sh
 
 ## 开箱即用的 Agent 协作提示词（一键复制）
 
-在 Claude Code、Cursor、Codex、OpenCode、Copilot 或 Antigravity 中直接粘贴即可使用（需 **Node.js `>=22`**）。若需在 macOS 桌面端亲自阅读 `.kdna` 作品，可前往 [`aikdna.com/zh/downloads`](https://aikdna.com/zh/downloads) 下载 **KDNA Reader（macOS 桌面版）**，或直接下载首部公开判断作品 **《KDNA 白皮书》`v1.0.2`**（张零 / Zhang Ling · `CC BY 4.0` · `45` 题）：[中文版 `.kdna`](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.zh-CN.kdna)、[英文版 `.kdna`](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.en.kdna) 或 [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets)：
+在 Claude Code、Cursor、Codex、OpenCode、Copilot 或 Antigravity 中直接粘贴即可使用（需 **Node.js `>=22`**）。若需在 macOS 桌面端亲自阅读 `.kdna` 作品，可前往 [`aikdna.com/zh/downloads`](https://aikdna.com/zh/downloads) 下载 **KDNA Reader（macOS 桌面版）**，或前往 [`aikdna.com/zh/explore/systems`](https://aikdna.com/zh/explore/systems) 免登录体验官方双语示范体系与 192 次无泄漏实测（[活人感写作 `v1.0.1`](https://aikdna.com/zh/explore/human-writing) · [代码审查 `v1.0.2`](https://aikdna.com/zh/explore/code-review)），亦可直接下载首部公开判断作品 **《KDNA 白皮书》`v1.0.2`**（张零 / Zhang Ling · `CC BY 4.0` · `45` 题）：[中文版 `.kdna`](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.zh-CN.kdna)、[英文版 `.kdna`](https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.en.kdna) 或 [`aikdna/kdna-assets`](https://github.com/aikdna/kdna-assets)：
 
 1. **免配置直接让 Agent 精读《KDNA 白皮书》`v1.0.2`：**
    > *“请先下载《KDNA 白皮书》（`curl -fsSLo kdna-whitepaper-1.0.2.zh-CN.kdna https://aikdna.com/downloads/whitepaper/v1.0.2/kdna-whitepaper-1.0.2.zh-CN.kdna`），用 `npx -y @aikdna/kdna-cli@0.46.0 read kdna-whitepaper-1.0.2.zh-CN.kdna --mode catalog --format human --allow-read` 查看全部 45 个议题目录；再根据我的问题，用 `--mode exact_selection --judgment-id <id1,id2> --format human --allow-read` 按需精读对应判断（切勿用 `whole_asset` 读正文）。”*
