@@ -25,19 +25,7 @@
     "bin/",
     "README.md",
     "LICENSE",
-    "NOTICE",
-    "vendor/aikdna-kdna-core-0.37.11.tgz",
-    "vendor/aikdna-kdna-read-0.13.5.tgz",
-    "vendor/ajv-8.20.0.tgz",
-    "vendor/ajv-formats-3.0.1.tgz",
-    "vendor/cbor-x-1.6.9.tgz",
-    "vendor/fast-deep-equal-3.1.3.tgz",
-    "vendor/fast-uri-3.1.9.tgz",
-    "vendor/json-schema-traverse-1.0.0.tgz",
-    "vendor/noble-hashes-1.8.0.tgz",
-    "vendor/pako-2.1.0.tgz",
-    "vendor/require-from-string-2.0.2.tgz",
-    "vendor/aikdna-kdna-cli-0.45.2.tgz"
+    "NOTICE"
   ],
   "scripts": {
     "test": "node scripts/verify-runtime-candidates.mjs && node ../scripts/check-current-names.mjs && node --test test/*.test.mjs && npm run check:orphan-lockfile",

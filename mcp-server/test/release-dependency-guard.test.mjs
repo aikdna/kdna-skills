@@ -113,6 +113,7 @@ test("release dependency guard rejects unbundled file candidates, ranges, shadow
     ["root lock drift", (facts) => { facts.lock.packages[""].dependencies[CLI] = "0.43.5"; }],
     ["CLI unbundled file resolution", (facts) => { facts.lock.packages[`node_modules/${CLI}`].resolved = "file:test/cli.tgz"; }],
     ["Core unbundled file resolution", (facts) => { facts.lock.packages[`node_modules/${CORE}`].resolved = "file:test/core.tgz"; }],
+    ["vendor archive double-shipped in published files", (facts) => { facts.packageJson.files = ["bin/", "vendor/aikdna-kdna-core-0.37.11.tgz"]; }],
     ["CLI to Core edge drift", (facts) => { facts.lock.packages[`node_modules/${CLI}`].dependencies[CORE] = "0.37.9"; }],
     ["CLI Eval dependency reintroduced", (facts) => { facts.lock.packages[`node_modules/${CLI}`].dependencies["@aikdna/kdna-eval"] = "0.3.2"; }],
     ["shadow copy", (facts) => { facts.lock.packages[`node_modules/other/node_modules/${CLI}`] = { version: REQUIRED[CLI] }; }],

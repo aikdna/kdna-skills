@@ -16,7 +16,7 @@ test("private local candidate binds exact twelve artifacts and complete installe
  const result=validateCandidateFacts(facts());
  assert.equal(result.fixedArtifacts,12); assert.equal(result.lockedRequiredPackages,12);
  assert.equal(result.installedRequiredPackages,12); assert.equal(result.optionalOmitted,9);
- assert.equal(result.packedFileCount,22); assert.equal(result.status,"STABLE_RELEASE_READY");
+ assert.equal(result.packedFileCount,10); assert.equal(result.status,"STABLE_RELEASE_READY");
 });
 test("runtime binding rejects candidate, graph, dependency and package drift",async t=>{
  const mutations=[
@@ -30,6 +30,8 @@ test("runtime binding rejects candidate, graph, dependency and package drift",as
    f=>delete f.installed["node_modules/@aikdna/kdna-read"],
    f=>f.packedFiles.push("test/unexpected.mjs"),
    f=>f.packedFiles.push("vendor/unbound.tgz"),
+   f=>f.packedFiles.push("vendor/aikdna-kdna-core-0.37.11.tgz"),
+   f=>f.packageJson.files.push("vendor/aikdna-kdna-core-0.37.11.tgz"),
    f=>f.packedFiles=f.packedFiles.filter(name=>name!=="bin/reading-views.mjs"),
    f=>f.packedFiles=f.packedFiles.filter(name=>name!=="bin/task-content.mjs"),
    f=>f.lock.packages[""].dependencies["@aikdna/kdna-cli"]="^0.37.3"
