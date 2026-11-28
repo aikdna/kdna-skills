@@ -366,12 +366,17 @@ export const ARTIFACTS = [
     "file": "vendor/aikdna-kdna-cli-0.45.2.tgz"
   }
 ];
-export const PACKED_FILES = ["LICENSE","NOTICE","README.md","bin/kdna-mcp.mjs","bin/model-view.mjs","bin/operator-binding.mjs","bin/read-session.mjs","bin/reading-views.mjs","bin/task-content.mjs","package.json","vendor/aikdna-kdna-cli-0.45.2.tgz","vendor/aikdna-kdna-core-0.37.11.tgz","vendor/aikdna-kdna-read-0.13.5.tgz","vendor/ajv-8.20.0.tgz","vendor/ajv-formats-3.0.1.tgz","vendor/cbor-x-1.6.9.tgz","vendor/fast-deep-equal-3.1.3.tgz","vendor/fast-uri-3.1.9.tgz","vendor/json-schema-traverse-1.0.0.tgz","vendor/noble-hashes-1.8.0.tgz","vendor/pako-2.1.0.tgz","vendor/require-from-string-2.0.2.tgz"];
+export const PACKED_FILES = ["LICENSE","NOTICE","README.md","bin/kdna-mcp.mjs","bin/model-view.mjs","bin/operator-binding.mjs","bin/read-session.mjs","bin/reading-views.mjs","bin/task-content.mjs","package.json"];
 const read = (root, name) => JSON.parse(fs.readFileSync(path.join(root, name), "utf8"));
 export function validateSourceFacts({ packageJson, lock, root }) {
   assert.equal(packageJson.name, "@aikdna/kdna-mcp-server");
   assert.equal(packageJson.version, "0.8.4");
   assert.equal(packageJson.private, undefined, "public release manifest must not set private");
+  assert.equal(
+    (packageJson.files || []).some((entry) => String(entry).startsWith("vendor/") || entry === "vendor"),
+    false,
+    "published npm package must not bundle offline vendor/*.tgz archives alongside registry dependencies",
+  );
   const dependencies = Object.fromEntries(ARTIFACTS.map(item => [item.name, item.version]));
   assert.deepEqual(packageJson.dependencies, dependencies);
   assert.deepEqual(packageJson.kdna_runtime, { cli: "0.45.2", core: "0.37.11", read: "0.13.5", read_contract: "kdna.read/0.7.0-candidate" });
@@ -403,7 +408,7 @@ export function validateCandidateFacts({ packageJson, lock, installed, packedFil
   // not from whether this machine happens to have installed them.
   return { fixedArtifacts: 12, lockedRequiredPackages: 12, installedRequiredPackages: 12,
     optionalOmitted: Object.values(EXPECTED_GRAPH).filter((value) => value.optional).length,
-    packedFileCount: 22, status: "STABLE_RELEASE_READY" };
+    packedFileCount: PACKED_FILES.length, status: "STABLE_RELEASE_READY" };
 }
 export function verifyRuntime(root = ROOT) {
   const installed = {};

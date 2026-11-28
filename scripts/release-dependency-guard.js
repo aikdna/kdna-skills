@@ -44,7 +44,15 @@ function validateLocalReleaseDependencies({ packageJson, lock }) {
   assert.deepEqual(packageJson.dependencies, REQUIRED);
   assert.deepEqual(lock.packages?.[""]?.dependencies, REQUIRED);
 
-  const packedSet = new Set(Array.isArray(packageJson.files) ? packageJson.files : []);
+  const packedFiles = Array.isArray(packageJson.files) ? packageJson.files : [];
+  assert.equal(
+    packedFiles.some((entry) => String(entry).startsWith("vendor/") || entry === "vendor"),
+    false,
+    "published package files must not double-ship offline vendor/*.tgz archives",
+  );
+  const allowedVendorResolutions = new Set(
+    Object.entries(REQUIRED).map(([name, version]) => packedVendorTarball(name, version)),
+  );
   const cli = lock.packages?.[`node_modules/${CLI}`];
   assert.equal(cli?.version, REQUIRED[CLI]);
   assert.deepEqual(cli?.dependencies, {
@@ -57,13 +65,10 @@ function validateLocalReleaseDependencies({ packageJson, lock }) {
     const version = REQUIRED[packageName];
     assert.equal(locked?.version, version);
     const expectedRegistry = officialTarball(packageName, version);
-    const expectedPackedVendor = packedVendorTarball(packageName, version);
-    const isPackedVendor =
-      locked?.resolved === expectedPackedVendor &&
-      packedSet.has(expectedPackedVendor.slice("file:".length));
+    const expectedCheckoutVendor = packedVendorTarball(packageName, version);
     assert.ok(
-      locked?.resolved === expectedRegistry || isPackedVendor,
-      `${packageName} must resolve to the official registry or exact packed vendor tarball`,
+      locked?.resolved === expectedRegistry || locked?.resolved === expectedCheckoutVendor,
+      `${packageName} must resolve to the official registry or exact checkout vendor tarball`,
     );
     assert.match(locked?.integrity || "", /^sha512-[A-Za-z0-9+/]+={0,2}$/u);
     const copies = Object.keys(lock.packages || {}).filter((entry) =>
@@ -80,9 +85,7 @@ function validateLocalReleaseDependencies({ packageJson, lock }) {
   for (const [entry, locked] of Object.entries(lock.packages || {})) {
     if (entry === "" || !locked?.resolved) continue;
     const okRegistry = locked.resolved.startsWith(REGISTRY);
-    const okVendor =
-      locked.resolved.startsWith("file:vendor/") &&
-      packedSet.has(locked.resolved.slice("file:".length));
+    const okVendor = allowedVendorResolutions.has(locked.resolved);
     assert.ok(
       okRegistry || okVendor,
       `release lock contains an unverified resolution: ${entry}`,
